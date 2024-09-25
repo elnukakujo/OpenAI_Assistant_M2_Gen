@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "OpenAI_Assistant_M2_Gen"
+version = "0.1.0"
+description = ""
+authors = ["elnukakujo <jagernoe1s3@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+openai = "^1.47.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
