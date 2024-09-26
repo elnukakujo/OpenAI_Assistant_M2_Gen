@@ -1,0 +1,2 @@
+Can you write me a simple MetaModel for a company having a name, composed of 1 to infinity employees, and 
+having a list of products? Write it as an xtext syntax.
