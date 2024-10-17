@@ -19,4 +19,4 @@ The folder data contains the problems descriptions, the analysis of the result a
 generateDsl.py is the python script to load one of the DSL description in the data/DSL2Gen folder, add the 3shot example, format the prompt and save it in prompt.txt, send the generation request to gpt4 and save it in output.txt.
 
 ## generateDsls.py
-Have the same purpose as generateDsl.py but do all the folder DSL descriptions in data/DSL2Gen, preprocess the prompt, get the output and save everything in data/input_output_GPT.csv.
+Have the same purpose as generateDsl.py but do all the folder DSL descriptions in data/DSL2Gen, preprocess the prompt, get the output and save everything in data/input_output_GPT.csv. 
