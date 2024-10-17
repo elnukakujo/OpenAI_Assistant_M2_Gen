@@ -10,6 +10,6 @@ Using poetry for package management
 The folder data contains the problems descriptions, the analysis of the result and their evaluation from the article cited above ([downloaded here](https://zenodo.org/records/8105098))
 
 ## The data folder
-M2_ebnf_format.txt contains the format given to the GPT to use to define the metamodel.
+M2_ebnf_format.txt contains the format given used to define the metamodels.
 The folder DSL2Gen contains the problem descriptions and the solutions for the DSLs to try and generate with GPT.
 The folder Example contains the 3shot.txt that is to be passed as example to GPT. In an attempt for better result than the article with GPT4, I use their best method and try to add one more example for maybe a better recall and F1 score.
