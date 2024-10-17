@@ -1,0 +1,49 @@
+Enumeration:
+RoomType(SINGLE, DOUBLE, TWIN)
+BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
+PaymentType(PREPAID, PAID_AT_HOTEL)
+
+Classes:
+HotelChain()
+HotelBookingManager()
+Traveller(string name, int reliabilityRating)
+BillingInformation(string companyName, string address)
+TravelPreference(string preference, string value)
+Hotel(string city, string country, string area, RoomAvailability availability)
+abstract Offer()
+SpecialOffer()
+RegularOffer()
+TravelSearch()
+SearchInfo()
+RoomAvailability()
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
+BookingInfo()
+Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount)
+
+1 HotelChain contain *Hotel
+1 HotelBookingManager contain *HotelChain
+1 HotelBookingManager contain *Traveller
+1 Hotel contain *Offer
+1 Hotel contain *RoomAvailability
+1 Traveller contain *TravelSearch
+1 Traveller contain *TravelPreference
+1 Traveller contain 1 BillingInformation
+1 TravelSearch contain 1 SearchInfo
+1 TravelSearch contain *TravelPreference
+
+1 Booking contain 1 BookingInfo
+
+1 SpecialOffer inherit Offer
+1 RegularOffer inherit Offer
+1 RoomAvailability inherit TripInfo
+1 SearchInfo inherit TripInfo
+
+1 BookingInfo inherit TripInfo
+
+*RegularOffer associate * TravelSearch
+
+1 Hotel associate * Booking
+Booking associate 0..1 Offer
+* Booking associate 1 Traveller
+* SpecialOffer associate 1 BookingInfo
+BookingInfo associate 0..5 SpecialOffer
