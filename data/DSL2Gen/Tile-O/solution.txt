@@ -1,8 +1,8 @@
-Enumeration:
+Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
-Class:
+Classes:
 TileO()
 Game(int currentConnectionPieces, Mode mode, const int spaceConnectionPieces=32, const int numberOfActionCards=32)
 Connection()
@@ -21,6 +21,7 @@ ActionTile()
 NormalTile()
 Player(int number, int turnsUntilActive, Color color)
 
+Relationships: 
 1 TileO contain *Game
 1 Game contain *Tile
 1 Game contain *Connection

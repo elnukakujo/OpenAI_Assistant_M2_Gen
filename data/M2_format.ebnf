@@ -5,7 +5,7 @@
 <classes> ::= "Classes: " (<class>)+
 <class> ::= ["abstract"] <string> "(" [<attributes>] ")"
 <attributes> ::= <attribute> | <attribute> "," <attributes>
-<attribute> ::= <type> ["[]"] <string>
+<attribute> ::= ["const"] <type> ["[]"] <string> ["=" <string>]
 <type> ::= <string>
 <relationships> ::= "Relationships: " [<composition>]* [<inheritance>]* [<association>]*
 <composition> ::= <mul> <string> "contain" <mul> <string>

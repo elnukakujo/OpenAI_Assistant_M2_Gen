@@ -11,8 +11,9 @@ The BTMS keeps track of a driver’s name and automatically assigns a unique ID 
 
 The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.
 
-Enumeration: 
+Enumerations: 
 Shift(morning, afternoon, night)
+
 Classes: 
 BTMS()
 BusVehicle(string licencePlate, boolean inRepairShop)
@@ -40,8 +41,9 @@ At the beginning of every weekday, a pickup route for that day is determined for
 
 H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.
 
-Enumeration:
+Enumerations:
 ItemCategory(Baby Clothing, Fridge, ...)
+
 Classes:
 H2S()
 Person(string name, string address, string phoneNumber, string emailAddress)
@@ -83,7 +85,7 @@ A patient is required to make an appointment for some tests while others are wal
 
 To make an appointment for a requisition, a patient selects the desired lab based on the lab’s address and business hours. For requisitions with repeated tests, a patient is only allowed to make one appointment at a time. The confirmation for an appointment also shows a confirmation number, the date as well as start/end times, and the name of the lab as well as its registration number. It is possible to change or cancel an appointment at any time but doing so within 24 hours of the appointment incurs a change/cancellation fee. Each lab determines its own fee and business hours. All labs are open every day of the year and offer all tests. The business hours of a lab do not change from one week to the next. Each day a lab is open from the day’s start time to its end time, i.e., there are no breaks. 
 
-Enumeration:
+Enumerations:
 Interval(weekly, monthly, everyHalfYear, yearly)
 AccessType(reservable, walkIn, dropOff)
 DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
@@ -136,64 +138,33 @@ A designer first defines the whole game including the layout of the game board. 
 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumeration:
-CardAction(extraTurn, addConnection, removeConnection, teleport, loseTurn)
-TileColor(white, black)
-Classes:
-TileO()
-Designer(string name)
-Player(string name, PlayPieceColor color)
-BoardGame(string name)
-Tile(Position position, TileColor color)
-ConnectionTile()
-ActionTile(int inactiveTurns)
-HiddenTile()
-Position(int xCoordinate, int yCoordinate)
-ConnectionPiece(Position startPoint, Position endPoint)
-ActionCard(CardAction action)
-Deck()
-Die(int face)
-Gameplay(Player currentPlayer)
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumerations: 
+Action(rollExtraTurn, connectTiles, removeConnection, moveArbitraryTile, loseNextTurn)
+
 Classes: 
 TileO()
-Designer(string name)
-Player(string name, PlayPieceColor color)
-BoardGame()
-Tile()
-ConnectionTile(Tile tile1, Tile tile2)
-ActionTile(int inactiveTurns)
-HiddenTile()
-ConnectionPiece()
-ActionCard(CardAction action)
-Deck()
+Tile(string color, boolean isHidden, boolean isActionTile, boolean isStartPos)
+Player(int id, string color)
 Die()
-Gameplay()
+DeckCard(int number)
+Card(Action action)
+ConnectionPiece()
 
 Relationships:
-1 TileO contain 1 Designer
-1 TileO contain 1..4 Player
-1 TileO contain 1 Deck
-1 TileO contain 1 BoardGame
-1 TileO contain 1 Gameplay
+1 TileO contain *Tile
+1 TileO contain *Player
+1 TileO contain *Die
+1 TileO contain *DeckCard
+1 TileO contain *Card
 
-1 Designer contain * BoardGame
-1 BoardGame contain * Tile [either ConnectionTile or ActionTile or HiddenTile]
-1 BoardGame contain * ConnectionPiece
-1 Player associate 1 PlayPiece
-1 Deck contain 32 ActionCard
-1 Gameplay contain * Player
-1 Gameplay contain 1 BoardGame
-1 Gameplay associate 1 Die
-1 ConnectionPiece associate 2 Tile
-1 Gameplay associate * ActionCard
-1 Gameplay associate 1 Deck
-1 ActionTile associate 1 ActionCard [when a player lands on it]
-1 ConnectionTile associate 1..4 ConnectionPiece [right, left, top, or bottom]
-1 HiddenTile associate 1 Player [when a player lands on it and wins the game]","Enumeration:
+1 Tile associate *ConnectionPiece
+1 Tile associate *Player
+1 Player associate *Tile
+1 DeckCard associate *Card","Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
-Class:
+Classes:
 TileO()
 Game(int currentConnectionPieces, Mode mode, const int spaceConnectionPieces=32, const int numberOfActionCards=32)
 Connection()
@@ -212,6 +183,7 @@ ActionTile()
 NormalTile()
 Player(int number, int turnsUntilActive, Color color)
 
+Relationships: 
 1 TileO contain *Game
 1 Game contain *Tile
 1 Game contain *Connection
@@ -248,8 +220,9 @@ The BTMS keeps track of a driver’s name and automatically assigns a unique ID 
 
 The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.
 
-Enumeration: 
+Enumerations: 
 Shift(morning, afternoon, night)
+
 Classes: 
 BTMS()
 BusVehicle(string licencePlate, boolean inRepairShop)
@@ -277,8 +250,9 @@ At the beginning of every weekday, a pickup route for that day is determined for
 
 H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.
 
-Enumeration:
+Enumerations:
 ItemCategory(Baby Clothing, Fridge, ...)
+
 Classes:
 H2S()
 Person(string name, string address, string phoneNumber, string emailAddress)
@@ -320,7 +294,7 @@ A patient is required to make an appointment for some tests while others are wal
 
 To make an appointment for a requisition, a patient selects the desired lab based on the lab’s address and business hours. For requisitions with repeated tests, a patient is only allowed to make one appointment at a time. The confirmation for an appointment also shows a confirmation number, the date as well as start/end times, and the name of the lab as well as its registration number. It is possible to change or cancel an appointment at any time but doing so within 24 hours of the appointment incurs a change/cancellation fee. Each lab determines its own fee and business hours. All labs are open every day of the year and offer all tests. The business hours of a lab do not change from one week to the next. Each day a lab is open from the day’s start time to its end time, i.e., there are no breaks. 
 
-Enumeration:
+Enumerations:
 Interval(weekly, monthly, everyHalfYear, yearly)
 AccessType(reservable, walkIn, dropOff)
 DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
@@ -377,41 +351,35 @@ when actualTemperature by Device #1244 in Living Room < 18 and window is closed 
 
 Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Classes:
 SHAS()
-SmartHome(string physicalAddress)
-Room()
-Device(string id)
-abstract SensorDevice()
-abstract ActuatorDevice()
-SensorReading(float measuredValue, Date date)
-ControlCommand(string status, string triggerCommand, Date timestamp)
-ActivityLog()
-AutomationRule(bool precondition, string action, bool status, string hierarchy)
-Owner()
-
-Enumeration:
-CommandStatus(requested, completed, failed)
-RelationalTerms(AND, OR, NOT)
+SmartHome(string address)
+Room(string name)
+Sensor(int deviceID, string type, boolean active)
+Actuator(int deviceID, string type, boolean active)
+SensorReading(int value, Date timestamp)
+ControlCommand(string status, Date timestamp, string command)
+AutomationRule(string precondition, string action, boolean active)
+ActivityLog(Date timestamp)
+RuleHierarchy(int level)
 
 Relationships:
-1 SHAS contain * SmartHome
+1 SHAS contain *SmartHome
 1 SHAS contain * ActivityLog
-1 SHAS contain * Owner
+1 SHAS contain * RuleHierarchy
 1 SmartHome contain * Room
-1 SmartHome contain * AutomationRule
-1 Room contain * Device
-SensorDevice inherit Device
-ActuatorDevice inherit Device
-
-1 SensorDevice associate * SensorReading
-1 ActuatorDevice associate * ControlCommand
-* ControlCommand associate 1 ActivityLog
-1 AutomationRule associate * ControlCommand
-1 Owner associate * AutomationRule","Enumeration:
+1 SmartHome contain *AutomationRule
+1 Room contain * Sensor
+1 Room contain * Actuator
+1 Sensor associate * SensorReading
+1 Actuator associate * ControlCommand
+* AutomationRule associate * SensorReading
+* AutomationRule associate * ControlCommand
+1 AutomationRule associate * RuleHierarchy","Enumerations:
 DeviceStatus(Activated, Deactivated)
 CommandType (lockDoor, turnOnHeating)
 CommandStatus (Requested, Completed, Failed)
 RuleStatus (created, edited, activated, deactivated )
 BinaryOp (AND, OR )
+
 Classes:
 SHAS()
 SmartHome()
@@ -432,6 +400,7 @@ NotExpression()
 BinaryExpression(BinaryOp binaryOp)
 CommandSequence() 
 
+Relationships: 
 0..1 SHAS contain * SmartHome
 1 SHAS contain * User
 
@@ -486,8 +455,9 @@ The BTMS keeps track of a driver’s name and automatically assigns a unique ID 
 
 The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.
 
-Enumeration: 
+Enumerations: 
 Shift(morning, afternoon, night)
+
 Classes: 
 BTMS()
 BusVehicle(string licencePlate, boolean inRepairShop)
@@ -515,8 +485,9 @@ At the beginning of every weekday, a pickup route for that day is determined for
 
 H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.
 
-Enumeration:
+Enumerations:
 ItemCategory(Baby Clothing, Fridge, ...)
+
 Classes:
 H2S()
 Person(string name, string address, string phoneNumber, string emailAddress)
@@ -558,7 +529,7 @@ A patient is required to make an appointment for some tests while others are wal
 
 To make an appointment for a requisition, a patient selects the desired lab based on the lab’s address and business hours. For requisitions with repeated tests, a patient is only allowed to make one appointment at a time. The confirmation for an appointment also shows a confirmation number, the date as well as start/end times, and the name of the lab as well as its registration number. It is possible to change or cancel an appointment at any time but doing so within 24 hours of the appointment incurs a change/cancellation fee. Each lab determines its own fee and business hours. All labs are open every day of the year and offer all tests. The business hours of a lab do not change from one week to the next. Each day a lab is open from the day’s start time to its end time, i.e., there are no breaks. 
 
-Enumeration:
+Enumerations:
 Interval(weekly, monthly, everyHalfYear, yearly)
 AccessType(reservable, walkIn, dropOff)
 DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
@@ -615,49 +586,41 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations: 
 RoomType(single, double, twin)
-PaymentType(prePaid, payAtHotel)
-HotelRating(oneStar, twoStar, threeStar, fourStar, fiveStar)
+BookingType(preliminary, regular)
+PaymentStatus(paid, unpaid)
+PaymentType(atHotel, prePaid)
+HotelRating(star_1, star_2, star_3, star_4, star_5)
 
-Classes: 
+Classes:
 HBMS()
-Traveller(string name, string companyName, string companyAddress, string travelPreferences)
-CreditCard(string cardNumber)
-Booking(string dateOfArrival, string dateOfDeparture, int roomsNeeded, RoomType roomType, HotelRating minRating, double tentativeBudget, PaymentType paymentType, string cancellationDeadline)
-PreliminaryBooking(string price, string cityArea, HotelRating hotelRating, string keyPreferences)
-ConfirmedBooking(string confirmationNumber)
-Hotel(string city, string address)
-HotelChain(string name)
-RoomAvailability(string dateFrom, string dateTo)
-SpecialOffer(string offerDetails)
+Traveler(string name, string billingInfo, boolean breakfast, boolean freeWifi, boolean frontDesk24, string reliabilityRating)
+City(string name)
+Hotel(string name, boolean chain, string address, HotelRating rating)
+Room(string availability, RoomType type)
+Booking(DateTime arrivalDate, DateTime departureDate, int roomsRequired, RoomType roomType, string budget, boolean breakfast, boolean freeWifi, boolean frontDesk24, HotelRating minRating, BookingType type, string uniqueID)
+SpecialOffer(string offerDetails, DateTime validTill)
 
 Relationships:
-1 HBMS contain *Traveller
-1 HBMS contain *CreditCard
-1 HBMS contain *Booking
-1 HBMS contain *PreliminaryBooking
-1 HBMS contain *ConfirmedBooking
+1 HBMS contain *Traveler
+1 HBMS contain *City
 1 HBMS contain *Hotel
-1 HBMS contain *HotelChain
-1 HBMS contain *RoomAvailability
+1 HBMS contain *Room
+1 HBMS contain *Booking
 1 HBMS contain *SpecialOffer
 
-1 Traveller associate *CreditCard
-1 Traveller associate *Booking
-1 Traveller associate *PreliminaryBooking
-1 Traveller associate *SpecialOffer
-* Booking associate 1 Hotel
-1 PreliminaryBooking associate 1 Hotel
-1 ConfirmedBooking associate 1 Hotel
-1 Hotel associate *RoomAvailability
-1 Hotel associate *SpecialOffer
-1 ConfirmedBooking inherit Booking
-1 PreliminaryBooking inherit Booking
-0..1 Hotel associate 1 HotelChain
-1 SpecialOffer associate 1 PreliminaryBooking
+* Traveler associate *Booking
+* City associate *Hotel
+1 Hotel associate *Room
+1 Booking associate *Hotel
 1 Booking associate *SpecialOffer
-","Enumeration:
+1 Hotel associate *SpecialOffer
+
+1 Room associate 0..* Booking
+1 Bookings associate 0..* Traveler
+1 Hotelassociate 0..* Booking
+SpecialOffer associate 1..* Booking","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
 PaymentType(PREPAID, PAID_AT_HOTEL)
@@ -679,6 +642,7 @@ abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date d
 BookingInfo()
 Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount)
 
+Relationships: 
 1 HotelChain contain *Hotel
 1 HotelBookingManager contain *HotelChain
 1 HotelBookingManager contain *Traveller

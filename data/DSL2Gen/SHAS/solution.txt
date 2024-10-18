@@ -1,9 +1,10 @@
-Enumeration:
+Enumerations:
 DeviceStatus(Activated, Deactivated)
 CommandType (lockDoor, turnOnHeating)
 CommandStatus (Requested, Completed, Failed)
 RuleStatus (created, edited, activated, deactivated )
 BinaryOp (AND, OR )
+
 Classes:
 SHAS()
 SmartHome()
@@ -24,6 +25,7 @@ NotExpression()
 BinaryExpression(BinaryOp binaryOp)
 CommandSequence() 
 
+Relationships: 
 0..1 SHAS contain * SmartHome
 1 SHAS contain * User
 
