@@ -1,11 +1,11 @@
-DSL_Name,Description,Prompt,Output
+DSL_Name,Description,Prompt,Output,Expected_Output
 Tile-O,"The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
 
 A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.","A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
 
 The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
 
@@ -136,39 +136,85 @@ A designer first defines the whole game including the layout of the game board. 
 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.","Enumeration:
-CardAction(rollExtraTurn, connectTiles,removeConnection, moveArbitraryTile, loseTurn)
-TileColor(white, black)
-TileType(regular, action, hidden, connected)
-PlayerOrder(first, second, third, fourth)
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumeration:
+ActionType(extraTurn, connectTiles, removeConnection, moveArbitraryTile, loseNextTurn)
+PositionType(right, left, top, bottom)
+TileState(white, black, hidden, action)
+PlayerStatus(active, win, lose)
 
-Classes: 
+Classes:
 TileO()
-Tile(string id, TileColor color, TileType type)
-ConnectionPiece(string id)
-Player(string id, string playingPieceColor)
-Die()
-GameDesigner()
-GameBoard()
-ActionCard(CardAction action)
-Deck()
+Person(string name)
+Player(string color, PlayerStatus status)
+GameBoard(Tile[][] layout)
+Tile(int x, int y, TileState state)
+Connection(Tile tile1, Tile tile2, PositionType position)
+Deck(ActionCard[] cards)
+ActionCard(ActionType type, string description)
+ConnectionPiece(Connection connection)
+Die(int faces)
 
-Relationships:
-1 TileO contain 1 GameDesigner
-1 TileO contain 5 Players
+Relationship:
 1 TileO contain 1 GameBoard
 1 TileO contain 1 Deck
+1 TileO contain *Player
+1 TileO contain *Person
 1 TileO contain 1 Die
 
-1 GameDesigner design 1 GameBoard
-1 GameBoard consist of *Tile
-1 GameBoard consist of *ConnectionPiece
-1 Tile connected to 0..4 ConnectionPiece
-1 Die used by *Player
-1 Deck hold *ActionCard
-1 Player hold 0..1 ActionCard
-1 Player located on 1 Tile
-"
+1 GameBoard contain *Tile
+1 GameBoard contain *Connection
+
+1 Connection associate 2 Tile
+1 Player associate 1 Person
+1 Player associate 1 Tile
+1 Deck contain *ActionCard
+1 Tile associate 1 ConnectionPiece
+1 Tile associate *Player
+1 ConnectionPiece associate 1 Connection","Enumeration:
+Mode(design, game)
+Color(red, blue, green, yellow)
+
+Class:
+TileO()
+Game(int currentConnectionPieces, Mode mode, const int spaceConnectionPieces=32, const int numberOfActionCards=32)
+Connection()
+WinTile()
+Die()
+Deck()
+abstract Tile(int x, int y)
+abstract ActionCard(string instructions)
+RollDieActionCard()
+ConnectTilesActionCard()
+RemoveConnectionActionCard()
+TeleportActionCard()
+LoseTurnActionCard()
+WinTile()
+ActionTile()
+NormalTile()
+Player(int number, int turnsUntilActive, Color color)
+
+1 TileO contain *Game
+1 Game contain *Tile
+1 Game contain *Connection
+1 Game contain 1Die
+1 Game contain 1Deck
+1 Game contain 0..1 Player
+1 Deck contain 0..32 ActionCard
+
+1 WinTile inherit Tile
+1 ActionTile inherit Tile
+1 NormalTile inherit Tile
+1 RollDieActionCard inherit ActionCard
+1 ConnectTilesActionCard inherit ActionCard  
+1 RemoveConnectionActionCard inherit ActionCard
+1 TeleportActionCard inherit ActionCard
+1 LoseTurnActionCard inherit ActionCard
+
+1 Game associate 0..1 WinTile
+0..4 Connection associate 2 Tile
+1 Player associate 0..1 Tile
+0..4 Player associate 0..1 Tile
+1 Deck associate 0..1 ActionCard"
 SHAS,"A smart home automation system (SHAS) offers various users to automatically manage smart home automation tasks. A smart home (located at a physical address) consists of several rooms, each of which may contain sensor devices and actuator (controller) devices of different types (e.g. temperature sensor, movement sensor, light controller, lock controller). Each sensor and actuator have a unique device identifier. Once a new sensor or actuator is activated or deactivated, SHAS will recognize the change and update its infrastructure map.
 
 When SHAS is operational, a sensor device periodically provides sensor readings (recording the measured value and the timestamp). Similarly, a predefined set of control commands (e.g. lockDoor, turnOnHeating) can be sent to the actuator devices with the timestamp and the status of the command (e.g. requested, completed, failed, etc.). All sensor readings and control commands for a smart home are recorded by SHAS in an activity log.
@@ -311,40 +357,94 @@ For example, a sample rule could specify:
 when actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room
 
 Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Classes:
-SHAS()
-SmartHome(string physicalAddress)
-Room(string name)
-SensorDevice(string deviceId, boolean isActive)
-ActuatorDevice(string deviceId, boolean isActive)
-SensorReading(int value, Date timestamp)
-ControlCommand(string command, Date timestamp, CommandStatus status)
-ActivityLog()
-AutomationRule(string precondition, string action, boolean isActive)
-RuleHierarchy()
-
-Enumeration:
-DeviceType(temperatureSensor, movementSensor, lightController, lockController)
-CommandStatus(requested, completed, failed)
-BooleanOperators(AND, OR, NOT)
+- SHAS()
+- SmartHome(string physicalAddress)
+- Room(string name)
+- SensorDevice(string uniqueID, string type, boolean status)
+- ActuatorDevice(string uniqueID, string type, boolean status)
+- SensorReading(float measuredvalue, DateTime timestamp)
+- ControlCommand(string commandType, DateTime timestamp, string commandStatus)
+- ActivityLog(DateTime timestamp)
+- Owner()
+- AutomationRule(string precondition, string action, boolean isActivated)
+- RuleHierarchy();
 
 Relationships:
-1 SHAS contain * SmartHome
-1 SHAS contain * ActivityLog
+- 1 SHAS contain *SmartHome
+- 1 SmartHome contain *Room
+- 1 SmartHome contain *Owner
+- 1 Room contain *SensorDevice
+- 1 Room contain *ActuatorDevice
+- 1 Room contain *AutomationRule
+- 1 AutomationRule contain *ControlCommand
+- 1 SHAS contain *ActivityLog
+- *ActivityLog associate *SensorReading
+- *ActivityLog associate *ControlCommand
+- 1 Owner associate *AutomationRule
+- 1 AutomationRule associate *RuleHierarchy","Enumeration:
+DeviceStatus(Activated, Deactivated)
+CommandType (lockDoor, turnOnHeating)
+CommandStatus (Requested, Completed, Failed)
+RuleStatus (created, edited, activated, deactivated )
+BinaryOp (AND, OR )
+Classes:
+SHAS()
+SmartHome()
+User(string name)
+Address(string city, string postalCode, string street, string aptNumber)
+Room()
+abstract Device(DeviceStatus deviceStatus, int deviceID)
+SensorDevice()
+ActuatorDevice()
+ActvityLog()
+abstract RuntimeElement(time timestamp)
+SensorReading(double value)
+ControlCommand(CommandType commandType, CommandStatus commandStatus)
+AlertRule(RuleStatus ruleStatus)
+abstract BooleanExpression()
+RelationalTerm()
+NotExpression()
+BinaryExpression(BinaryOp binaryOp)
+CommandSequence() 
 
-1 SmartHome contain * Room
-1 SmartHome contain * AutomationRule
-1 SmartHome contain * RuleHierarchy
+0..1 SHAS contain * SmartHome
+1 SHAS contain * User
+
+1 SmartHome contain 0..1 Address
+1 SmartHome contain 0..* Room
+1 SmartHome contain 0..1 ActivityLog
+* SmartHome associate * User
+
 1 Room contain * SensorDevice
 1 Room contain * ActuatorDevice
 
-* SensorDevice provide * SensorReading
-* ActuatorDevice receive * ControlCommand
-* ActivityLog record * SensorReading
-* ActivityLog record * ControlCommand
-1 AutomationRule dependOn 0..* AutomationRule
-1 AutomationRule conflictWith 0..* AutomationRule
-1 AutomationRule associate * ControlCommand
-1 SHAS record * triggered AutomationRule"
+1 ActivityLog contain * SensorReading
+1 ActivityLog contain * ControlCommand
+
+* SensorReading associate 1 SensorDevice
+
+* ControlCommand associate 1 ActuatorDevice
+
+1 Dcontain 0..1 BooleanExpression
+1 AlertRule contain * CommandSequence
+
+* RelationalTerm associate 0..1  Room
+* RelationalTerm associate 0..1  SensorDevice
+* RelationalTerm associate 0..1  ActuatorDevice
+* RelationalTerm associate 0..1  SensorReading
+* RelationalTerm associate 0..1  ControlCommand
+
+0..1 NotExpression associate 1 BooleanExpression
+
+0..1 BinaryExpression associate 1 BooleanExpreesion
+0..1 BinaryExpression associate 1 BooleanExpreesion
+
+* CommandSequence associate 0..1 CommandSequence
+1 CommandSequence contain 0..1 ControlCommand
+
+SensorDevice inherit Device
+ActuatorDevice inherit Device
+SensorReading inherit RuntimeElement"
 HBMS,"Hotel Booking Management System (HBMS)
 
 Business travellers use HMBS for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
@@ -490,34 +590,89 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Classes:
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumeration: 
+TravelPreference(breakfastIncluded, freeWifi, twentyFourHourDesk)
+RoomType(single, double, twin)
+HotelRating(star1, star2, star3, star4, star5)
+PaymentStatus(prepaid, paidAtHotel)
+BookingStatus(preliminary, finalized)
+TravelReliabilityRating(low, average, high)
 
+Classes:
 HBMS()
-Traveller(string name, string billingInformation, string travelPreferences)
-Hotel(string name, string city, string address, string rating, bool isChain)
-Booking(string arrivalDate, string departureDate, int roomsNeeded, string roomType, float maxCostPerNight, string travelPreferences, string bookingId, string paymentMethod)
-PreliminaryBooking(string price, string cityArea, string hotelRating, string keyPreferences, string bookingId)
-BookingConfirmation(string confirmationDate)
-Cancellation(string deadline, float penalty)
+Traveller(string name, string billingCompany, string billingAddress)
+CreditCard(string number, string nameOnCard, string expirationDate, string securityCode)
+SearchRequest(string city, Date arrivalDate, Date departureDate, int neededRooms, RoomType roomType, HotelRating rating, float budget)
+Hotel(string name, string address, string city, boolean partOfChain)
+HotelOffer(string price, string cityArea, HotelRating rating, TravelPreference preference)
+Booking(string uniqueIdentifier, PaymentStatus paymentStatus, Date cancellationDeadline)
+Room(string roomType, AvailabilityStatus availabilityStatus)
 
-Associations:
+Relationships:
+1 HBMS contain *Traveller
+1 HBMS contain *SearchRequest
+1 HBMS contain *Hotel
+1 HBMS contain *HotelOffer
+1 HBMS contain *Booking
+1 HBMS contain *Room
 
-1 HBMS contain * Traveller
-1 HBMS contain * Hotel
-1 HBMS contain * Booking
-1 HBMS contain * PreliminaryBooking
-1 HBMS contain * BookingConfirmation
-1 HBMS contain * Cancellation
-
+1 Traveller associate *CreditCard
 1 Traveller associate *Booking
-1 Traveller associate *PreliminaryBooking
+1 Traveller associate *SearchRequest
+1 SearchRequest associate *HotelOffer
+1 Hotel associate *HotelOffer
+1 Booking associate 1 CreditCard
+1 Booking associate 1 HotelOffer
+1 Hotel associate *Room
+1 Room associate *Booking
 
-1 Booking associate 1 Hotel
-0..1 PreliminaryBooking associate *Hotel
-1 BookingConfirmation associate 1 Booking
-1 Cancellation associate 1 Booking
+There is a process from search request to hotel offer, to booking, and finally to hotel confirmation. During this process, a traveller interacts with HBMS system, which handles information from both traveller and hotels. The hotel provides hotel offer based on search requests from travellers. Then, a traveller makes a booking based on the hotel offer. The booking will then be sent to the hotel for confirmation. This process continues until the dates of the booking are over. This can be modelled with interaction diagrams, such as sequence diagrams or colloboration diagrams.","Enumeration:
+RoomType(SINGLE, DOUBLE, TWIN)
+BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
+PaymentType(PREPAID, PAID_AT_HOTEL)
 
-1 Hotel canOffer *PreliminaryBooking
-1 Booking canBeConfirmedBy 1 Hotel
-1 Booking canBeCancelledBy 1 Hotel
-1 Booking canBeCancelledBy 1 Traveller"
+Classes:
+HotelChain()
+HotelBookingManager()
+Traveller(string name, int reliabilityRating)
+BillingInformation(string companyName, string address)
+TravelPreference(string preference, string value)
+Hotel(string city, string country, string area, RoomAvailability availability)
+abstract Offer()
+SpecialOffer()
+RegularOffer()
+TravelSearch()
+SearchInfo()
+RoomAvailability()
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
+BookingInfo()
+Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount)
+
+1 HotelChain contain *Hotel
+1 HotelBookingManager contain *HotelChain
+1 HotelBookingManager contain *Traveller
+1 Hotel contain *Offer
+1 Hotel contain *RoomAvailability
+1 Traveller contain *TravelSearch
+1 Traveller contain *TravelPreference
+1 Traveller contain 1 BillingInformation
+1 TravelSearch contain 1 SearchInfo
+1 TravelSearch contain *TravelPreference
+
+1 Booking contain 1 BookingInfo
+
+1 SpecialOffer inherit Offer
+1 RegularOffer inherit Offer
+1 RoomAvailability inherit TripInfo
+1 SearchInfo inherit TripInfo
+
+1 BookingInfo inherit TripInfo
+
+*RegularOffer associate * TravelSearch
+
+1 Hotel associate * Booking
+Booking associate 0..1 Offer
+* Booking associate 1 Traveller
+* SpecialOffer associate 1 BookingInfo
+BookingInfo associate 0..5 SpecialOffer
+"

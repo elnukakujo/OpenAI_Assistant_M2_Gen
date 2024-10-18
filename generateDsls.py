@@ -12,21 +12,31 @@ def read_file(path):
 def import_dsls():
     dsl_list = []
     for folder in os.listdir("data/DSL2Gen"):
-        file_path = os.path.join(os.path.join("data/DSL2Gen", folder), 'description.txt')
-        content = read_file(file_path)
-        dsl_list.append((folder,content.strip()))
+        description_path = os.path.join(os.path.join("data/DSL2Gen", folder), 'description.txt')
+        solution_path = os.path.join(os.path.join("data/DSL2Gen", folder), 'solution.txt')
+        
+        description = read_file(description_path)
+        solution = read_file(solution_path)
+        
+        dsl_list.append((folder,description,solution))
     return dsl_list
 
 def get_prompts():
     if not os.path.exists("data/input_output_GPT.csv"):
         example = read_file("data/Example/3shot.txt")
         dsl_list = import_dsls()
-        df = pd.DataFrame(dsl_list, columns=['DSL_Name', 'Description'])
-        df['Prompt'] = example + "\n### \nGenerate the lists of model classes and associations from the following given description.\nDescription: " + df['Description']
+        df = pd.DataFrame(dsl_list, columns=['DSL_Name', 'Description', 'Expected_Output'])
+        task="Generate the lists of model classes and associations from the following given description."
+        df['Prompt'] = example + "\n### \n"+task+"\nDescription: " + df['Description']
         df.to_csv('data/input_output_GPT.csv', index=False)
     else:
         df = pd.read_csv('data/input_output_GPT.csv')
     return df
+
+def save_outputs(df, outputs):
+    df["Output"] = outputs
+    df=df[['DSL_Name', 'Description', 'Prompt', 'Output', 'Expected_Output']]
+    df.to_csv('data/input_output_GPT.csv', index=False)
 
 df = get_prompts()
 
@@ -42,5 +52,4 @@ for prompt in df.Prompt:
     response = response.choices[0].message.content
     outputs.append(response)
 
-df["Output"] = outputs
-df.to_csv('data/input_output_GPT.csv', index=False)
+save_outputs(df, outputs)
