@@ -137,40 +137,59 @@ A designer first defines the whole game including the layout of the game board. 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
 Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumeration:
-ActionType(extraTurn, connectTiles, removeConnection, moveArbitraryTile, loseNextTurn)
-PositionType(right, left, top, bottom)
-TileState(white, black, hidden, action)
-PlayerStatus(active, win, lose)
-
+CardAction(extraTurn, addConnection, removeConnection, teleport, loseTurn)
+TileColor(white, black)
 Classes:
 TileO()
-Person(string name)
-Player(string color, PlayerStatus status)
-GameBoard(Tile[][] layout)
-Tile(int x, int y, TileState state)
-Connection(Tile tile1, Tile tile2, PositionType position)
-Deck(ActionCard[] cards)
-ActionCard(ActionType type, string description)
-ConnectionPiece(Connection connection)
-Die(int faces)
+Designer(string name)
+Player(string name, PlayPieceColor color)
+BoardGame(string name)
+Tile(Position position, TileColor color)
+ConnectionTile()
+ActionTile(int inactiveTurns)
+HiddenTile()
+Position(int xCoordinate, int yCoordinate)
+ConnectionPiece(Position startPoint, Position endPoint)
+ActionCard(CardAction action)
+Deck()
+Die(int face)
+Gameplay(Player currentPlayer)
+Classes: 
+TileO()
+Designer(string name)
+Player(string name, PlayPieceColor color)
+BoardGame()
+Tile()
+ConnectionTile(Tile tile1, Tile tile2)
+ActionTile(int inactiveTurns)
+HiddenTile()
+ConnectionPiece()
+ActionCard(CardAction action)
+Deck()
+Die()
+Gameplay()
 
-Relationship:
-1 TileO contain 1 GameBoard
+Relationships:
+1 TileO contain 1 Designer
+1 TileO contain 1..4 Player
 1 TileO contain 1 Deck
-1 TileO contain *Player
-1 TileO contain *Person
-1 TileO contain 1 Die
+1 TileO contain 1 BoardGame
+1 TileO contain 1 Gameplay
 
-1 GameBoard contain *Tile
-1 GameBoard contain *Connection
-
-1 Connection associate 2 Tile
-1 Player associate 1 Person
-1 Player associate 1 Tile
-1 Deck contain *ActionCard
-1 Tile associate 1 ConnectionPiece
-1 Tile associate *Player
-1 ConnectionPiece associate 1 Connection","Enumeration:
+1 Designer contain * BoardGame
+1 BoardGame contain * Tile [either ConnectionTile or ActionTile or HiddenTile]
+1 BoardGame contain * ConnectionPiece
+1 Player associate 1 PlayPiece
+1 Deck contain 32 ActionCard
+1 Gameplay contain * Player
+1 Gameplay contain 1 BoardGame
+1 Gameplay associate 1 Die
+1 ConnectionPiece associate 2 Tile
+1 Gameplay associate * ActionCard
+1 Gameplay associate 1 Deck
+1 ActionTile associate 1 ActionCard [when a player lands on it]
+1 ConnectionTile associate 1..4 ConnectionPiece [right, left, top, or bottom]
+1 HiddenTile associate 1 Player [when a player lands on it and wins the game]","Enumeration:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
@@ -357,31 +376,37 @@ For example, a sample rule could specify:
 when actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room
 
 Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Classes:
-- SHAS()
-- SmartHome(string physicalAddress)
-- Room(string name)
-- SensorDevice(string uniqueID, string type, boolean status)
-- ActuatorDevice(string uniqueID, string type, boolean status)
-- SensorReading(float measuredvalue, DateTime timestamp)
-- ControlCommand(string commandType, DateTime timestamp, string commandStatus)
-- ActivityLog(DateTime timestamp)
-- Owner()
-- AutomationRule(string precondition, string action, boolean isActivated)
-- RuleHierarchy();
+SHAS()
+SmartHome(string physicalAddress)
+Room()
+Device(string id)
+abstract SensorDevice()
+abstract ActuatorDevice()
+SensorReading(float measuredValue, Date date)
+ControlCommand(string status, string triggerCommand, Date timestamp)
+ActivityLog()
+AutomationRule(bool precondition, string action, bool status, string hierarchy)
+Owner()
+
+Enumeration:
+CommandStatus(requested, completed, failed)
+RelationalTerms(AND, OR, NOT)
 
 Relationships:
-- 1 SHAS contain *SmartHome
-- 1 SmartHome contain *Room
-- 1 SmartHome contain *Owner
-- 1 Room contain *SensorDevice
-- 1 Room contain *ActuatorDevice
-- 1 Room contain *AutomationRule
-- 1 AutomationRule contain *ControlCommand
-- 1 SHAS contain *ActivityLog
-- *ActivityLog associate *SensorReading
-- *ActivityLog associate *ControlCommand
-- 1 Owner associate *AutomationRule
-- 1 AutomationRule associate *RuleHierarchy","Enumeration:
+1 SHAS contain * SmartHome
+1 SHAS contain * ActivityLog
+1 SHAS contain * Owner
+1 SmartHome contain * Room
+1 SmartHome contain * AutomationRule
+1 Room contain * Device
+SensorDevice inherit Device
+ActuatorDevice inherit Device
+
+1 SensorDevice associate * SensorReading
+1 ActuatorDevice associate * ControlCommand
+* ControlCommand associate 1 ActivityLog
+1 AutomationRule associate * ControlCommand
+1 Owner associate * AutomationRule","Enumeration:
 DeviceStatus(Activated, Deactivated)
 CommandType (lockDoor, turnOnHeating)
 CommandStatus (Requested, Completed, Failed)
@@ -590,43 +615,49 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumeration: 
-TravelPreference(breakfastIncluded, freeWifi, twentyFourHourDesk)
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
 RoomType(single, double, twin)
-HotelRating(star1, star2, star3, star4, star5)
-PaymentStatus(prepaid, paidAtHotel)
-BookingStatus(preliminary, finalized)
-TravelReliabilityRating(low, average, high)
+PaymentType(prePaid, payAtHotel)
+HotelRating(oneStar, twoStar, threeStar, fourStar, fiveStar)
 
-Classes:
+Classes: 
 HBMS()
-Traveller(string name, string billingCompany, string billingAddress)
-CreditCard(string number, string nameOnCard, string expirationDate, string securityCode)
-SearchRequest(string city, Date arrivalDate, Date departureDate, int neededRooms, RoomType roomType, HotelRating rating, float budget)
-Hotel(string name, string address, string city, boolean partOfChain)
-HotelOffer(string price, string cityArea, HotelRating rating, TravelPreference preference)
-Booking(string uniqueIdentifier, PaymentStatus paymentStatus, Date cancellationDeadline)
-Room(string roomType, AvailabilityStatus availabilityStatus)
+Traveller(string name, string companyName, string companyAddress, string travelPreferences)
+CreditCard(string cardNumber)
+Booking(string dateOfArrival, string dateOfDeparture, int roomsNeeded, RoomType roomType, HotelRating minRating, double tentativeBudget, PaymentType paymentType, string cancellationDeadline)
+PreliminaryBooking(string price, string cityArea, HotelRating hotelRating, string keyPreferences)
+ConfirmedBooking(string confirmationNumber)
+Hotel(string city, string address)
+HotelChain(string name)
+RoomAvailability(string dateFrom, string dateTo)
+SpecialOffer(string offerDetails)
 
 Relationships:
 1 HBMS contain *Traveller
-1 HBMS contain *SearchRequest
-1 HBMS contain *Hotel
-1 HBMS contain *HotelOffer
+1 HBMS contain *CreditCard
 1 HBMS contain *Booking
-1 HBMS contain *Room
+1 HBMS contain *PreliminaryBooking
+1 HBMS contain *ConfirmedBooking
+1 HBMS contain *Hotel
+1 HBMS contain *HotelChain
+1 HBMS contain *RoomAvailability
+1 HBMS contain *SpecialOffer
 
 1 Traveller associate *CreditCard
 1 Traveller associate *Booking
-1 Traveller associate *SearchRequest
-1 SearchRequest associate *HotelOffer
-1 Hotel associate *HotelOffer
-1 Booking associate 1 CreditCard
-1 Booking associate 1 HotelOffer
-1 Hotel associate *Room
-1 Room associate *Booking
-
-There is a process from search request to hotel offer, to booking, and finally to hotel confirmation. During this process, a traveller interacts with HBMS system, which handles information from both traveller and hotels. The hotel provides hotel offer based on search requests from travellers. Then, a traveller makes a booking based on the hotel offer. The booking will then be sent to the hotel for confirmation. This process continues until the dates of the booking are over. This can be modelled with interaction diagrams, such as sequence diagrams or colloboration diagrams.","Enumeration:
+1 Traveller associate *PreliminaryBooking
+1 Traveller associate *SpecialOffer
+* Booking associate 1 Hotel
+1 PreliminaryBooking associate 1 Hotel
+1 ConfirmedBooking associate 1 Hotel
+1 Hotel associate *RoomAvailability
+1 Hotel associate *SpecialOffer
+1 ConfirmedBooking inherit Booking
+1 PreliminaryBooking inherit Booking
+0..1 Hotel associate 1 HotelChain
+1 SpecialOffer associate 1 PreliminaryBooking
+1 Booking associate *SpecialOffer
+","Enumeration:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
 PaymentType(PREPAID, PAID_AT_HOTEL)

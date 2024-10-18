@@ -10,6 +10,7 @@ python = "^3.10"
 openai = "^1.47.1"
 python-dotenv = "^1.0.1"
 pandas = "^2.2.3"
+antlr4-python3-runtime = "^4.13.2"
 
 
 [build-system]
