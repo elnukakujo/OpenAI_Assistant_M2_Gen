@@ -17,15 +17,12 @@ def import_dsls():
     return dsl_list
 
 def get_prompts():
-    if not os.path.exists("data/input_output_GPT.csv"):
-        example = read_file("data/Example/3shot.txt")
-        dsl_list = import_dsls()
-        df = pd.DataFrame(dsl_list, columns=['DSL_Name', 'Description', 'Expected_Output'])
-        task="Generate the lists of model classes and associations from the following given description."
-        df['Prompt'] = example + "\n### \n"+task+"\nDescription: " + df['Description']
-        df.to_csv('data/input_output_GPT.csv', index=False)
-    else:
-        df = pd.read_csv('data/input_output_GPT.csv')
+    example = read_file("data/Example/3shot.txt")
+    dsl_list = import_dsls()
+    df = pd.DataFrame(dsl_list, columns=['DSL_Name', 'Description', 'Expected_Output'])
+    task="Generate the lists of model classes and associations from the following given description."
+    df['Prompt'] = example + "\n### \n"+task+"\nDescription: " + df['Description']
+    df.to_csv('data/input_output_GPT.csv', index=False)
     return df
 
 def save_outputs(df, outputs):
@@ -33,18 +30,19 @@ def save_outputs(df, outputs):
     df=df[['DSL_Name', 'Description', 'Prompt', 'Output', 'Expected_Output']]
     df.to_csv('data/input_output_GPT.csv', index=False)
 
-df = get_prompts()
-sys_role = "You are a metamodel design assistant. Using the following format define with EBNF, you generate metamodels based on the examples and description you are given as input:"+read_file("data/M2_format.ebnf")
-outputs = []
-for prompt in df.Prompt:
+def api_call(prompt):
     load_dotenv()
+    sys_role = "You are a metamodel design assistant. Using the following format define with EBNF, you generate metamodels based on the examples and description you are given as input:"+read_file("antlrConversion/ClassDiagram.g4")
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     response = client.chat.completions.create(model="gpt-4", messages=[
         {"role": "system", "content": sys_role},
         {"role": "user", "content": prompt}
     ])
-
-    response = response.choices[0].message.content
-    outputs.append(response)
-
-save_outputs(df, outputs)
+    return response.choices[0].message.content
+    
+def generateDsls():
+    df = get_prompts()
+    outputs = []
+    for prompt in df.Prompt:
+        outputs.append(api_call(prompt))
+    save_outputs(df, outputs)

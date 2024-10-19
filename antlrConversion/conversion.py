@@ -1,7 +1,7 @@
 import sys
 from antlr4 import *
-from ClassDiagramLexer import ClassDiagramLexer
-from ClassDiagramParser import ClassDiagramParser
+from antlrConversion.ClassDiagramLexer import ClassDiagramLexer
+from antlrConversion.ClassDiagramParser import ClassDiagramParser
 import pandas as pd
 
 def generate_xmi(parsed_data):
@@ -92,11 +92,12 @@ def conversion(input_ebnf):
 
     return generate_xmi((enumerations, classes, relationships))
 
-df = pd.read_csv("../data/input_output_GPT.csv")
-    
-# Create a new column "test" and apply the conversion function to each row in the "Prompt" column
-df['OutputXMI'] = df['Output'].apply(conversion)
-df['Expected_OutputXMI'] = df['Expected_Output'].apply(conversion)
+def csv_convertion():
+    df = pd.read_csv("data/input_output_GPT.csv")
+        
+    # Create a new column "test" and apply the conversion function to each row in the "Prompt" column
+    df['OutputXMI'] = df['Output'].apply(conversion)
+    df['Expected_OutputXMI'] = df['Expected_Output'].apply(conversion)
 
-# Save the updated dataframe to a new CSV file
-df.to_csv("../data/input_output_GPT.csv", index=False)
+    # Save the updated dataframe to a new CSV file
+    df.to_csv("data/input_output_GPT.csv", index=False)

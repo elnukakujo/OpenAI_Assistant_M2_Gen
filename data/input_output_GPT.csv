@@ -139,47 +139,34 @@ A designer first defines the whole game including the layout of the game board. 
 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumerations: 
-ActionCard(ExtraTurn, ConnectTiles, RemoveConnection, MoveToTile, LoseTurn)
-Color(Red, Blue, Yellow, Green)
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumerations:
+ActionCard(RollDieExtraTurn, ConnectTwoTiles, RemoveConnectionPiece, MoveToAnyTile, LoseNextTurn)
 
-Classes: 
+Classes:
 TileO()
-Game()
-Tile(string id, boolean isHidden, boolean wasVisited, boolean isActionTile, int disableForTurns)
-ConnectionPiece(string id, bool inPile)
-Player(Color color)
-PlayingPiece(Color color)
-ActionDeck()
-Die(int faceUp)
+Board()
+Tile(boolean isVisible, boolean isStartTile, boolean isHiddenTile, boolean visited)
+ConnectionPiece()
+Player(string color)
+Die(int number)
+ActionTile(int restTurns)
+Deck()
+ActionCard(ActionCard action)
 
-Relationships: 
-(1) TileO contain (1) Game
-(1) TileO contain (4) Player
-(1) TileO contain (4) PlayingPiece
-(1) TileO contain (1..49) Tile
-(1) TileO contain (32) ConnectionPiece
-(1) TileO contain (1) ActionDeck
+Relationships:
+(1) TileO contain (1) Board
+(1) TileO contain (2..4) Player
 (1) TileO contain (1) Die
-
-(1) Game contain (1) Tile
-(1) Game contain (*) Player
-(1) Game contain (1) Die
-(1) Game contain (1) ActionDeck
-
-(1) Player associate (1) PlayingPiece
-
-(*..*) Tile associate (*) ConnectionPiece
-(1..49) Game associate (1..49) Tile
-
-(32) ConnectionPiece associate (32) ActionDeck
-
-(1) PlayingPiece associate (1..49) Tile
-(1) PlayingPiece contain (1) ConnectionPiece
-
-(1) ActionDeck contain (32) ConnectionPiece
-
-(1) Die contain (4) Player","Enumerations:
+(1) TileO contain (1) Deck
+(1) Board contain (*) Tile
+(1) Board contain (*) ConnectionPiece
+(1) Board contain (*) Player
+(1) Player associate (1) Tile
+(1) Tile associate (0..4) Tile
+(1) ConnectionPiece associate (2) Tile
+(1) Deck contain (32) ActionCard
+(#) Tile inherit ActionTile
+(1) ActionCard associate (*) Player","Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
@@ -228,43 +215,37 @@ LoseTurnActionCard inherit ActionCard
 <XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
     <UML:Model name=""ClassDiagram"" visibility=""public"">
         <UML:Enumeration name=""ActionCard"">
-            <UML:Literal name=""ExtraTurn""/>
-            <UML:Literal name=""ConnectTiles""/>
-            <UML:Literal name=""RemoveConnection""/>
-            <UML:Literal name=""MoveToTile""/>
-            <UML:Literal name=""LoseTurn""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""Color"">
-            <UML:Literal name=""Red""/>
-            <UML:Literal name=""Blue""/>
-            <UML:Literal name=""Yellow""/>
-            <UML:Literal name=""Green""/>
+            <UML:Literal name=""RollDieExtraTurn""/>
+            <UML:Literal name=""ConnectTwoTiles""/>
+            <UML:Literal name=""RemoveConnectionPiece""/>
+            <UML:Literal name=""MoveToAnyTile""/>
+            <UML:Literal name=""LoseNextTurn""/>
         </UML:Enumeration>
         <UML:Class name=""TileO"" visibility=""public"">
         </UML:Class>
-        <UML:Class name=""Game"" visibility=""public"">
+        <UML:Class name=""Board"" visibility=""public"">
         </UML:Class>
         <UML:Class name=""Tile"" visibility=""public"">
-            <UML:Attribute name=""id"" type=""string""/>
-            <UML:Attribute name=""isHidden"" type=""boolean""/>
-            <UML:Attribute name=""wasVisited"" type=""boolean""/>
-            <UML:Attribute name=""isActionTile"" type=""boolean""/>
-            <UML:Attribute name=""disableForTurns"" type=""int""/>
+            <UML:Attribute name=""isVisible"" type=""boolean""/>
+            <UML:Attribute name=""isStartTile"" type=""boolean""/>
+            <UML:Attribute name=""isHiddenTile"" type=""boolean""/>
+            <UML:Attribute name=""visited"" type=""boolean""/>
         </UML:Class>
         <UML:Class name=""ConnectionPiece"" visibility=""public"">
-            <UML:Attribute name=""id"" type=""string""/>
-            <UML:Attribute name=""inPile"" type=""bool""/>
         </UML:Class>
         <UML:Class name=""Player"" visibility=""public"">
-            <UML:Attribute name=""color"" type=""Color""/>
-        </UML:Class>
-        <UML:Class name=""PlayingPiece"" visibility=""public"">
-            <UML:Attribute name=""color"" type=""Color""/>
-        </UML:Class>
-        <UML:Class name=""ActionDeck"" visibility=""public"">
+            <UML:Attribute name=""color"" type=""string""/>
         </UML:Class>
         <UML:Class name=""Die"" visibility=""public"">
-            <UML:Attribute name=""faceUp"" type=""int""/>
+            <UML:Attribute name=""number"" type=""int""/>
+        </UML:Class>
+        <UML:Class name=""ActionTile"" visibility=""public"">
+            <UML:Attribute name=""restTurns"" type=""int""/>
+        </UML:Class>
+        <UML:Class name=""Deck"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""ActionCard"" visibility=""public"">
+            <UML:Attribute name=""action"" type=""ActionCard""/>
         </UML:Class>
     </UML:Model>
 </XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -473,36 +454,36 @@ For example, a sample rule could specify:
 when actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room
 
 Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Enumerations:
-DeviceType(sensor, actuator)
-Status(requested, completed, failed)
-Operator(AND, OR, NOT)
+DeviceType(temperatureSensor, movementSensor, lightController, lockController)
+RuleStatus(active, inactive)
+CommandStatus(requested, completed, failed)
+BooleanOperator(and, or, not)
 
 Classes:
 SHAS()
 SmartHome(string address)
 Room(string name)
-Device(string deviceId, DeviceType type, boolean isActive)
-SensorReading(string measuredValue, Date timestamp)
-ControlCommand(string command, Status status, Date timestamp)
-AutomationRule(Operator operator, string precondition, string action)
+Device(string id, DeviceType deviceType)
+SensorReading(int measuredValue, Date date)
+ControlCommand(string command, Date date, CommandStatus status)
 ActivityLog()
-RuleHierarchy()
+AutomationRule(BooleanOperator operator, RuleStatus status, string action)
 
 Relationships:
 (1) SHAS contain (*) SmartHome
 (1) SHAS contain (*) ActivityLog
-(1) SHAS contain (*) RuleHierarchy
 (1) SmartHome contain (*) Room
-(1) SmartHome contain (*) AutomationRule 
-(1) Room contain (*) Device
-(1) Device associate (*) SensorReading
-(1) Device associate (*) ControlCommand
-(1) AutomationRule associate (*) SensorReading
-(1) AutomationRule associate (*) ControlCommand
-(1) ActivityLog associate (*) SensorReading
-(1) ActivityLog associate (*) ControlCommand
-(1) AutomationRule associate (*) RuleHierarchy
-(1..*) AutomationRule associate (0..*) AutomationRule
+(1) SmartHome contain (*) AutomationRule
+(*) Room contain (*) Device
+(1) ActivityLog contain (*) SensorReading
+(1) ActivityLog contain (*) ControlCommand
+(1) AutomationRule contain (*) Action
+(1) AutomationRule contain (*) Precondition
+
+(0..1) Device associate (*) SensorReading
+(0..1) Device associate (*) ControlCommand
+(*) AutomationRule associate (1) Room
+(*) AutomationRule associate (*) AutomationRule
 ","Enumerations:
 DeviceStatus(Activated, Deactivated)
 CommandType(lockDoor, turnOnHeating)
@@ -572,18 +553,24 @@ SensorReading inherit RuntimeElement","<?xml version=""1.0"" encoding=""UTF-8""?
 <XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
     <UML:Model name=""ClassDiagram"" visibility=""public"">
         <UML:Enumeration name=""DeviceType"">
-            <UML:Literal name=""sensor""/>
-            <UML:Literal name=""actuator""/>
+            <UML:Literal name=""temperatureSensor""/>
+            <UML:Literal name=""movementSensor""/>
+            <UML:Literal name=""lightController""/>
+            <UML:Literal name=""lockController""/>
         </UML:Enumeration>
-        <UML:Enumeration name=""Status"">
+        <UML:Enumeration name=""RuleStatus"">
+            <UML:Literal name=""active""/>
+            <UML:Literal name=""inactive""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""CommandStatus"">
             <UML:Literal name=""requested""/>
             <UML:Literal name=""completed""/>
             <UML:Literal name=""failed""/>
         </UML:Enumeration>
-        <UML:Enumeration name=""Operator"">
-            <UML:Literal name=""AND""/>
-            <UML:Literal name=""OR""/>
-            <UML:Literal name=""NOT""/>
+        <UML:Enumeration name=""BooleanOperator"">
+            <UML:Literal name=""and""/>
+            <UML:Literal name=""or""/>
+            <UML:Literal name=""not""/>
         </UML:Enumeration>
         <UML:Class name=""SHAS"" visibility=""public"">
         </UML:Class>
@@ -594,27 +581,24 @@ SensorReading inherit RuntimeElement","<?xml version=""1.0"" encoding=""UTF-8""?
             <UML:Attribute name=""name"" type=""string""/>
         </UML:Class>
         <UML:Class name=""Device"" visibility=""public"">
-            <UML:Attribute name=""deviceId"" type=""string""/>
-            <UML:Attribute name=""type"" type=""DeviceType""/>
-            <UML:Attribute name=""isActive"" type=""boolean""/>
+            <UML:Attribute name=""id"" type=""string""/>
+            <UML:Attribute name=""deviceType"" type=""DeviceType""/>
         </UML:Class>
         <UML:Class name=""SensorReading"" visibility=""public"">
-            <UML:Attribute name=""measuredValue"" type=""string""/>
-            <UML:Attribute name=""timestamp"" type=""Date""/>
+            <UML:Attribute name=""measuredValue"" type=""int""/>
+            <UML:Attribute name=""date"" type=""Date""/>
         </UML:Class>
         <UML:Class name=""ControlCommand"" visibility=""public"">
             <UML:Attribute name=""command"" type=""string""/>
-            <UML:Attribute name=""status"" type=""Status""/>
-            <UML:Attribute name=""timestamp"" type=""Date""/>
-        </UML:Class>
-        <UML:Class name=""AutomationRule"" visibility=""public"">
-            <UML:Attribute name=""operator"" type=""Operator""/>
-            <UML:Attribute name=""precondition"" type=""string""/>
-            <UML:Attribute name=""action"" type=""string""/>
+            <UML:Attribute name=""date"" type=""Date""/>
+            <UML:Attribute name=""status"" type=""CommandStatus""/>
         </UML:Class>
         <UML:Class name=""ActivityLog"" visibility=""public"">
         </UML:Class>
-        <UML:Class name=""RuleHierarchy"" visibility=""public"">
+        <UML:Class name=""AutomationRule"" visibility=""public"">
+            <UML:Attribute name=""operator"" type=""BooleanOperator""/>
+            <UML:Attribute name=""status"" type=""RuleStatus""/>
+            <UML:Attribute name=""action"" type=""string""/>
         </UML:Class>
     </UML:Model>
 </XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -842,34 +826,32 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations: 
 RoomType(single, double, twin)
 PaymentType(prePaid, paidAtHotel)
 
-Classes:
+Classes: 
 HBMS()
-Traveller(string name, string company, string billingAddress, string preferences, string reliabilityRating)
-Hotel(string name, string city, string address)
-HotelChain(string name)
-Booking(Date arrival, Date departure, int numberOfRooms, float maxPrice, RoomType roomType, string minRating, string tentativeBudget, boolean finalized, PaymentType payment, Date cancellationDeadline, string bookingId)
-SpecialOffer(float price, string preferences, float rating)
-RoomInventory(RoomType type, Date start, Date end)
+Traveler(string name, string billingInfo, string preferences, double reliabilityRating)
+SearchCriteria(string city, Date arrivalDate, Date departureDate, int roomsNeeded, RoomType roomType, double minHotelRating, double budget, string preferences)
+Booking(double price, string area, double hotelRating, string preferences, string bookingID, PaymentType payment, Date confirmationDeadline, Date cancellationDeadline)
+Hotel(string name, string address, string city, double rating, string roomInfo)
+Offer(double price)
 
-Relationships:
-(1) HBMS contain (*) Traveller
-(1) HBMS contain (*) Hotel
-(1) HBMS contain (*) HotelChain
+Relationships: 
+(1) HBMS contain (*) Traveler
+(1) HBMS contain (*) SearchCriteria
 (1) HBMS contain (*) Booking
-(1) HBMS contain (*) SpecialOffer
-(1) HBMS contain (*) RoomInventory
+(1) HBMS contain (*) Hotel
+(1) HBMS contain (*) Offer
 
-(1) Traveller associate (*) Booking
-(1) Booking associate (1) Hotel
-(1) Hotel associate (1) HotelChain
-(*) SpecialOffer associate (1) Hotel
-(1) Hotel associate (*) RoomInventory
-(1) Booking associate (*) SpecialOffer
-(1) HotelChain contain (*) Hotel","Enumerations:
+(*) Traveler associate (1) SearchCriteria
+(1) SearchCriteria associate (*) Booking
+(*) Traveler associate (*) Booking
+(*) Booking associate (1) Hotel
+(*) Booking associate (1) Offer
+(1) Offer associate (*) Hotel
+(1) Hotel associate (*) HBMS","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
 PaymentType(PREPAID, PAID_AT_HOTEL)
@@ -931,43 +913,41 @@ BookingInfo inherit TripInfo
         </UML:Enumeration>
         <UML:Class name=""HBMS"" visibility=""public"">
         </UML:Class>
-        <UML:Class name=""Traveller"" visibility=""public"">
+        <UML:Class name=""Traveler"" visibility=""public"">
             <UML:Attribute name=""name"" type=""string""/>
-            <UML:Attribute name=""company"" type=""string""/>
-            <UML:Attribute name=""billingAddress"" type=""string""/>
+            <UML:Attribute name=""billingInfo"" type=""string""/>
             <UML:Attribute name=""preferences"" type=""string""/>
-            <UML:Attribute name=""reliabilityRating"" type=""string""/>
+            <UML:Attribute name=""reliabilityRating"" type=""double""/>
+        </UML:Class>
+        <UML:Class name=""SearchCriteria"" visibility=""public"">
+            <UML:Attribute name=""city"" type=""string""/>
+            <UML:Attribute name=""arrivalDate"" type=""Date""/>
+            <UML:Attribute name=""departureDate"" type=""Date""/>
+            <UML:Attribute name=""roomsNeeded"" type=""int""/>
+            <UML:Attribute name=""roomType"" type=""RoomType""/>
+            <UML:Attribute name=""minHotelRating"" type=""double""/>
+            <UML:Attribute name=""budget"" type=""double""/>
+            <UML:Attribute name=""preferences"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Booking"" visibility=""public"">
+            <UML:Attribute name=""price"" type=""double""/>
+            <UML:Attribute name=""area"" type=""string""/>
+            <UML:Attribute name=""hotelRating"" type=""double""/>
+            <UML:Attribute name=""preferences"" type=""string""/>
+            <UML:Attribute name=""bookingID"" type=""string""/>
+            <UML:Attribute name=""payment"" type=""PaymentType""/>
+            <UML:Attribute name=""confirmationDeadline"" type=""Date""/>
+            <UML:Attribute name=""cancellationDeadline"" type=""Date""/>
         </UML:Class>
         <UML:Class name=""Hotel"" visibility=""public"">
             <UML:Attribute name=""name"" type=""string""/>
-            <UML:Attribute name=""city"" type=""string""/>
             <UML:Attribute name=""address"" type=""string""/>
+            <UML:Attribute name=""city"" type=""string""/>
+            <UML:Attribute name=""rating"" type=""double""/>
+            <UML:Attribute name=""roomInfo"" type=""string""/>
         </UML:Class>
-        <UML:Class name=""HotelChain"" visibility=""public"">
-            <UML:Attribute name=""name"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Booking"" visibility=""public"">
-            <UML:Attribute name=""arrival"" type=""Date""/>
-            <UML:Attribute name=""departure"" type=""Date""/>
-            <UML:Attribute name=""numberOfRooms"" type=""int""/>
-            <UML:Attribute name=""maxPrice"" type=""float""/>
-            <UML:Attribute name=""roomType"" type=""RoomType""/>
-            <UML:Attribute name=""minRating"" type=""string""/>
-            <UML:Attribute name=""tentativeBudget"" type=""string""/>
-            <UML:Attribute name=""finalized"" type=""boolean""/>
-            <UML:Attribute name=""payment"" type=""PaymentType""/>
-            <UML:Attribute name=""cancellationDeadline"" type=""Date""/>
-            <UML:Attribute name=""bookingId"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""SpecialOffer"" visibility=""public"">
-            <UML:Attribute name=""price"" type=""float""/>
-            <UML:Attribute name=""preferences"" type=""string""/>
-            <UML:Attribute name=""rating"" type=""float""/>
-        </UML:Class>
-        <UML:Class name=""RoomInventory"" visibility=""public"">
-            <UML:Attribute name=""type"" type=""RoomType""/>
-            <UML:Attribute name=""start"" type=""Date""/>
-            <UML:Attribute name=""end"" type=""Date""/>
+        <UML:Class name=""Offer"" visibility=""public"">
+            <UML:Attribute name=""price"" type=""double""/>
         </UML:Class>
     </UML:Model>
 </XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>

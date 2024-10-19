@@ -2,18 +2,24 @@
 <XMI xmi.version="2.1" xmlns:UML="http://www.omg.org/spec/UML/20090901">
     <UML:Model name="ClassDiagram" visibility="public">
         <UML:Enumeration name="DeviceType">
-            <UML:Literal name="sensor"/>
-            <UML:Literal name="actuator"/>
+            <UML:Literal name="temperatureSensor"/>
+            <UML:Literal name="movementSensor"/>
+            <UML:Literal name="lightController"/>
+            <UML:Literal name="lockController"/>
         </UML:Enumeration>
-        <UML:Enumeration name="Status">
+        <UML:Enumeration name="RuleStatus">
+            <UML:Literal name="active"/>
+            <UML:Literal name="inactive"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="CommandStatus">
             <UML:Literal name="requested"/>
             <UML:Literal name="completed"/>
             <UML:Literal name="failed"/>
         </UML:Enumeration>
-        <UML:Enumeration name="Operator">
-            <UML:Literal name="AND"/>
-            <UML:Literal name="OR"/>
-            <UML:Literal name="NOT"/>
+        <UML:Enumeration name="BooleanOperator">
+            <UML:Literal name="and"/>
+            <UML:Literal name="or"/>
+            <UML:Literal name="not"/>
         </UML:Enumeration>
         <UML:Class name="SHAS" visibility="public">
         </UML:Class>
@@ -24,27 +30,24 @@
             <UML:Attribute name="name" type="string"/>
         </UML:Class>
         <UML:Class name="Device" visibility="public">
-            <UML:Attribute name="deviceId" type="string"/>
-            <UML:Attribute name="type" type="DeviceType"/>
-            <UML:Attribute name="isActive" type="boolean"/>
+            <UML:Attribute name="id" type="string"/>
+            <UML:Attribute name="deviceType" type="DeviceType"/>
         </UML:Class>
         <UML:Class name="SensorReading" visibility="public">
-            <UML:Attribute name="measuredValue" type="string"/>
-            <UML:Attribute name="timestamp" type="Date"/>
+            <UML:Attribute name="measuredValue" type="int"/>
+            <UML:Attribute name="date" type="Date"/>
         </UML:Class>
         <UML:Class name="ControlCommand" visibility="public">
             <UML:Attribute name="command" type="string"/>
-            <UML:Attribute name="status" type="Status"/>
-            <UML:Attribute name="timestamp" type="Date"/>
-        </UML:Class>
-        <UML:Class name="AutomationRule" visibility="public">
-            <UML:Attribute name="operator" type="Operator"/>
-            <UML:Attribute name="precondition" type="string"/>
-            <UML:Attribute name="action" type="string"/>
+            <UML:Attribute name="date" type="Date"/>
+            <UML:Attribute name="status" type="CommandStatus"/>
         </UML:Class>
         <UML:Class name="ActivityLog" visibility="public">
         </UML:Class>
-        <UML:Class name="RuleHierarchy" visibility="public">
+        <UML:Class name="AutomationRule" visibility="public">
+            <UML:Attribute name="operator" type="BooleanOperator"/>
+            <UML:Attribute name="status" type="RuleStatus"/>
+            <UML:Attribute name="action" type="string"/>
         </UML:Class>
     </UML:Model>
 </XMI>
