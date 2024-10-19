@@ -30,14 +30,14 @@ Relationships:
 1 Game contain 0..1 Player
 1 Deck contain 0..32 ActionCard
 
-1 WinTile inherit Tile
-1 ActionTile inherit Tile
-1 NormalTile inherit Tile
-1 RollDieActionCard inherit ActionCard
-1 ConnectTilesActionCard inherit ActionCard  
-1 RemoveConnectionActionCard inherit ActionCard
-1 TeleportActionCard inherit ActionCard
-1 LoseTurnActionCard inherit ActionCard
+WinTile inherit Tile
+ActionTile inherit Tile
+NormalTile inherit Tile
+RollDieActionCard inherit ActionCard
+ConnectTilesActionCard inherit ActionCard  
+RemoveConnectionActionCard inherit ActionCard
+TeleportActionCard inherit ActionCard
+LoseTurnActionCard inherit ActionCard
 
 1 Game associate 0..1 WinTile
 0..4 Connection associate 2 Tile

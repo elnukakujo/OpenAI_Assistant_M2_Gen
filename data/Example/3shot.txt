@@ -110,8 +110,8 @@ Relationships:
 1 LabTracker contain *Test
 1 LabTracker contain *TestType
 
-1 Patient inherit PersonRole
-1 Doctor inherit PersonRole
+Patient inherit PersonRole
+Doctor inherit PersonRole
 
 1 Person associate 0..2 PersonRole
 1 Patient associate * Requisition

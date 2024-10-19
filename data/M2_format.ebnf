@@ -1,11 +1,11 @@
 <class-diagram> ::= [<enumerations>] <classes> <relationships>
-<enumerations> ::= "Enumerations: " (<enumeration>)+
+<enumerations> ::= "Enumerations:" (<enumeration>)+
 <enumeration> ::= <string> "(" <literals> ")"
 <literals> ::= <string> | <string> "," <literals>
-<classes> ::= "Classes: " (<class>)+
+<classes> ::= "Classes:" (<class>)+
 <class> ::= ["abstract"] <string> "(" [<attributes>] ")"
 <attributes> ::= <attribute> | <attribute> "," <attributes>
-<attribute> ::= ["const"] <type> ["[]"] <string> ["=" <string>]
+<attribute> ::= ["const"] <type> ["[]"] <string> ["=" (<string>|<num>)]
 <type> ::= <string>
 <relationships> ::= "Relationships: " [<composition>]* [<inheritance>]* [<association>]*
 <composition> ::= <mul> <string> "contain" <mul> <string>

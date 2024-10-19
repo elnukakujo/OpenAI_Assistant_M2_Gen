@@ -20,3 +20,6 @@ generateDsl.py is the python script to load one of the DSL description in the da
 
 ## generateDsls.py
 Have the same purpose as generateDsl.py but do all the folder DSL descriptions in data/DSL2Gen, preprocess the prompt, get the output and save everything in data/input_output_GPT.csv. 
+
+## antlrConversion
+To run the antlr conversion, run in the corresponding folder: 'python3 conversion.py input.ebnf output.xmi'

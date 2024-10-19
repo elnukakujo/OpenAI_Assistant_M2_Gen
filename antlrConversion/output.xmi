@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMI xmi.version="2.1" xmlns:UML="http://www.omg.org/spec/UML/20090901">
+    <UML:Model name="ClassDiagram" visibility="public">
+        <UML:Enumeration name="ActionCardType">
+            <UML:Literal name="extraTurn"/>
+            <UML:Literal name="connectTiles"/>
+            <UML:Literal name="removeConnection"/>
+            <UML:Literal name="moveToTile"/>
+            <UML:Literal name="loseTurn"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="PlayerColor">
+            <UML:Literal name="Blue"/>
+            <UML:Literal name="Red"/>
+            <UML:Literal name="Yellow"/>
+            <UML:Literal name="Green"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="CardStatus">
+            <UML:Literal name="inDeck"/>
+            <UML:Literal name="inPlay"/>
+        </UML:Enumeration>
+        <UML:Class name="Tile_O" visibility="public">
+        </UML:Class>
+        <UML:Class name="Player" visibility="public">
+            <UML:Attribute name="number" type="int"/>
+            <UML:Attribute name="color" type="PlayerColor"/>
+        </UML:Class>
+        <UML:Class name="Tile" visibility="public">
+            <UML:Attribute name="isHidden" type="boolean"/>
+            <UML:Attribute name="isVisited" type="boolean"/>
+        </UML:Class>
+        <UML:Class name="ConnectionPiece" visibility="public">
+        </UML:Class>
+        <UML:Class name="ActionTile" visibility="public">
+            <UML:Attribute name="turnsAsNormalTile" type="int"/>
+        </UML:Class>
+        <UML:Class name="ActionCard" visibility="public">
+            <UML:Attribute name="type" type="ActionCardType"/>
+            <UML:Attribute name="status" type="CardStatus"/>
+        </UML:Class>
+        <UML:Association>
+            <UML:End type="Tile_O" multiplicity="1"/>
+            <UML:End type="ActionCard" multiplicity="1..32"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="Tile_O" multiplicity="1"/>
+            <UML:End type="ConnectionPiece" multiplicity="32"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="Tile_O" multiplicity="1"/>
+            <UML:End type="Player" multiplicity="*"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="Tile_O" multiplicity="1"/>
+            <UML:End type="Tile" multiplicity="*"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="Tile" multiplicity="1"/>
+            <UML:End type="ConnectionPiece" multiplicity="*"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="Tile" multiplicity="1..4"/>
+            <UML:End type="Player" multiplicity="1"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="ActionTile" multiplicity="1"/>
+            <UML:End type="Tile" multiplicity="*"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="ActionCard" multiplicity="1"/>
+            <UML:End type="Player" multiplicity="1..4"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="Tile" multiplicity="*"/>
+            <UML:End type="Player" multiplicity="1..*"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="Player" multiplicity="1..4"/>
+            <UML:End type="Tile" multiplicity="1..*"/>
+        </UML:Association>
+        <UML:Association>
+            <UML:End type="ConnectionPiece" multiplicity="1..2"/>
+            <UML:End type="Tile" multiplicity="1"/>
+        </UML:Association>
+    </UML:Model>
+</XMI>

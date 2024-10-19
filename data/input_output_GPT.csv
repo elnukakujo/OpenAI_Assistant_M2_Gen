@@ -117,8 +117,8 @@ Relationships:
 1 LabTracker contain *Test
 1 LabTracker contain *TestType
 
-1 Patient inherit PersonRole
-1 Doctor inherit PersonRole
+Patient inherit PersonRole
+Doctor inherit PersonRole
 
 1 Person associate 0..2 PersonRole
 1 Patient associate * Requisition
@@ -139,28 +139,31 @@ A designer first defines the whole game including the layout of the game board. 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
 Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumerations: 
-Action(rollExtraTurn, connectTiles, removeConnection, moveArbitraryTile, loseNextTurn)
+ActionCardType(extraTurn, connectTiles, removeConnection, moveToTile, loseTurn)
+PlayerColor(Blue, Red, Yellow, Green)
+CardStatus(inDeck, inPlay)
 
 Classes: 
-TileO()
-Tile(string color, boolean isHidden, boolean isActionTile, boolean isStartPos)
-Player(int id, string color)
-Die()
-DeckCard(int number)
-Card(Action action)
+Tile_O()
+Player(int number, PlayerColor color)
+Tile(boolean isHidden, boolean isVisited)
 ConnectionPiece()
+ActionTile(int turnsAsNormalTile)
+ActionCard(ActionCardType type, CardStatus status)
 
 Relationships:
-1 TileO contain *Tile
-1 TileO contain *Player
-1 TileO contain *Die
-1 TileO contain *DeckCard
-1 TileO contain *Card
+1 Tile_O contain 1..32 ActionCard
+1 Tile_O contain 32 ConnectionPiece
+1 Tile_O contain * Player
+1 Tile_O contain *Tile
 
 1 Tile associate *ConnectionPiece
-1 Tile associate *Player
-1 Player associate *Tile
-1 DeckCard associate *Card","Enumerations:
+1..4 Tile associate 1 Player
+1 ActionTile associate * Tile
+1 ActionCard associate 1..4 Player
+* Tile associate 1..* Player
+1..4 Player associate 1..* Tile
+1..2 ConnectionPiece associate 1 Tile","Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
@@ -192,14 +195,14 @@ Relationships:
 1 Game contain 0..1 Player
 1 Deck contain 0..32 ActionCard
 
-1 WinTile inherit Tile
-1 ActionTile inherit Tile
-1 NormalTile inherit Tile
-1 RollDieActionCard inherit ActionCard
-1 ConnectTilesActionCard inherit ActionCard  
-1 RemoveConnectionActionCard inherit ActionCard
-1 TeleportActionCard inherit ActionCard
-1 LoseTurnActionCard inherit ActionCard
+WinTile inherit Tile
+ActionTile inherit Tile
+NormalTile inherit Tile
+RollDieActionCard inherit ActionCard
+ConnectTilesActionCard inherit ActionCard  
+RemoveConnectionActionCard inherit ActionCard
+TeleportActionCard inherit ActionCard
+LoseTurnActionCard inherit ActionCard
 
 1 Game associate 0..1 WinTile
 0..4 Connection associate 2 Tile
@@ -326,8 +329,8 @@ Relationships:
 1 LabTracker contain *Test
 1 LabTracker contain *TestType
 
-1 Patient inherit PersonRole
-1 Doctor inherit PersonRole
+Patient inherit PersonRole
+Doctor inherit PersonRole
 
 1 Person associate 0..2 PersonRole
 1 Patient associate * Requisition
@@ -349,31 +352,44 @@ Relevant alerts in a smart home can be set up and managed by its owner by settin
 For example, a sample rule could specify:
 when actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room
 
-Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Classes:
+Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Enumerations:
+CommandStatus(requested, completed, failed)
+BooleanOperator(AND, OR, NOT)
+DeviceStatus(activated, deactivated)
+
+Classes:
 SHAS()
+HomeOwner()
 SmartHome(string address)
 Room(string name)
-Sensor(int deviceID, string type, boolean active)
-Actuator(int deviceID, string type, boolean active)
-SensorReading(int value, Date timestamp)
-ControlCommand(string status, Date timestamp, string command)
-AutomationRule(string precondition, string action, boolean active)
-ActivityLog(Date timestamp)
-RuleHierarchy(int level)
+Device(string id, DeviceStatus status)
+SensorDevice()
+ActuatorDevice()
+SensorReading(value, timestamp)
+ControlCommand(CommandStatus status, timestamp)
+ActivityLog()
+AutomationRule(boolean active)
+RelationalTerm()
 
 Relationships:
 1 SHAS contain *SmartHome
-1 SHAS contain * ActivityLog
-1 SHAS contain * RuleHierarchy
-1 SmartHome contain * Room
+1 SHAS contain *HomeOwner
+1 SHAS contain *ActivityLog
+1 HomeOwner associate *SmartHome
+1 SmartHome contain *Room
 1 SmartHome contain *AutomationRule
-1 Room contain * Sensor
-1 Room contain * Actuator
-1 Sensor associate * SensorReading
-1 Actuator associate * ControlCommand
-* AutomationRule associate * SensorReading
-* AutomationRule associate * ControlCommand
-1 AutomationRule associate * RuleHierarchy","Enumerations:
+1 SmartHome contain *ActivityLog
+1 Room contain *Device
+1 SensorDevice associate *SensorReading
+1 ActuatorDevice associate *ControlCommand
+1 AutomationRule contain *RelationalTerm
+1 AutomationRule contain *ControlCommand
+1 AutomationRule associate *AutomationRule (to capture the dependencies and conflicts)
+ 
+SensorDevice inherit Device
+ActuatorDevice inherit Device
+SensorReading inherit ActivityLog
+ControlCommand inherit ActivityLog","Enumerations:
 DeviceStatus(Activated, Deactivated)
 CommandType (lockDoor, turnOnHeating)
 CommandStatus (Requested, Completed, Failed)
@@ -561,8 +577,8 @@ Relationships:
 1 LabTracker contain *Test
 1 LabTracker contain *TestType
 
-1 Patient inherit PersonRole
-1 Doctor inherit PersonRole
+Patient inherit PersonRole
+Doctor inherit PersonRole
 
 1 Person associate 0..2 PersonRole
 1 Patient associate * Requisition
@@ -586,41 +602,42 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations: 
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
 RoomType(single, double, twin)
-BookingType(preliminary, regular)
-PaymentStatus(paid, unpaid)
-PaymentType(atHotel, prePaid)
-HotelRating(star_1, star_2, star_3, star_4, star_5)
+HotelRating(one, two, three, four, five)
+BookingStatus(preliminary, confirmed, finalized, canceled)
+PaymentType(prePaid, paidAtHotel)
+Preferences(breakfast, wifi, 24HourFrontDesk)
+BookingState(preliminary, confirmed, cancel)
 
 Classes:
 HBMS()
-Traveler(string name, string billingInfo, boolean breakfast, boolean freeWifi, boolean frontDesk24, string reliabilityRating)
-City(string name)
-Hotel(string name, boolean chain, string address, HotelRating rating)
-Room(string availability, RoomType type)
-Booking(DateTime arrivalDate, DateTime departureDate, int roomsRequired, RoomType roomType, string budget, boolean breakfast, boolean freeWifi, boolean frontDesk24, HotelRating minRating, BookingType type, string uniqueID)
-SpecialOffer(string offerDetails, DateTime validTill)
+Person(string name, string billingInfo, Preferences travelPreferences)
+Hotel(string name, string address, boolean chain, HotelRating rating)
+Booking(string arrivalDate, string departureDate, number roomsCount, RoomType roomType, HotelRating minRating, number limitBudget, Preferences travelPref, string ccInfo, BookingState state)
+Room(RoomType type)
+Offer(string deadline, number specialPrice)
+Chain(string chainName)
+Rating(number rate)
+HotelRoom(string fromDate, string toDate, RoomType type)
 
 Relationships:
-1 HBMS contain *Traveler
-1 HBMS contain *City
-1 HBMS contain *Hotel
-1 HBMS contain *Room
-1 HBMS contain *Booking
-1 HBMS contain *SpecialOffer
+1 HBMS contain * Person
+1 HBMS contain * Hotel 
+1 HBMS contain * Booking 
+1 HBMS contain * Room 
+1 HBMS contain * Offer 
+1 HBMS contain * Chain 
+1 HBMS contain * Rating 
+1 HBMS contain * HotelRoom 
 
-* Traveler associate *Booking
-* City associate *Hotel
-1 Hotel associate *Room
-1 Booking associate *Hotel
-1 Booking associate *SpecialOffer
-1 Hotel associate *SpecialOffer
-
-1 Room associate 0..* Booking
-1 Bookings associate 0..* Traveler
-1 Hotelassociate 0..* Booking
-SpecialOffer associate 1..* Booking","Enumerations:
+1 Hotel associate * Chain
+1 Booking associate 1 Person
+1 Booking associate 1 Hotel
+1 Hotel associate * Room
+1 Booking associate * Offer
+1 Booking associate 1 Rating
+1 Hotel associate * HotelRoom","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
 PaymentType(PREPAID, PAID_AT_HOTEL)
@@ -656,12 +673,11 @@ Relationships:
 
 1 Booking contain 1 BookingInfo
 
-1 SpecialOffer inherit Offer
-1 RegularOffer inherit Offer
-1 RoomAvailability inherit TripInfo
-1 SearchInfo inherit TripInfo
-
-1 BookingInfo inherit TripInfo
+SpecialOffer inherit Offer
+RegularOffer inherit Offer
+RoomAvailability inherit TripInfo
+SearchInfo inherit TripInfo
+BookingInfo inherit TripInfo
 
 *RegularOffer associate * TravelSearch
 
@@ -669,5 +685,4 @@ Relationships:
 Booking associate 0..1 Offer
 * Booking associate 1 Traveller
 * SpecialOffer associate 1 BookingInfo
-BookingInfo associate 0..5 SpecialOffer
-"
+BookingInfo associate 0..5 SpecialOffer"

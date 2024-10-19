@@ -34,12 +34,11 @@ Relationships:
 
 1 Booking contain 1 BookingInfo
 
-1 SpecialOffer inherit Offer
-1 RegularOffer inherit Offer
-1 RoomAvailability inherit TripInfo
-1 SearchInfo inherit TripInfo
-
-1 BookingInfo inherit TripInfo
+SpecialOffer inherit Offer
+RegularOffer inherit Offer
+RoomAvailability inherit TripInfo
+SearchInfo inherit TripInfo
+BookingInfo inherit TripInfo
 
 *RegularOffer associate * TravelSearch
 
