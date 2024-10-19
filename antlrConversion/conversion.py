@@ -2,6 +2,7 @@ import sys
 from antlr4 import *
 from ClassDiagramLexer import ClassDiagramLexer
 from ClassDiagramParser import ClassDiagramParser
+import pandas as pd
 
 def generate_xmi(parsed_data):
     xmi = """<?xml version="1.0" encoding="UTF-8"?>
@@ -43,8 +44,8 @@ def generate_xmi(parsed_data):
 </XMI>"""
     return xmi
 
-def main(input_file, output_file):
-    input_stream = FileStream(input_file)
+def conversion(input_ebnf):
+    input_stream = InputStream(input_ebnf)
     lexer = ClassDiagramLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = ClassDiagramParser(token_stream)
@@ -89,12 +90,13 @@ def main(input_file, output_file):
                     # Ensure you access both classes and their multiplicities
                     relationships.append((rel.mul(0).getText(), rel.STRING(0).getText(), rel.mul(1).getText(), rel.STRING(1).getText()))  # Add class2
 
-    xmi_output = generate_xmi((enumerations, classes, relationships))
+    return generate_xmi((enumerations, classes, relationships))
 
-    with open(output_file, 'w') as f:
-        f.write(xmi_output)
+df = pd.read_csv("../data/input_output_GPT.csv")
+    
+# Create a new column "test" and apply the conversion function to each row in the "Prompt" column
+df['OutputXMI'] = df['Output'].apply(conversion)
+df['Expected_OutputXMI'] = df['Expected_Output'].apply(conversion)
 
-if __name__ == "__main__":
-    input_file = sys.argv[1]
-    output_file = sys.argv[2]
-    main(input_file, output_file)
+# Save the updated dataframe to a new CSV file
+df.to_csv("../data/input_output_GPT.csv", index=False)

@@ -1,4 +1,4 @@
-DSL_Name,Description,Prompt,Output,Expected_Output
+DSL_Name,Description,Prompt,Output,Expected_Output,OutputXMI,Expected_OutputXMI
 Tile-O,"The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
 
 A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
@@ -20,20 +20,20 @@ BusVehicle(string licencePlate, boolean inRepairShop)
 Route(int number)
 RouteAssignment(Date date)
 Driver(string name, string id, boolean onSickLeave)
-DriverSchedule(Shift shit)
+DriverSchedule(Shift shift)
 
 Relationships:
-1 BTMS contain * BusVehicle 
-1 BTMS contain * Route
-1 BTMS contain * RouteAssignment
-1 BTMS contain * Drivers
-1 BTMS contain * DriverSchedule
+(1) BTMS contain (*) BusVehicle 
+(1) BTMS contain (*) Route
+(1) BTMS contain (*) RouteAssignment
+(1) BTMS contain (*) Driver
+(1) BTMS contain (*) DriverSchedule
 
-* RouteAssignment associate 1 BusVehicle
-* RouteAssignment associate 1 Route
+(*) RouteAssignment associate (1) BusVehicle
+(*) RouteAssignment associate (1) Route
 
-* DriverSchedule associate 1 Driver
-* DriverSchedule associate 1 RouteAssignment
+(*) DriverSchedule associate (1) Driver
+(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -51,25 +51,25 @@ abstract UserRole()
 Volunteer() 
 Resident()
 SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
-abstract item(string description, string dimension, int weight, Date requestedPickedDate)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
 Route(Date date)
 
 Relationships:
-1 H2S contain *Item
-1 H2S contain *Route
-1 H2S contain *UserRole
-1 H2S contain *Person
-1 Volunteer contain *Date
+(1) H2S contain (*) Item
+(1) H2S contain (*) Route
+(1) H2S contain (*) UserRole
+(1) H2S contain (*) Person
+(1) Volunteer contain (*) Date
 
 Volunteer inherit UserRole
 Resident inherit UserRole
 SecondHandArticle inherit Item
 
-1 Person associate *UserRole
-1 Volunteer associate * Route
-0..1 Route associate *Item
-0..1 Route associate *SecondHandArticle
-1 Resident associate *Item
+(1) Person associate (*) UserRole
+(1) Volunteer associate (*) Route
+(0..1) Route associate (*) Item
+(0..1) Route associate (*) SecondHandArticle
+(1) Resident associate (*) Item
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -106,30 +106,31 @@ Test(string name, string duration)
 TestType(string name, string durationAdditive, AccessType access)
 
 Relationships:
-1 LabTracker contain *Person
-1 LabTracker contain *PersonRole
-1 LabTracker contain *Requisition
-1 LabTracker contain *TestResult
-1 Lab Tracker contain *SpecificTest
-1 LabTracker contain *Appointment
-1 LabTracker contain *BusinessHour 
-1 LabTracker contain *Lab
-1 LabTracker contain *Test
-1 LabTracker contain *TestType
+(1) LabTracker contain (*) Person
+(1) LabTracker contain (*) PersonRole
+(1) LabTracker contain (*) Requisition
+(1) LabTracker contain (*) TestResult
+(1) LabTracker contain (*) SpecificTest
+(1) LabTracker contain (*) Appointment
+(1) LabTracker contain (*) BusinessHour 
+(1) LabTracker contain (*) Lab
+(1) LabTracker contain (*) Test
+(1) LabTracker contain (*) TestType
 
 Patient inherit PersonRole
 Doctor inherit PersonRole
 
-1 Person associate 0..2 PersonRole
-1 Patient associate * Requisition
-* Requisition associate *Appointment
-* Appointment associate 1 Lab
-1 Docter associate * Requisition
-1 Requsition associate *SpecificTest
-0..1 TestResult associate *SpecificTest
-1 Lab associate 7 Business
-1 Test associate *SpecificTest
-1 TestType associate * Test
+(1) Person associate (0..2) PersonRole
+(1) Patient associate (*) Requisition
+(*) Requisition associate (*) Appointment
+(*) Appointment associate (1) Lab
+(1) Doctor associate (*) Requisition
+(1) Requisition associate (*) SpecificTest
+(0..1) TestResult associate (*) SpecificTest
+(1) Lab associate (7) Business
+(1) Test associate (*) SpecificTest
+(1) TestType associate (*) Test
+
 ### 
 Generate the lists of model classes and associations from the following given description.
 Description: The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
@@ -139,31 +140,46 @@ A designer first defines the whole game including the layout of the game board. 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
 Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumerations: 
-ActionCardType(extraTurn, connectTiles, removeConnection, moveToTile, loseTurn)
-PlayerColor(Blue, Red, Yellow, Green)
-CardStatus(inDeck, inPlay)
+ActionCard(ExtraTurn, ConnectTiles, RemoveConnection, MoveToTile, LoseTurn)
+Color(Red, Blue, Yellow, Green)
 
 Classes: 
-Tile_O()
-Player(int number, PlayerColor color)
-Tile(boolean isHidden, boolean isVisited)
-ConnectionPiece()
-ActionTile(int turnsAsNormalTile)
-ActionCard(ActionCardType type, CardStatus status)
+TileO()
+Game()
+Tile(string id, boolean isHidden, boolean wasVisited, boolean isActionTile, int disableForTurns)
+ConnectionPiece(string id, bool inPile)
+Player(Color color)
+PlayingPiece(Color color)
+ActionDeck()
+Die(int faceUp)
 
-Relationships:
-1 Tile_O contain 1..32 ActionCard
-1 Tile_O contain 32 ConnectionPiece
-1 Tile_O contain * Player
-1 Tile_O contain *Tile
+Relationships: 
+(1) TileO contain (1) Game
+(1) TileO contain (4) Player
+(1) TileO contain (4) PlayingPiece
+(1) TileO contain (1..49) Tile
+(1) TileO contain (32) ConnectionPiece
+(1) TileO contain (1) ActionDeck
+(1) TileO contain (1) Die
 
-1 Tile associate *ConnectionPiece
-1..4 Tile associate 1 Player
-1 ActionTile associate * Tile
-1 ActionCard associate 1..4 Player
-* Tile associate 1..* Player
-1..4 Player associate 1..* Tile
-1..2 ConnectionPiece associate 1 Tile","Enumerations:
+(1) Game contain (1) Tile
+(1) Game contain (*) Player
+(1) Game contain (1) Die
+(1) Game contain (1) ActionDeck
+
+(1) Player associate (1) PlayingPiece
+
+(*..*) Tile associate (*) ConnectionPiece
+(1..49) Game associate (1..49) Tile
+
+(32) ConnectionPiece associate (32) ActionDeck
+
+(1) PlayingPiece associate (1..49) Tile
+(1) PlayingPiece contain (1) ConnectionPiece
+
+(1) ActionDeck contain (32) ConnectionPiece
+
+(1) Die contain (4) Player","Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
@@ -187,13 +203,13 @@ NormalTile()
 Player(int number, int turnsUntilActive, Color color)
 
 Relationships: 
-1 TileO contain *Game
-1 Game contain *Tile
-1 Game contain *Connection
-1 Game contain 1Die
-1 Game contain 1Deck
-1 Game contain 0..1 Player
-1 Deck contain 0..32 ActionCard
+(1) TileO contain (*) Game
+(1) Game contain (*) Tile
+(1) Game contain (*) Connection
+(1) Game contain (1) Die
+(1) Game contain (1) Deck
+(1) Game contain (0..1) Player
+(1) Deck contain (0..32) ActionCard
 
 WinTile inherit Tile
 ActionTile inherit Tile
@@ -204,11 +220,114 @@ RemoveConnectionActionCard inherit ActionCard
 TeleportActionCard inherit ActionCard
 LoseTurnActionCard inherit ActionCard
 
-1 Game associate 0..1 WinTile
-0..4 Connection associate 2 Tile
-1 Player associate 0..1 Tile
-0..4 Player associate 0..1 Tile
-1 Deck associate 0..1 ActionCard"
+(1) Game associate (0..1) WinTile
+(0..4) Connection associate (2) Tile
+(1) Player associate (0..1) Tile
+(0..4) Player associate (0..1) Tile
+(1) Deck associate (0..1) ActionCard","<?xml version=""1.0"" encoding=""UTF-8""?>
+<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
+    <UML:Model name=""ClassDiagram"" visibility=""public"">
+        <UML:Enumeration name=""ActionCard"">
+            <UML:Literal name=""ExtraTurn""/>
+            <UML:Literal name=""ConnectTiles""/>
+            <UML:Literal name=""RemoveConnection""/>
+            <UML:Literal name=""MoveToTile""/>
+            <UML:Literal name=""LoseTurn""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""Color"">
+            <UML:Literal name=""Red""/>
+            <UML:Literal name=""Blue""/>
+            <UML:Literal name=""Yellow""/>
+            <UML:Literal name=""Green""/>
+        </UML:Enumeration>
+        <UML:Class name=""TileO"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Game"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Tile"" visibility=""public"">
+            <UML:Attribute name=""id"" type=""string""/>
+            <UML:Attribute name=""isHidden"" type=""boolean""/>
+            <UML:Attribute name=""wasVisited"" type=""boolean""/>
+            <UML:Attribute name=""isActionTile"" type=""boolean""/>
+            <UML:Attribute name=""disableForTurns"" type=""int""/>
+        </UML:Class>
+        <UML:Class name=""ConnectionPiece"" visibility=""public"">
+            <UML:Attribute name=""id"" type=""string""/>
+            <UML:Attribute name=""inPile"" type=""bool""/>
+        </UML:Class>
+        <UML:Class name=""Player"" visibility=""public"">
+            <UML:Attribute name=""color"" type=""Color""/>
+        </UML:Class>
+        <UML:Class name=""PlayingPiece"" visibility=""public"">
+            <UML:Attribute name=""color"" type=""Color""/>
+        </UML:Class>
+        <UML:Class name=""ActionDeck"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Die"" visibility=""public"">
+            <UML:Attribute name=""faceUp"" type=""int""/>
+        </UML:Class>
+    </UML:Model>
+</XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
+<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
+    <UML:Model name=""ClassDiagram"" visibility=""public"">
+        <UML:Enumeration name=""Mode"">
+            <UML:Literal name=""design""/>
+            <UML:Literal name=""game""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""Color"">
+            <UML:Literal name=""red""/>
+            <UML:Literal name=""blue""/>
+            <UML:Literal name=""green""/>
+            <UML:Literal name=""yellow""/>
+        </UML:Enumeration>
+        <UML:Class name=""TileO"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Game"" visibility=""public"">
+            <UML:Attribute name=""currentConnectionPieces"" type=""int""/>
+            <UML:Attribute name=""mode"" type=""Mode""/>
+            <UML:Attribute name=""spaceConnectionPieces"" type=""int""/>
+            <UML:Attribute name=""32"" type=""int""/>
+            <UML:Attribute name=""numberOfActionCards"" type=""int""/>
+            <UML:Attribute name=""32"" type=""int""/>
+        </UML:Class>
+        <UML:Class name=""Connection"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""WinTile"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Die"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Deck"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Tile"" visibility=""abstract"">
+            <UML:Attribute name=""x"" type=""int""/>
+            <UML:Attribute name=""y"" type=""int""/>
+        </UML:Class>
+        <UML:Class name=""ActionCard"" visibility=""abstract"">
+            <UML:Attribute name=""instructions"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""RollDieActionCard"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""ConnectTilesActionCard"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""RemoveConnectionActionCard"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""TeleportActionCard"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""LoseTurnActionCard"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""WinTile"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""ActionTile"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""NormalTile"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Player"" visibility=""public"">
+            <UML:Attribute name=""number"" type=""int""/>
+            <UML:Attribute name=""turnsUntilActive"" type=""int""/>
+            <UML:Attribute name=""color"" type=""Color""/>
+        </UML:Class>
+    </UML:Model>
+</XMI>"
 SHAS,"A smart home automation system (SHAS) offers various users to automatically manage smart home automation tasks. A smart home (located at a physical address) consists of several rooms, each of which may contain sensor devices and actuator (controller) devices of different types (e.g. temperature sensor, movement sensor, light controller, lock controller). Each sensor and actuator have a unique device identifier. Once a new sensor or actuator is activated or deactivated, SHAS will recognize the change and update its infrastructure map.
 
 When SHAS is operational, a sensor device periodically provides sensor readings (recording the measured value and the timestamp). Similarly, a predefined set of control commands (e.g. lockDoor, turnOnHeating) can be sent to the actuator devices with the timestamp and the status of the command (e.g. requested, completed, failed, etc.). All sensor readings and control commands for a smart home are recorded by SHAS in an activity log.
@@ -232,20 +351,20 @@ BusVehicle(string licencePlate, boolean inRepairShop)
 Route(int number)
 RouteAssignment(Date date)
 Driver(string name, string id, boolean onSickLeave)
-DriverSchedule(Shift shit)
+DriverSchedule(Shift shift)
 
 Relationships:
-1 BTMS contain * BusVehicle 
-1 BTMS contain * Route
-1 BTMS contain * RouteAssignment
-1 BTMS contain * Drivers
-1 BTMS contain * DriverSchedule
+(1) BTMS contain (*) BusVehicle 
+(1) BTMS contain (*) Route
+(1) BTMS contain (*) RouteAssignment
+(1) BTMS contain (*) Driver
+(1) BTMS contain (*) DriverSchedule
 
-* RouteAssignment associate 1 BusVehicle
-* RouteAssignment associate 1 Route
+(*) RouteAssignment associate (1) BusVehicle
+(*) RouteAssignment associate (1) Route
 
-* DriverSchedule associate 1 Driver
-* DriverSchedule associate 1 RouteAssignment
+(*) DriverSchedule associate (1) Driver
+(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -263,25 +382,25 @@ abstract UserRole()
 Volunteer() 
 Resident()
 SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
-abstract item(string description, string dimension, int weight, Date requestedPickedDate)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
 Route(Date date)
 
 Relationships:
-1 H2S contain *Item
-1 H2S contain *Route
-1 H2S contain *UserRole
-1 H2S contain *Person
-1 Volunteer contain *Date
+(1) H2S contain (*) Item
+(1) H2S contain (*) Route
+(1) H2S contain (*) UserRole
+(1) H2S contain (*) Person
+(1) Volunteer contain (*) Date
 
 Volunteer inherit UserRole
 Resident inherit UserRole
 SecondHandArticle inherit Item
 
-1 Person associate *UserRole
-1 Volunteer associate * Route
-0..1 Route associate *Item
-0..1 Route associate *SecondHandArticle
-1 Resident associate *Item
+(1) Person associate (*) UserRole
+(1) Volunteer associate (*) Route
+(0..1) Route associate (*) Item
+(0..1) Route associate (*) SecondHandArticle
+(1) Resident associate (*) Item
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -318,30 +437,31 @@ Test(string name, string duration)
 TestType(string name, string durationAdditive, AccessType access)
 
 Relationships:
-1 LabTracker contain *Person
-1 LabTracker contain *PersonRole
-1 LabTracker contain *Requisition
-1 LabTracker contain *TestResult
-1 Lab Tracker contain *SpecificTest
-1 LabTracker contain *Appointment
-1 LabTracker contain *BusinessHour 
-1 LabTracker contain *Lab
-1 LabTracker contain *Test
-1 LabTracker contain *TestType
+(1) LabTracker contain (*) Person
+(1) LabTracker contain (*) PersonRole
+(1) LabTracker contain (*) Requisition
+(1) LabTracker contain (*) TestResult
+(1) LabTracker contain (*) SpecificTest
+(1) LabTracker contain (*) Appointment
+(1) LabTracker contain (*) BusinessHour 
+(1) LabTracker contain (*) Lab
+(1) LabTracker contain (*) Test
+(1) LabTracker contain (*) TestType
 
 Patient inherit PersonRole
 Doctor inherit PersonRole
 
-1 Person associate 0..2 PersonRole
-1 Patient associate * Requisition
-* Requisition associate *Appointment
-* Appointment associate 1 Lab
-1 Docter associate * Requisition
-1 Requsition associate *SpecificTest
-0..1 TestResult associate *SpecificTest
-1 Lab associate 7 Business
-1 Test associate *SpecificTest
-1 TestType associate * Test
+(1) Person associate (0..2) PersonRole
+(1) Patient associate (*) Requisition
+(*) Requisition associate (*) Appointment
+(*) Appointment associate (1) Lab
+(1) Doctor associate (*) Requisition
+(1) Requisition associate (*) SpecificTest
+(0..1) TestResult associate (*) SpecificTest
+(1) Lab associate (7) Business
+(1) Test associate (*) SpecificTest
+(1) TestType associate (*) Test
+
 ### 
 Generate the lists of model classes and associations from the following given description.
 Description: A smart home automation system (SHAS) offers various users to automatically manage smart home automation tasks. A smart home (located at a physical address) consists of several rooms, each of which may contain sensor devices and actuator (controller) devices of different types (e.g. temperature sensor, movement sensor, light controller, lock controller). Each sensor and actuator have a unique device identifier. Once a new sensor or actuator is activated or deactivated, SHAS will recognize the change and update its infrastructure map.
@@ -353,48 +473,42 @@ For example, a sample rule could specify:
 when actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room
 
 Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Enumerations:
-CommandStatus(requested, completed, failed)
-BooleanOperator(AND, OR, NOT)
-DeviceStatus(activated, deactivated)
+DeviceType(sensor, actuator)
+Status(requested, completed, failed)
+Operator(AND, OR, NOT)
 
 Classes:
 SHAS()
-HomeOwner()
 SmartHome(string address)
 Room(string name)
-Device(string id, DeviceStatus status)
-SensorDevice()
-ActuatorDevice()
-SensorReading(value, timestamp)
-ControlCommand(CommandStatus status, timestamp)
+Device(string deviceId, DeviceType type, boolean isActive)
+SensorReading(string measuredValue, Date timestamp)
+ControlCommand(string command, Status status, Date timestamp)
+AutomationRule(Operator operator, string precondition, string action)
 ActivityLog()
-AutomationRule(boolean active)
-RelationalTerm()
+RuleHierarchy()
 
 Relationships:
-1 SHAS contain *SmartHome
-1 SHAS contain *HomeOwner
-1 SHAS contain *ActivityLog
-1 HomeOwner associate *SmartHome
-1 SmartHome contain *Room
-1 SmartHome contain *AutomationRule
-1 SmartHome contain *ActivityLog
-1 Room contain *Device
-1 SensorDevice associate *SensorReading
-1 ActuatorDevice associate *ControlCommand
-1 AutomationRule contain *RelationalTerm
-1 AutomationRule contain *ControlCommand
-1 AutomationRule associate *AutomationRule (to capture the dependencies and conflicts)
- 
-SensorDevice inherit Device
-ActuatorDevice inherit Device
-SensorReading inherit ActivityLog
-ControlCommand inherit ActivityLog","Enumerations:
+(1) SHAS contain (*) SmartHome
+(1) SHAS contain (*) ActivityLog
+(1) SHAS contain (*) RuleHierarchy
+(1) SmartHome contain (*) Room
+(1) SmartHome contain (*) AutomationRule 
+(1) Room contain (*) Device
+(1) Device associate (*) SensorReading
+(1) Device associate (*) ControlCommand
+(1) AutomationRule associate (*) SensorReading
+(1) AutomationRule associate (*) ControlCommand
+(1) ActivityLog associate (*) SensorReading
+(1) ActivityLog associate (*) ControlCommand
+(1) AutomationRule associate (*) RuleHierarchy
+(1..*) AutomationRule associate (0..*) AutomationRule
+","Enumerations:
 DeviceStatus(Activated, Deactivated)
-CommandType (lockDoor, turnOnHeating)
-CommandStatus (Requested, Completed, Failed)
-RuleStatus (created, edited, activated, deactivated )
-BinaryOp (AND, OR )
+CommandType(lockDoor, turnOnHeating)
+CommandStatus(Requested, Completed, Failed)
+RuleStatus(created, edited, activated, deactivated)
+BinaryOp(AND, OR)
 
 Classes:
 SHAS()
@@ -405,7 +519,7 @@ Room()
 abstract Device(DeviceStatus deviceStatus, int deviceID)
 SensorDevice()
 ActuatorDevice()
-ActvityLog()
+ActivityLog()
 abstract RuntimeElement(time timestamp)
 SensorReading(double value)
 ControlCommand(CommandType commandType, CommandStatus commandStatus)
@@ -414,47 +528,172 @@ abstract BooleanExpression()
 RelationalTerm()
 NotExpression()
 BinaryExpression(BinaryOp binaryOp)
-CommandSequence() 
+CommandSequence()
 
 Relationships: 
-0..1 SHAS contain * SmartHome
-1 SHAS contain * User
+(0..1) SHAS contain (*) SmartHome
+(1) SHAS contain (*) User
 
-1 SmartHome contain 0..1 Address
-1 SmartHome contain 0..* Room
-1 SmartHome contain 0..1 ActivityLog
-* SmartHome associate * User
+(1) SmartHome contain (0..1) Address
+(1) SmartHome contain (0..*) Room
+(1) SmartHome contain (0..1) ActivityLog
+(*) SmartHome associate (*) User
 
-1 Room contain * SensorDevice
-1 Room contain * ActuatorDevice
+(1) Room contain (*) SensorDevice
+(1) Room contain (*) ActuatorDevice
 
-1 ActivityLog contain * SensorReading
-1 ActivityLog contain * ControlCommand
+(1) ActivityLog contain (*) SensorReading
+(1) ActivityLog contain (*) ControlCommand
 
-* SensorReading associate 1 SensorDevice
+(*) SensorReading associate (1) SensorDevice
 
-* ControlCommand associate 1 ActuatorDevice
+(*) ControlCommand associate (1) ActuatorDevice
 
-1 Dcontain 0..1 BooleanExpression
-1 AlertRule contain * CommandSequence
+(1) D contain (0..1) BooleanExpression
+(1) AlertRule contain (*) CommandSequence
 
-* RelationalTerm associate 0..1  Room
-* RelationalTerm associate 0..1  SensorDevice
-* RelationalTerm associate 0..1  ActuatorDevice
-* RelationalTerm associate 0..1  SensorReading
-* RelationalTerm associate 0..1  ControlCommand
+(*) RelationalTerm associate (0..1) Room
+(*) RelationalTerm associate (0..1) SensorDevice
+(*) RelationalTerm associate (0..1) ActuatorDevice
+(*) RelationalTerm associate (0..1) SensorReading
+(*) RelationalTerm associate (0..1) ControlCommand
 
-0..1 NotExpression associate 1 BooleanExpression
+(0..1) NotExpression associate (1) BooleanExpression
 
-0..1 BinaryExpression associate 1 BooleanExpreesion
-0..1 BinaryExpression associate 1 BooleanExpreesion
+(0..1) BinaryExpression associate (1) BooleanExpression
+(0..1) BinaryExpression associate (1) BooleanExpression
 
-* CommandSequence associate 0..1 CommandSequence
-1 CommandSequence contain 0..1 ControlCommand
+(*) CommandSequence associate (0..1) CommandSequence
+(1) CommandSequence contain (0..1) ControlCommand
 
 SensorDevice inherit Device
 ActuatorDevice inherit Device
-SensorReading inherit RuntimeElement"
+SensorReading inherit RuntimeElement","<?xml version=""1.0"" encoding=""UTF-8""?>
+<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
+    <UML:Model name=""ClassDiagram"" visibility=""public"">
+        <UML:Enumeration name=""DeviceType"">
+            <UML:Literal name=""sensor""/>
+            <UML:Literal name=""actuator""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""Status"">
+            <UML:Literal name=""requested""/>
+            <UML:Literal name=""completed""/>
+            <UML:Literal name=""failed""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""Operator"">
+            <UML:Literal name=""AND""/>
+            <UML:Literal name=""OR""/>
+            <UML:Literal name=""NOT""/>
+        </UML:Enumeration>
+        <UML:Class name=""SHAS"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""SmartHome"" visibility=""public"">
+            <UML:Attribute name=""address"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Room"" visibility=""public"">
+            <UML:Attribute name=""name"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Device"" visibility=""public"">
+            <UML:Attribute name=""deviceId"" type=""string""/>
+            <UML:Attribute name=""type"" type=""DeviceType""/>
+            <UML:Attribute name=""isActive"" type=""boolean""/>
+        </UML:Class>
+        <UML:Class name=""SensorReading"" visibility=""public"">
+            <UML:Attribute name=""measuredValue"" type=""string""/>
+            <UML:Attribute name=""timestamp"" type=""Date""/>
+        </UML:Class>
+        <UML:Class name=""ControlCommand"" visibility=""public"">
+            <UML:Attribute name=""command"" type=""string""/>
+            <UML:Attribute name=""status"" type=""Status""/>
+            <UML:Attribute name=""timestamp"" type=""Date""/>
+        </UML:Class>
+        <UML:Class name=""AutomationRule"" visibility=""public"">
+            <UML:Attribute name=""operator"" type=""Operator""/>
+            <UML:Attribute name=""precondition"" type=""string""/>
+            <UML:Attribute name=""action"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""ActivityLog"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""RuleHierarchy"" visibility=""public"">
+        </UML:Class>
+    </UML:Model>
+</XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
+<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
+    <UML:Model name=""ClassDiagram"" visibility=""public"">
+        <UML:Enumeration name=""DeviceStatus"">
+            <UML:Literal name=""Activated""/>
+            <UML:Literal name=""Deactivated""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""CommandType"">
+            <UML:Literal name=""lockDoor""/>
+            <UML:Literal name=""turnOnHeating""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""CommandStatus"">
+            <UML:Literal name=""Requested""/>
+            <UML:Literal name=""Completed""/>
+            <UML:Literal name=""Failed""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""RuleStatus"">
+            <UML:Literal name=""created""/>
+            <UML:Literal name=""edited""/>
+            <UML:Literal name=""activated""/>
+            <UML:Literal name=""deactivated""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""BinaryOp"">
+            <UML:Literal name=""AND""/>
+            <UML:Literal name=""OR""/>
+        </UML:Enumeration>
+        <UML:Class name=""SHAS"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""SmartHome"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""User"" visibility=""public"">
+            <UML:Attribute name=""name"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Address"" visibility=""public"">
+            <UML:Attribute name=""city"" type=""string""/>
+            <UML:Attribute name=""postalCode"" type=""string""/>
+            <UML:Attribute name=""street"" type=""string""/>
+            <UML:Attribute name=""aptNumber"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Room"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Device"" visibility=""abstract"">
+            <UML:Attribute name=""deviceStatus"" type=""DeviceStatus""/>
+            <UML:Attribute name=""deviceID"" type=""int""/>
+        </UML:Class>
+        <UML:Class name=""SensorDevice"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""ActuatorDevice"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""ActivityLog"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""RuntimeElement"" visibility=""abstract"">
+            <UML:Attribute name=""timestamp"" type=""time""/>
+        </UML:Class>
+        <UML:Class name=""SensorReading"" visibility=""public"">
+            <UML:Attribute name=""value"" type=""double""/>
+        </UML:Class>
+        <UML:Class name=""ControlCommand"" visibility=""public"">
+            <UML:Attribute name=""commandType"" type=""CommandType""/>
+            <UML:Attribute name=""commandStatus"" type=""CommandStatus""/>
+        </UML:Class>
+        <UML:Class name=""AlertRule"" visibility=""public"">
+            <UML:Attribute name=""ruleStatus"" type=""RuleStatus""/>
+        </UML:Class>
+        <UML:Class name=""BooleanExpression"" visibility=""abstract"">
+        </UML:Class>
+        <UML:Class name=""RelationalTerm"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""NotExpression"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""BinaryExpression"" visibility=""public"">
+            <UML:Attribute name=""binaryOp"" type=""BinaryOp""/>
+        </UML:Class>
+        <UML:Class name=""CommandSequence"" visibility=""public"">
+        </UML:Class>
+    </UML:Model>
+</XMI>"
 HBMS,"Hotel Booking Management System (HBMS)
 
 Business travellers use HMBS for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
@@ -480,20 +719,20 @@ BusVehicle(string licencePlate, boolean inRepairShop)
 Route(int number)
 RouteAssignment(Date date)
 Driver(string name, string id, boolean onSickLeave)
-DriverSchedule(Shift shit)
+DriverSchedule(Shift shift)
 
 Relationships:
-1 BTMS contain * BusVehicle 
-1 BTMS contain * Route
-1 BTMS contain * RouteAssignment
-1 BTMS contain * Drivers
-1 BTMS contain * DriverSchedule
+(1) BTMS contain (*) BusVehicle 
+(1) BTMS contain (*) Route
+(1) BTMS contain (*) RouteAssignment
+(1) BTMS contain (*) Driver
+(1) BTMS contain (*) DriverSchedule
 
-* RouteAssignment associate 1 BusVehicle
-* RouteAssignment associate 1 Route
+(*) RouteAssignment associate (1) BusVehicle
+(*) RouteAssignment associate (1) Route
 
-* DriverSchedule associate 1 Driver
-* DriverSchedule associate 1 RouteAssignment
+(*) DriverSchedule associate (1) Driver
+(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -511,25 +750,25 @@ abstract UserRole()
 Volunteer() 
 Resident()
 SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
-abstract item(string description, string dimension, int weight, Date requestedPickedDate)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
 Route(Date date)
 
 Relationships:
-1 H2S contain *Item
-1 H2S contain *Route
-1 H2S contain *UserRole
-1 H2S contain *Person
-1 Volunteer contain *Date
+(1) H2S contain (*) Item
+(1) H2S contain (*) Route
+(1) H2S contain (*) UserRole
+(1) H2S contain (*) Person
+(1) Volunteer contain (*) Date
 
 Volunteer inherit UserRole
 Resident inherit UserRole
 SecondHandArticle inherit Item
 
-1 Person associate *UserRole
-1 Volunteer associate * Route
-0..1 Route associate *Item
-0..1 Route associate *SecondHandArticle
-1 Resident associate *Item
+(1) Person associate (*) UserRole
+(1) Volunteer associate (*) Route
+(0..1) Route associate (*) Item
+(0..1) Route associate (*) SecondHandArticle
+(1) Resident associate (*) Item
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -566,30 +805,31 @@ Test(string name, string duration)
 TestType(string name, string durationAdditive, AccessType access)
 
 Relationships:
-1 LabTracker contain *Person
-1 LabTracker contain *PersonRole
-1 LabTracker contain *Requisition
-1 LabTracker contain *TestResult
-1 Lab Tracker contain *SpecificTest
-1 LabTracker contain *Appointment
-1 LabTracker contain *BusinessHour 
-1 LabTracker contain *Lab
-1 LabTracker contain *Test
-1 LabTracker contain *TestType
+(1) LabTracker contain (*) Person
+(1) LabTracker contain (*) PersonRole
+(1) LabTracker contain (*) Requisition
+(1) LabTracker contain (*) TestResult
+(1) LabTracker contain (*) SpecificTest
+(1) LabTracker contain (*) Appointment
+(1) LabTracker contain (*) BusinessHour 
+(1) LabTracker contain (*) Lab
+(1) LabTracker contain (*) Test
+(1) LabTracker contain (*) TestType
 
 Patient inherit PersonRole
 Doctor inherit PersonRole
 
-1 Person associate 0..2 PersonRole
-1 Patient associate * Requisition
-* Requisition associate *Appointment
-* Appointment associate 1 Lab
-1 Docter associate * Requisition
-1 Requsition associate *SpecificTest
-0..1 TestResult associate *SpecificTest
-1 Lab associate 7 Business
-1 Test associate *SpecificTest
-1 TestType associate * Test
+(1) Person associate (0..2) PersonRole
+(1) Patient associate (*) Requisition
+(*) Requisition associate (*) Appointment
+(*) Appointment associate (1) Lab
+(1) Doctor associate (*) Requisition
+(1) Requisition associate (*) SpecificTest
+(0..1) TestResult associate (*) SpecificTest
+(1) Lab associate (7) Business
+(1) Test associate (*) SpecificTest
+(1) TestType associate (*) Test
+
 ### 
 Generate the lists of model classes and associations from the following given description.
 Description: Hotel Booking Management System (HBMS)
@@ -604,40 +844,32 @@ In both cases, the traveller needs to provide credit card information to finaliz
 
 Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
 RoomType(single, double, twin)
-HotelRating(one, two, three, four, five)
-BookingStatus(preliminary, confirmed, finalized, canceled)
 PaymentType(prePaid, paidAtHotel)
-Preferences(breakfast, wifi, 24HourFrontDesk)
-BookingState(preliminary, confirmed, cancel)
 
 Classes:
 HBMS()
-Person(string name, string billingInfo, Preferences travelPreferences)
-Hotel(string name, string address, boolean chain, HotelRating rating)
-Booking(string arrivalDate, string departureDate, number roomsCount, RoomType roomType, HotelRating minRating, number limitBudget, Preferences travelPref, string ccInfo, BookingState state)
-Room(RoomType type)
-Offer(string deadline, number specialPrice)
-Chain(string chainName)
-Rating(number rate)
-HotelRoom(string fromDate, string toDate, RoomType type)
+Traveller(string name, string company, string billingAddress, string preferences, string reliabilityRating)
+Hotel(string name, string city, string address)
+HotelChain(string name)
+Booking(Date arrival, Date departure, int numberOfRooms, float maxPrice, RoomType roomType, string minRating, string tentativeBudget, boolean finalized, PaymentType payment, Date cancellationDeadline, string bookingId)
+SpecialOffer(float price, string preferences, float rating)
+RoomInventory(RoomType type, Date start, Date end)
 
 Relationships:
-1 HBMS contain * Person
-1 HBMS contain * Hotel 
-1 HBMS contain * Booking 
-1 HBMS contain * Room 
-1 HBMS contain * Offer 
-1 HBMS contain * Chain 
-1 HBMS contain * Rating 
-1 HBMS contain * HotelRoom 
+(1) HBMS contain (*) Traveller
+(1) HBMS contain (*) Hotel
+(1) HBMS contain (*) HotelChain
+(1) HBMS contain (*) Booking
+(1) HBMS contain (*) SpecialOffer
+(1) HBMS contain (*) RoomInventory
 
-1 Hotel associate * Chain
-1 Booking associate 1 Person
-1 Booking associate 1 Hotel
-1 Hotel associate * Room
-1 Booking associate * Offer
-1 Booking associate 1 Rating
-1 Hotel associate * HotelRoom","Enumerations:
+(1) Traveller associate (*) Booking
+(1) Booking associate (1) Hotel
+(1) Hotel associate (1) HotelChain
+(*) SpecialOffer associate (1) Hotel
+(1) Hotel associate (*) RoomInventory
+(1) Booking associate (*) SpecialOffer
+(1) HotelChain contain (*) Hotel","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
 PaymentType(PREPAID, PAID_AT_HOTEL)
@@ -660,18 +892,18 @@ BookingInfo()
 Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount)
 
 Relationships: 
-1 HotelChain contain *Hotel
-1 HotelBookingManager contain *HotelChain
-1 HotelBookingManager contain *Traveller
-1 Hotel contain *Offer
-1 Hotel contain *RoomAvailability
-1 Traveller contain *TravelSearch
-1 Traveller contain *TravelPreference
-1 Traveller contain 1 BillingInformation
-1 TravelSearch contain 1 SearchInfo
-1 TravelSearch contain *TravelPreference
+(1) HotelChain contain (*) Hotel
+(1) HotelBookingManager contain (*) HotelChain
+(1) HotelBookingManager contain (*) Traveller
+(1) Hotel contain (*) Offer
+(1) Hotel contain (*) RoomAvailability
+(1) Traveller contain (*) TravelSearch
+(1) Traveller contain (*) TravelPreference
+(1) Traveller contain (1) BillingInformation
+(1) TravelSearch contain (1) SearchInfo
+(1) TravelSearch contain (*) TravelPreference
 
-1 Booking contain 1 BookingInfo
+(1) Booking contain (1) BookingInfo
 
 SpecialOffer inherit Offer
 RegularOffer inherit Offer
@@ -679,10 +911,136 @@ RoomAvailability inherit TripInfo
 SearchInfo inherit TripInfo
 BookingInfo inherit TripInfo
 
-*RegularOffer associate * TravelSearch
+(*) RegularOffer associate (*) TravelSearch
 
-1 Hotel associate * Booking
-Booking associate 0..1 Offer
-* Booking associate 1 Traveller
-* SpecialOffer associate 1 BookingInfo
-BookingInfo associate 0..5 SpecialOffer"
+(1) Hotel associate (*) Booking
+(1) Booking associate (0..1) Offer
+(*) Booking associate (1) Traveller
+(*) SpecialOffer associate (1) BookingInfo
+(1) BookingInfo associate (0..5) SpecialOffer","<?xml version=""1.0"" encoding=""UTF-8""?>
+<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
+    <UML:Model name=""ClassDiagram"" visibility=""public"">
+        <UML:Enumeration name=""RoomType"">
+            <UML:Literal name=""single""/>
+            <UML:Literal name=""double""/>
+            <UML:Literal name=""twin""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""PaymentType"">
+            <UML:Literal name=""prePaid""/>
+            <UML:Literal name=""paidAtHotel""/>
+        </UML:Enumeration>
+        <UML:Class name=""HBMS"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Traveller"" visibility=""public"">
+            <UML:Attribute name=""name"" type=""string""/>
+            <UML:Attribute name=""company"" type=""string""/>
+            <UML:Attribute name=""billingAddress"" type=""string""/>
+            <UML:Attribute name=""preferences"" type=""string""/>
+            <UML:Attribute name=""reliabilityRating"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Hotel"" visibility=""public"">
+            <UML:Attribute name=""name"" type=""string""/>
+            <UML:Attribute name=""city"" type=""string""/>
+            <UML:Attribute name=""address"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""HotelChain"" visibility=""public"">
+            <UML:Attribute name=""name"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Booking"" visibility=""public"">
+            <UML:Attribute name=""arrival"" type=""Date""/>
+            <UML:Attribute name=""departure"" type=""Date""/>
+            <UML:Attribute name=""numberOfRooms"" type=""int""/>
+            <UML:Attribute name=""maxPrice"" type=""float""/>
+            <UML:Attribute name=""roomType"" type=""RoomType""/>
+            <UML:Attribute name=""minRating"" type=""string""/>
+            <UML:Attribute name=""tentativeBudget"" type=""string""/>
+            <UML:Attribute name=""finalized"" type=""boolean""/>
+            <UML:Attribute name=""payment"" type=""PaymentType""/>
+            <UML:Attribute name=""cancellationDeadline"" type=""Date""/>
+            <UML:Attribute name=""bookingId"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""SpecialOffer"" visibility=""public"">
+            <UML:Attribute name=""price"" type=""float""/>
+            <UML:Attribute name=""preferences"" type=""string""/>
+            <UML:Attribute name=""rating"" type=""float""/>
+        </UML:Class>
+        <UML:Class name=""RoomInventory"" visibility=""public"">
+            <UML:Attribute name=""type"" type=""RoomType""/>
+            <UML:Attribute name=""start"" type=""Date""/>
+            <UML:Attribute name=""end"" type=""Date""/>
+        </UML:Class>
+    </UML:Model>
+</XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
+<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
+    <UML:Model name=""ClassDiagram"" visibility=""public"">
+        <UML:Enumeration name=""RoomType"">
+            <UML:Literal name=""SINGLE""/>
+            <UML:Literal name=""DOUBLE""/>
+            <UML:Literal name=""TWIN""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""BookingStatus"">
+            <UML:Literal name=""FINALIZED""/>
+            <UML:Literal name=""CONFIRMED""/>
+            <UML:Literal name=""CANCELLED_BY_HBMS""/>
+            <UML:Literal name=""PRELIMINARY""/>
+            <UML:Literal name=""CANCELLED_BY_TRAVELLER""/>
+            <UML:Literal name=""CANCELLED_BY_HOTEL""/>
+        </UML:Enumeration>
+        <UML:Enumeration name=""PaymentType"">
+            <UML:Literal name=""PREPAID""/>
+            <UML:Literal name=""PAID_AT_HOTEL""/>
+        </UML:Enumeration>
+        <UML:Class name=""HotelChain"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""HotelBookingManager"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Traveller"" visibility=""public"">
+            <UML:Attribute name=""name"" type=""string""/>
+            <UML:Attribute name=""reliabilityRating"" type=""int""/>
+        </UML:Class>
+        <UML:Class name=""BillingInformation"" visibility=""public"">
+            <UML:Attribute name=""companyName"" type=""string""/>
+            <UML:Attribute name=""address"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""TravelPreference"" visibility=""public"">
+            <UML:Attribute name=""preference"" type=""string""/>
+            <UML:Attribute name=""value"" type=""string""/>
+        </UML:Class>
+        <UML:Class name=""Hotel"" visibility=""public"">
+            <UML:Attribute name=""city"" type=""string""/>
+            <UML:Attribute name=""country"" type=""string""/>
+            <UML:Attribute name=""area"" type=""string""/>
+            <UML:Attribute name=""availability"" type=""RoomAvailability""/>
+        </UML:Class>
+        <UML:Class name=""Offer"" visibility=""abstract"">
+        </UML:Class>
+        <UML:Class name=""SpecialOffer"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""RegularOffer"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""TravelSearch"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""SearchInfo"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""RoomAvailability"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""TripInfo"" visibility=""abstract"">
+            <UML:Attribute name=""numberOfRooms"" type=""int""/>
+            <UML:Attribute name=""roomType"" type=""RoomType""/>
+            <UML:Attribute name=""arrivalDate"" type=""date""/>
+            <UML:Attribute name=""departureDate"" type=""date""/>
+            <UML:Attribute name=""budgetPerNight"" type=""float""/>
+        </UML:Class>
+        <UML:Class name=""BookingInfo"" visibility=""public"">
+        </UML:Class>
+        <UML:Class name=""Booking"" visibility=""public"">
+            <UML:Attribute name=""bookingId"" type=""int""/>
+            <UML:Attribute name=""cancellationDeadline"" type=""date""/>
+            <UML:Attribute name=""creditCardNumber"" type=""string""/>
+            <UML:Attribute name=""bookingStatus"" type=""BookingStatus""/>
+            <UML:Attribute name=""paymentType"" type=""PaymentType""/>
+            <UML:Attribute name=""confirmationDate"" type=""date""/>
+            <UML:Attribute name=""paidAmount"" type=""float""/>
+        </UML:Class>
+    </UML:Model>
+</XMI>"

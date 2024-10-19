@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMI xmi.version="2.1" xmlns:UML="http://www.omg.org/spec/UML/20090901">
+    <UML:Model name="ClassDiagram" visibility="public">
+        <UML:Enumeration name="RoomType">
+            <UML:Literal name="single"/>
+            <UML:Literal name="double"/>
+            <UML:Literal name="twin"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="PaymentType">
+            <UML:Literal name="prePaid"/>
+            <UML:Literal name="paidAtHotel"/>
+        </UML:Enumeration>
+        <UML:Class name="HBMS" visibility="public">
+        </UML:Class>
+        <UML:Class name="Traveller" visibility="public">
+            <UML:Attribute name="name" type="string"/>
+            <UML:Attribute name="company" type="string"/>
+            <UML:Attribute name="billingAddress" type="string"/>
+            <UML:Attribute name="preferences" type="string"/>
+            <UML:Attribute name="reliabilityRating" type="string"/>
+        </UML:Class>
+        <UML:Class name="Hotel" visibility="public">
+            <UML:Attribute name="name" type="string"/>
+            <UML:Attribute name="city" type="string"/>
+            <UML:Attribute name="address" type="string"/>
+        </UML:Class>
+        <UML:Class name="HotelChain" visibility="public">
+            <UML:Attribute name="name" type="string"/>
+        </UML:Class>
+        <UML:Class name="Booking" visibility="public">
+            <UML:Attribute name="arrival" type="Date"/>
+            <UML:Attribute name="departure" type="Date"/>
+            <UML:Attribute name="numberOfRooms" type="int"/>
+            <UML:Attribute name="maxPrice" type="float"/>
+            <UML:Attribute name="roomType" type="RoomType"/>
+            <UML:Attribute name="minRating" type="string"/>
+            <UML:Attribute name="tentativeBudget" type="string"/>
+            <UML:Attribute name="finalized" type="boolean"/>
+            <UML:Attribute name="payment" type="PaymentType"/>
+            <UML:Attribute name="cancellationDeadline" type="Date"/>
+            <UML:Attribute name="bookingId" type="string"/>
+        </UML:Class>
+        <UML:Class name="SpecialOffer" visibility="public">
+            <UML:Attribute name="price" type="float"/>
+            <UML:Attribute name="preferences" type="string"/>
+            <UML:Attribute name="rating" type="float"/>
+        </UML:Class>
+        <UML:Class name="RoomInventory" visibility="public">
+            <UML:Attribute name="type" type="RoomType"/>
+            <UML:Attribute name="start" type="Date"/>
+            <UML:Attribute name="end" type="Date"/>
+        </UML:Class>
+    </UML:Model>
+</XMI>

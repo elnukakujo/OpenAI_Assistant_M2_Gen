@@ -11,4 +11,4 @@
 <composition> ::= <mul> <string> "contain" <mul> <string>
 <inheritance> ::= <string> "inherit" <string>
 <association> ::= <mul> <string> "associate" <mul> <string>
-<mul> ::= "*" | <num> | <num> ".." ("*" | <num>)
+<mul> ::= "(*)" | '('<num>')' | '('<num> ".." ("*" | <num>)')'

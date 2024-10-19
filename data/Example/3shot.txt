@@ -13,20 +13,20 @@ BusVehicle(string licencePlate, boolean inRepairShop)
 Route(int number)
 RouteAssignment(Date date)
 Driver(string name, string id, boolean onSickLeave)
-DriverSchedule(Shift shit)
+DriverSchedule(Shift shift)
 
 Relationships:
-1 BTMS contain * BusVehicle 
-1 BTMS contain * Route
-1 BTMS contain * RouteAssignment
-1 BTMS contain * Drivers
-1 BTMS contain * DriverSchedule
+(1) BTMS contain (*) BusVehicle 
+(1) BTMS contain (*) Route
+(1) BTMS contain (*) RouteAssignment
+(1) BTMS contain (*) Driver
+(1) BTMS contain (*) DriverSchedule
 
-* RouteAssignment associate 1 BusVehicle
-* RouteAssignment associate 1 Route
+(*) RouteAssignment associate (1) BusVehicle
+(*) RouteAssignment associate (1) Route
 
-* DriverSchedule associate 1 Driver
-* DriverSchedule associate 1 RouteAssignment
+(*) DriverSchedule associate (1) Driver
+(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -44,25 +44,25 @@ abstract UserRole()
 Volunteer() 
 Resident()
 SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
-abstract item(string description, string dimension, int weight, Date requestedPickedDate)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
 Route(Date date)
 
 Relationships:
-1 H2S contain *Item
-1 H2S contain *Route
-1 H2S contain *UserRole
-1 H2S contain *Person
-1 Volunteer contain *Date
+(1) H2S contain (*) Item
+(1) H2S contain (*) Route
+(1) H2S contain (*) UserRole
+(1) H2S contain (*) Person
+(1) Volunteer contain (*) Date
 
 Volunteer inherit UserRole
 Resident inherit UserRole
 SecondHandArticle inherit Item
 
-1 Person associate *UserRole
-1 Volunteer associate * Route
-0..1 Route associate *Item
-0..1 Route associate *SecondHandArticle
-1 Resident associate *Item
+(1) Person associate (*) UserRole
+(1) Volunteer associate (*) Route
+(0..1) Route associate (*) Item
+(0..1) Route associate (*) SecondHandArticle
+(1) Resident associate (*) Item
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -99,27 +99,27 @@ Test(string name, string duration)
 TestType(string name, string durationAdditive, AccessType access)
 
 Relationships:
-1 LabTracker contain *Person
-1 LabTracker contain *PersonRole
-1 LabTracker contain *Requisition
-1 LabTracker contain *TestResult
-1 Lab Tracker contain *SpecificTest
-1 LabTracker contain *Appointment
-1 LabTracker contain *BusinessHour 
-1 LabTracker contain *Lab
-1 LabTracker contain *Test
-1 LabTracker contain *TestType
+(1) LabTracker contain (*) Person
+(1) LabTracker contain (*) PersonRole
+(1) LabTracker contain (*) Requisition
+(1) LabTracker contain (*) TestResult
+(1) LabTracker contain (*) SpecificTest
+(1) LabTracker contain (*) Appointment
+(1) LabTracker contain (*) BusinessHour 
+(1) LabTracker contain (*) Lab
+(1) LabTracker contain (*) Test
+(1) LabTracker contain (*) TestType
 
 Patient inherit PersonRole
 Doctor inherit PersonRole
 
-1 Person associate 0..2 PersonRole
-1 Patient associate * Requisition
-* Requisition associate *Appointment
-* Appointment associate 1 Lab
-1 Docter associate * Requisition
-1 Requsition associate *SpecificTest
-0..1 TestResult associate *SpecificTest
-1 Lab associate 7 Business
-1 Test associate *SpecificTest
-1 TestType associate * Test
+(1) Person associate (0..2) PersonRole
+(1) Patient associate (*) Requisition
+(*) Requisition associate (*) Appointment
+(*) Appointment associate (1) Lab
+(1) Doctor associate (*) Requisition
+(1) Requisition associate (*) SpecificTest
+(0..1) TestResult associate (*) SpecificTest
+(1) Lab associate (7) Business
+(1) Test associate (*) SpecificTest
+(1) TestType associate (*) Test

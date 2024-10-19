@@ -21,18 +21,18 @@ BookingInfo()
 Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount)
 
 Relationships: 
-1 HotelChain contain *Hotel
-1 HotelBookingManager contain *HotelChain
-1 HotelBookingManager contain *Traveller
-1 Hotel contain *Offer
-1 Hotel contain *RoomAvailability
-1 Traveller contain *TravelSearch
-1 Traveller contain *TravelPreference
-1 Traveller contain 1 BillingInformation
-1 TravelSearch contain 1 SearchInfo
-1 TravelSearch contain *TravelPreference
+(1) HotelChain contain (*) Hotel
+(1) HotelBookingManager contain (*) HotelChain
+(1) HotelBookingManager contain (*) Traveller
+(1) Hotel contain (*) Offer
+(1) Hotel contain (*) RoomAvailability
+(1) Traveller contain (*) TravelSearch
+(1) Traveller contain (*) TravelPreference
+(1) Traveller contain (1) BillingInformation
+(1) TravelSearch contain (1) SearchInfo
+(1) TravelSearch contain (*) TravelPreference
 
-1 Booking contain 1 BookingInfo
+(1) Booking contain (1) BookingInfo
 
 SpecialOffer inherit Offer
 RegularOffer inherit Offer
@@ -40,10 +40,10 @@ RoomAvailability inherit TripInfo
 SearchInfo inherit TripInfo
 BookingInfo inherit TripInfo
 
-*RegularOffer associate * TravelSearch
+(*) RegularOffer associate (*) TravelSearch
 
-1 Hotel associate * Booking
-Booking associate 0..1 Offer
-* Booking associate 1 Traveller
-* SpecialOffer associate 1 BookingInfo
-BookingInfo associate 0..5 SpecialOffer
+(1) Hotel associate (*) Booking
+(1) Booking associate (0..1) Offer
+(*) Booking associate (1) Traveller
+(*) SpecialOffer associate (1) BookingInfo
+(1) BookingInfo associate (0..5) SpecialOffer

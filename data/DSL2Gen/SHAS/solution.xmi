@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMI xmi.version="2.1" xmlns:UML="http://www.omg.org/spec/UML/20090901">
+    <UML:Model name="ClassDiagram" visibility="public">
+        <UML:Enumeration name="DeviceStatus">
+            <UML:Literal name="Activated"/>
+            <UML:Literal name="Deactivated"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="CommandType">
+            <UML:Literal name="lockDoor"/>
+            <UML:Literal name="turnOnHeating"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="CommandStatus">
+            <UML:Literal name="Requested"/>
+            <UML:Literal name="Completed"/>
+            <UML:Literal name="Failed"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="RuleStatus">
+            <UML:Literal name="created"/>
+            <UML:Literal name="edited"/>
+            <UML:Literal name="activated"/>
+            <UML:Literal name="deactivated"/>
+        </UML:Enumeration>
+        <UML:Enumeration name="BinaryOp">
+            <UML:Literal name="AND"/>
+            <UML:Literal name="OR"/>
+        </UML:Enumeration>
+        <UML:Class name="SHAS" visibility="public">
+        </UML:Class>
+        <UML:Class name="SmartHome" visibility="public">
+        </UML:Class>
+        <UML:Class name="User" visibility="public">
+            <UML:Attribute name="name" type="string"/>
+        </UML:Class>
+        <UML:Class name="Address" visibility="public">
+            <UML:Attribute name="city" type="string"/>
+            <UML:Attribute name="postalCode" type="string"/>
+            <UML:Attribute name="street" type="string"/>
+            <UML:Attribute name="aptNumber" type="string"/>
+        </UML:Class>
+        <UML:Class name="Room" visibility="public">
+        </UML:Class>
+        <UML:Class name="Device" visibility="abstract">
+            <UML:Attribute name="deviceStatus" type="DeviceStatus"/>
+            <UML:Attribute name="deviceID" type="int"/>
+        </UML:Class>
+        <UML:Class name="SensorDevice" visibility="public">
+        </UML:Class>
+        <UML:Class name="ActuatorDevice" visibility="public">
+        </UML:Class>
+        <UML:Class name="ActivityLog" visibility="public">
+        </UML:Class>
+        <UML:Class name="RuntimeElement" visibility="abstract">
+            <UML:Attribute name="timestamp" type="time"/>
+        </UML:Class>
+        <UML:Class name="SensorReading" visibility="public">
+            <UML:Attribute name="value" type="double"/>
+        </UML:Class>
+        <UML:Class name="ControlCommand" visibility="public">
+            <UML:Attribute name="commandType" type="CommandType"/>
+            <UML:Attribute name="commandStatus" type="CommandStatus"/>
+        </UML:Class>
+        <UML:Class name="AlertRule" visibility="public">
+            <UML:Attribute name="ruleStatus" type="RuleStatus"/>
+        </UML:Class>
+        <UML:Class name="BooleanExpression" visibility="abstract">
+        </UML:Class>
+        <UML:Class name="RelationalTerm" visibility="public">
+        </UML:Class>
+        <UML:Class name="NotExpression" visibility="public">
+        </UML:Class>
+        <UML:Class name="BinaryExpression" visibility="public">
+            <UML:Attribute name="binaryOp" type="BinaryOp"/>
+        </UML:Class>
+        <UML:Class name="CommandSequence" visibility="public">
+        </UML:Class>
+    </UML:Model>
+</XMI>

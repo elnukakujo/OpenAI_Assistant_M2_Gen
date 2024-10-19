@@ -2,12 +2,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 import pandas as pd
-
-def read_file(path):
-    file = open(path, "r")
-    content = file.read()
-    file.close()
-    return content
+from common import *
 
 def import_dsls():
     dsl_list = []

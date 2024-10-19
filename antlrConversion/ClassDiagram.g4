@@ -17,9 +17,9 @@ composition: mul STRING 'contain' mul STRING;
 inheritance: STRING 'inherit' STRING;
 association: mul STRING 'associate' mul STRING;
 
-mul: '*' | NUM | NUM '..' ('*' | NUM);
+mul: '(*)' | '('NUM')' | '('NUM '..' ('*' | NUM)')';
 attributeType: STRING;
 
-STRING: [a-zA-Z_][a-zA-Z0-9_]*;
+STRING: [a-zA-Z0-9_]+;
 NUM: [0-9]+;
 WS: [ \t\r\n]+ -> skip; // Ignore whitespace
