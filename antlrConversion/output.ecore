@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="ClassDiagram" nsURI="http://www.example.com/ClassDiagram"
+    nsPrefix="ClassDiagram">
+  <eClassifiers xsi:type="ecore:EEnum" name="ActionCard">
+    <eLiterals name="RollDieExtraTurn"/>
+    <eLiterals name="ConnectTwoTiles"/>
+    <eLiterals name="RemoveConnectionPiece"/>
+    <eLiterals name="MoveToAnyTile"/>
+    <eLiterals name="LoseNextTurn"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TileO">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Board" eType="#//Board" containment="true" upperBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Player" eType="#//Player" containment="true" lowerBound="2" upperBound="4"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Die" eType="#//Die" containment="true" upperBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Deck" eType="#//Deck" containment="true" upperBound="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Board">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Tile" eType="#//Tile" containment="true" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ConnectionPiece" eType="#//ConnectionPiece" containment="true" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Player" eType="#//Player" containment="true" upperBound="-1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Tile">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isVisible" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isStartTile" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isHiddenTile" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="visited" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Player" eType="#//Player" containment="false" upperBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Tile" eType="#//Tile" containment="false" lowerBound="0" upperBound="4"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConnectionPiece">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Tile" eType="#//Tile" containment="false" upperBound="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Player">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="color" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Tile" eType="#//Tile" containment="false" upperBound="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Die">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="number" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ActionTile">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="restTurns" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eSuperTypes href="#//Tile"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Deck">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ActionCard" eType="#//ActionCard" containment="true" upperBound="32"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ActionCard">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Player" eType="#//Player" containment="false" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Deck" eType="#//Deck" containment="false" lowerBound="0" upperBound="1"/>
+  </eClassifiers>
+</ecore:EPackage>

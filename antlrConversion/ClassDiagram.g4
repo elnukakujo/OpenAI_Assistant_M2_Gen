@@ -8,18 +8,19 @@ enumeration: STRING '(' literals ')';
 literals: STRING (',' STRING)*;
 
 classes: 'Classes:' (classDefinition)+;
-classDefinition: ('abstract')? STRING '(' (attributes)? ')';
+classDefinition: ('abstract')? STRING '(' (attributes)? (relationships)? ')';
 attributes: attribute (',' attribute)*;
-attribute: ('const')? attributeType ('[]')? STRING ('=' (STRING | NUM))?;
+attribute: ('const')? attributeType ('[]')? STRING (('=' (STRING | NUM))?); // Allow optional assignment for attributes
 
-relationships: 'Relationships:' (composition | inheritance | association)*;
-composition: mul STRING 'contain' mul STRING;
-inheritance: STRING 'inherit' STRING;
-association: mul STRING 'associate' mul STRING;
+relationships: (composition | inheritance | association) (',' (composition | inheritance | association))*;
 
-mul: '(*)' | '('NUM')' | '('NUM '..' ('*' | NUM)')';
+composition: 'contain' mul STRING;
+inheritance: 'inherit' mul STRING;
+association: 'associate' mul STRING;
+
+mul: '(*)' | '(' NUM ')' | '(' NUM '..' ('*' | NUM) ')';
 attributeType: STRING;
 
-STRING: [a-zA-Z0-9_]+;
+STRING: [a-zA-Z_][a-zA-Z0-9_]*; // Adjusted to ensure it starts with a letter
 NUM: [0-9]+;
 WS: [ \t\r\n]+ -> skip; // Ignore whitespace

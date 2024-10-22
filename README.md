@@ -23,3 +23,7 @@ Have the same purpose as generateDsl.py but do all the folder DSL descriptions i
 
 ## antlrConversion
 To run the antlr conversion, run in the corresponding folder: 'python3 conversion.py input.ebnf output.xmi'
+
+cd antlrConversion
+java -jar antlr-4.13.2-complete.jar -Dlanguage=Python3 ClassDiagram.g4
+cd ..

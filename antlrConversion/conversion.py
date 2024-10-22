@@ -6,43 +6,83 @@ import pandas as pd
 
 def generate_xmi(parsed_data):
     xmi = """<?xml version="1.0" encoding="UTF-8"?>
-<XMI xmi.version="2.1" xmlns:UML="http://www.omg.org/spec/UML/20090901">
-    <UML:Model name="ClassDiagram" visibility="public">
-"""
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="ClassDiagram" nsURI="http://www.example.com/ClassDiagram"
+    nsPrefix="ClassDiagram">\n"""
 
-    enumerations, classes, relationships = parsed_data
-    
+    enumerations, classes = parsed_data
+
+    # Enumerations
     for enum in enumerations:
-        xmi += f"        <UML:Enumeration name=\"{enum[0]}\">\n"
+        xmi += f'  <eClassifiers xsi:type="ecore:EEnum" name="{enum[0]}">\n'
         for literal in enum[1]:
-            xmi += f"            <UML:Literal name=\"{literal}\"/>\n"
-        xmi += "        </UML:Enumeration>\n"
-    
+            xmi += f'    <eLiterals name="{literal}"/>\n'
+        xmi += "  </eClassifiers>\n"
+
+    # Classes and attributes
     for class_def in classes:
         class_name, attributes, is_abstract = class_def
+        xmi += f'  <eClassifiers xsi:type="ecore:EClass" name="{class_name}"'
         if is_abstract:
-            xmi += f"        <UML:Class name=\"{class_name}\" visibility=\"abstract\">\n"
+            xmi += ' abstract="true">\n'
         else:
-            xmi += f"        <UML:Class name=\"{class_name}\" visibility=\"public\">\n"
+            xmi += '>\n'
+
+        # Attributes as EStructuralFeatures
         for attr in attributes:
-            attr_type = attr[0] if attr[0] else "undefined"
-            xmi += f"            <UML:Attribute name=\"{attr[1]}\" type=\"{attr_type}\"/>\n"
-        xmi += "        </UML:Class>\n"
+            print(attr)
+            if attr[0] in ['composition', 'inheritance', 'association']:
+                if attr[0]=='composition':
+                    rel = attr[1]
+                    mul = rel[0] if rel[0] !='(*)' else '(-1)'
+                    containing = rel[1]
+                    xmi += f'    <eStructuralFeatures xsi:type="ecore:EReference" name="{containing}" '
+                    if len(mul) >=5:
+                        lower, higher = mul.split('..')
+                        higher = higher if higher !='*)' else '-1)'
+                        xmi += f'eType="#//{containing}" containment="true" lowerBound="{lower[1:]}" upperBound="{higher[:-1]}"/>\n'
+                    else:
+                        print(mul[1:-1])
+                        xmi += f'eType="#//{containing}" containment="true" upperBound="{mul[1:-1]}"/>\n'
+                if attr[0]=='inheritance':
+                    xmi += f'    <eSuperTypes href="#//{attr[1]}"/>\n'
+                if attr[0]=='association':
+                    rel = attr[1]
+                    mul = rel[0] if rel[0] !='(*)' else '(-1)'
+                    to = rel[1]
+                    xmi += f'    <eStructuralFeatures xsi:type="ecore:EReference" name="{to}" '
+                    if len(mul) >=5:
+                        lower, higher = mul.split('..')
+                        higher = higher if higher !='*)' else '-1)'
+                        xmi += f'eType="#//{to}" containment="false" lowerBound="{lower[1:]}" upperBound="{higher[:-1]}"/>\n'
+                    else:
+                        xmi += f'eType="#//{to}" containment="false" upperBound="{mul[1:-1]}"/>\n'
+                
+            else:
+                attr_type = attr[0] if attr[0] else "EString"  # Default to EString if type is missing
+                attr_name = attr[1]
+                is_const = attr[2]
+                default_value = attr[3]
+                
+                # Correct handling of attribute naming and default values
+                xmi += f'    <eStructuralFeatures xsi:type="ecore:EAttribute" name="{attr_name}" '
+                if attr_type == "string" or attr_type== "int" or attr_type== "boolean":
+                    xmi += f'eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//E{attr_type.capitalize()}"'
+                else:
+                    xmi += f'eType="#//{attr_type.capitalize()}"'
+                
+                # Handle constants and default values
+                if is_const:
+                    xmi += ' changeable="false"'
+                if default_value is not None:
+                    xmi += f' defaultValueLiteral="{default_value}"'
+                xmi += '/>\n'
 
-    for rel in relationships:
-        if len(rel) == 4 and isinstance(rel, tuple):  # Adjusted for Composition and Association
-            xmi += f"        <UML:Association>\n"
-            xmi += f"            <UML:End type=\"{rel[1]}\" multiplicity=\"{rel[0]}\"/>\n"
-            xmi += f"            <UML:End type=\"{rel[3]}\" multiplicity=\"{rel[2]}\"/>\n"
-            xmi += "        </UML:Association>\n"
-        elif len(rel) == 3 and rel[1] == 'inherit':  # Inheritance
-            xmi += f"        <UML:Generalization general=\"{rel[2]}\" specific=\"{rel[0]}\"/>\n"
-        else:
-            print(f"Warning: Unexpected relationship format: {rel}")  # This can help you debug further
+        xmi += "  </eClassifiers>\n"
 
-    xmi += """    </UML:Model>
-</XMI>"""
+    xmi += "</ecore:EPackage>"
     return xmi
+
 
 def conversion(input_ebnf):
     input_stream = InputStream(input_ebnf)
@@ -55,7 +95,6 @@ def conversion(input_ebnf):
     # Extract enumerations, classes, and relationships
     enumerations = []
     classes = []
-    relationships = []
 
     for child in tree.children:
         if isinstance(child, ClassDiagramParser.EnumerationsContext):
@@ -68,29 +107,55 @@ def conversion(input_ebnf):
             for cls in child.classDefinition():
                 class_name = cls.STRING().getText().strip('"')
                 attributes = []
-                is_abstract = cls.getChild(0).getText() == 'abstract'
+                is_abstract = cls.getChild(0).getText() == 'abstract' if cls.getChild(0) else False
+                
+                # Extract attributes
                 if cls.attributes():
                     for attr in cls.attributes().attribute():
-                        attr_type = attr.attributeType().getText() if attr.attributeType() else None  # Ensure this is correct
-                        # Accessing the STRING tokens; assuming there can be multiple STRING tokens
+                        attr_type = attr.attributeType().getText() if attr.attributeType() else None
                         attr_names = [s.getText().strip('"') for s in attr.STRING()]
-                        # Assuming you want to handle the first attribute name or all
+                        
+                        # Handle constant and default values
+                        is_const = 'const' in attr.getText()
+                        default_value = None
+                        if '=' in attr.getText():
+                            default_value = attr.getText().split('=')[1].strip()
+                        
+                        # Append attribute details
                         for attr_name in attr_names:
-                            attributes.append((attr_type, attr_name))
+                            attributes.append((attr_type, attr_name, is_const, default_value))
+
+                # Extract relationships as attributes
+                if cls.relationships():
+                    for rel in cls.relationships().children:
+                        if isinstance(rel, ClassDiagramParser.CompositionContext):
+                            # Composition relationships
+                            attributes.append((
+                                'composition',  # Relationship type
+                                (
+                                    rel.mul().getText(),  # Multiplicity to
+                                    rel.STRING().getText()# Target class
+                                )   
+                            ))
+                        elif isinstance(rel, ClassDiagramParser.InheritanceContext):
+                            attributes.append((
+                                'inheritance',  # Relationship type
+                                (
+                                    rel.STRING().getText()# Target class
+                                )   
+                            ))
+                        elif isinstance(rel, ClassDiagramParser.AssociationContext):
+                            # Association relationships
+                            attributes.append((
+                                'association',  # Relationship type
+                                (
+                                    rel.mul().getText(),  # Multiplicity to
+                                    rel.STRING().getText()# Target class
+                                )   
+                            ))
                 classes.append((class_name, attributes, is_abstract))
 
-        elif isinstance(child, ClassDiagramParser.RelationshipsContext):
-            for rel in child.children:
-                if isinstance(rel, ClassDiagramParser.CompositionContext):
-                    # Ensure both ends of the composition relationship are captured
-                    relationships.append((rel.mul(0).getText(), rel.STRING(0).getText(), rel.mul(1).getText(), rel.STRING(1).getText()))  # Add class2
-                elif isinstance(rel, ClassDiagramParser.InheritanceContext):
-                    relationships.append((rel.STRING(0).getText(), 'inherit', rel.STRING(1).getText()))  # Correct as it is
-                elif isinstance(rel, ClassDiagramParser.AssociationContext):
-                    # Ensure you access both classes and their multiplicities
-                    relationships.append((rel.mul(0).getText(), rel.STRING(0).getText(), rel.mul(1).getText(), rel.STRING(1).getText()))  # Add class2
-
-    return generate_xmi((enumerations, classes, relationships))
+    return generate_xmi((enumerations, classes))
 
 def csv_convertion():
     df = pd.read_csv("data/input_output_GPT.csv")
