@@ -6,61 +6,21 @@ RuleStatus(created, edited, activated, deactivated)
 BinaryOp(AND, OR)
 
 Classes:
-SHAS()
-SmartHome()
-User(string name)
+SHAS(contain (*) SmartHome, contain (*) User)
+SmartHome(contain (0..1) Address, contain (0..*) Room, contain (0..1) ActivityLog, associate (*) User)
+User(string name, associate (*) SmartHome)
 Address(string city, string postalCode, string street, string aptNumber)
-Room()
-abstract Device(DeviceStatus deviceStatus, int deviceID)
-SensorDevice()
-ActuatorDevice()
-ActivityLog()
+Room(contain (*) SensorDevice, contain (*) ActuatorDevice, associate (*) RelationalTerm)
+abstract Device(DeviceStatus deviceStatus, int deviceID, contain (0..1) BooleanExpression)
+SensorDevice(inherit Device, associate (*) SensorReading, associate (*) RelationalTerm)
+ActuatorDevice(inherit Device, associate (*) ControlCommand, associate (*) RelationalTerm)
+ActivityLog(contain (*) SensorReading, contain (*) ControlCommand)
 abstract RuntimeElement(time timestamp)
-SensorReading(double value)
-ControlCommand(CommandType commandType, CommandStatus commandStatus)
-AlertRule(RuleStatus ruleStatus)
-abstract BooleanExpression()
+SensorReading(double value, inherit RuntimeElement, associate (*) RelationalTerm)
+ControlCommand(CommandType commandType, CommandStatus commandStatus, associate (*) RelationalTerm)
+AlertRule(RuleStatus ruleStatus, contain (*) CommandSequence)
+abstract BooleanExpression(associate (0..1) NotExpression, associate (0..1) BinaryExpression)
 RelationalTerm()
 NotExpression()
 BinaryExpression(BinaryOp binaryOp)
-CommandSequence()
-
-Relationships: 
-(0..1) SHAS contain (*) SmartHome
-(1) SHAS contain (*) User
-
-(1) SmartHome contain (0..1) Address
-(1) SmartHome contain (0..*) Room
-(1) SmartHome contain (0..1) ActivityLog
-(*) SmartHome associate (*) User
-
-(1) Room contain (*) SensorDevice
-(1) Room contain (*) ActuatorDevice
-
-(1) ActivityLog contain (*) SensorReading
-(1) ActivityLog contain (*) ControlCommand
-
-(*) SensorReading associate (1) SensorDevice
-
-(*) ControlCommand associate (1) ActuatorDevice
-
-(1) D contain (0..1) BooleanExpression
-(1) AlertRule contain (*) CommandSequence
-
-(*) RelationalTerm associate (0..1) Room
-(*) RelationalTerm associate (0..1) SensorDevice
-(*) RelationalTerm associate (0..1) ActuatorDevice
-(*) RelationalTerm associate (0..1) SensorReading
-(*) RelationalTerm associate (0..1) ControlCommand
-
-(0..1) NotExpression associate (1) BooleanExpression
-
-(0..1) BinaryExpression associate (1) BooleanExpression
-(0..1) BinaryExpression associate (1) BooleanExpression
-
-(*) CommandSequence associate (0..1) CommandSequence
-(1) CommandSequence contain (0..1) ControlCommand
-
-SensorDevice inherit Device
-ActuatorDevice inherit Device
-SensorReading inherit RuntimeElement
+CommandSequence(contain (0..1) ControlCommand, associate (*) CommandSequence)

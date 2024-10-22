@@ -2,78 +2,102 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="ClassDiagram" nsURI="http://www.example.com/ClassDiagram"
     nsPrefix="ClassDiagram">
-  <eClassifiers xsi:type="ecore:EEnum" name="Mode">
-    <eLiterals name="design"/>
-    <eLiterals name="game"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="DeviceStatus">
+    <eLiterals name="Activated"/>
+    <eLiterals name="Deactivated"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="Color">
-    <eLiterals name="red"/>
-    <eLiterals name="blue"/>
-    <eLiterals name="green"/>
-    <eLiterals name="yellow"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="CommandType">
+    <eLiterals name="lockDoor"/>
+    <eLiterals name="turnOnHeating"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TileO">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Game" eType="#//Game" containment="true" upperBound="-1"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="CommandStatus">
+    <eLiterals name="Requested"/>
+    <eLiterals name="Completed"/>
+    <eLiterals name="Failed"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Game">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="currentConnectionPieces" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mode" eType="#//Mode"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="spaceConnectionPieces" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" changeable="false" defaultValueLiteral="32"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="numberOfActionCards" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" changeable="false" defaultValueLiteral="32"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Tile" eType="#//Tile" containment="true" upperBound="-1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Connection" eType="#//Connection" containment="true" upperBound="-1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Die" eType="#//Die" containment="true" upperBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Deck" eType="#//Deck" containment="true" upperBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Player" eType="#//Player" containment="true" lowerBound="0" upperBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="WinTile" eType="#//WinTile" containment="false" lowerBound="0" upperBound="1"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="RuleStatus">
+    <eLiterals name="created"/>
+    <eLiterals name="edited"/>
+    <eLiterals name="activated"/>
+    <eLiterals name="deactivated"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Connection">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Tile" eType="#//Tile" containment="false" upperBound="2"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="BinaryOp">
+    <eLiterals name="AND"/>
+    <eLiterals name="OR"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Die">
+  <eClassifiers xsi:type="ecore:EClass" name="SHAS">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="SmartHome" eType="#//SmartHome" containment="true" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="User" eType="#//User" containment="true" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Deck">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="ActionCard" eType="#//ActionCard" containment="true" lowerBound="0" upperBound="32"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SmartHome">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Address" eType="#//Address" containment="true" lowerBound="0" upperBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Room" eType="#//Room" containment="true" lowerBound="0" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ActivityLog" eType="#//ActivityLog" containment="true" lowerBound="0" upperBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="User" eType="#//User" containment="false" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Tile" abstract="true">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="x" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="y" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Connection" eType="#//Connection" containment="false" lowerBound="0" upperBound="-1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Player" eType="#//Player" containment="false" lowerBound="0" upperBound="4"/>
+  <eClassifiers xsi:type="ecore:EClass" name="User">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="SmartHome" eType="#//SmartHome" containment="false" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ActionCard" abstract="true">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="instructions" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Deck" eType="#//Deck" containment="false" lowerBound="0" upperBound="1"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Address">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="city" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="postalCode" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="street" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="aptNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="RollDieActionCard">
-    <eSuperTypes href="#//ActionCard"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Room">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="SensorDevice" eType="#//SensorDevice" containment="true" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ActuatorDevice" eType="#//ActuatorDevice" containment="true" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RelationalTerm" eType="#//RelationalTerm" containment="false" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ConnectTilesActionCard">
-    <eSuperTypes href="#//ActionCard"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Device" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deviceStatus" eType="#//DeviceStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deviceID" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="BooleanExpression" eType="#//BooleanExpression" containment="true" lowerBound="0" upperBound="1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="RemoveConnectionActionCard">
-    <eSuperTypes href="#//ActionCard"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SensorDevice">
+    <eSuperTypes href="#//Device"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="SensorReading" eType="#//SensorReading" containment="false" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RelationalTerm" eType="#//RelationalTerm" containment="false" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TeleportActionCard">
-    <eSuperTypes href="#//ActionCard"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ActuatorDevice">
+    <eSuperTypes href="#//Device"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ControlCommand" eType="#//ControlCommand" containment="false" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RelationalTerm" eType="#//RelationalTerm" containment="false" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="LoseTurnActionCard">
-    <eSuperTypes href="#//ActionCard"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ActivityLog">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="SensorReading" eType="#//SensorReading" containment="true" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ControlCommand" eType="#//ControlCommand" containment="true" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="WinTile">
-    <eSuperTypes href="#//Tile"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Game" eType="#//Game" containment="false" upperBound="1"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RuntimeElement" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="timestamp" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ETime"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ActionTile">
-    <eSuperTypes href="#//Tile"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SensorReading">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RelationalTerm" eType="#//RelationalTerm" containment="false" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="NormalTile">
-    <eSuperTypes href="#//Tile"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ControlCommand">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="commandType" eType="#//CommandType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="commandStatus" eType="#//CommandStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RelationalTerm" eType="#//RelationalTerm" containment="false" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Player">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="number" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="turnsUntilActive" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="color" eType="#//Color"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Tile" eType="#//Tile" containment="false" lowerBound="0" upperBound="2"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AlertRule">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ruleStatus" eType="#//RuleStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="CommandSequence" eType="#//CommandSequence" containment="true" upperBound="-1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BooleanExpression" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="NotExpression" eType="#//NotExpression" containment="false" lowerBound="0" upperBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="BinaryExpression" eType="#//BinaryExpression" containment="false" lowerBound="0" upperBound="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RelationalTerm">
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NotExpression">
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BinaryExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="binaryOp" eType="#//BinaryOp"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CommandSequence">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ControlCommand" eType="#//ControlCommand" containment="true" lowerBound="0" upperBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="CommandSequence" eType="#//CommandSequence" containment="false" upperBound="-1"/>
   </eClassifiers>
 </ecore:EPackage>

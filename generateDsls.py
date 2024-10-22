@@ -32,7 +32,7 @@ def save_outputs(df, outputs):
 
 def api_call(prompt):
     load_dotenv()
-    sys_role = "You are a metamodel design assistant. Using the following format define with EBNF, you generate metamodels based on the examples and description you are given as input:"+read_file("antlrConversion/ClassDiagram.g4")
+    sys_role = "You are a metamodel design assistant. Using the following format define with EBNF, not adding any extra text or '#' or ',' , remembering that every class you reference must be defined, you generate metamodels based on the examples and description you are given as input:"+read_file("antlrConversion/ClassDiagram.g4")
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     response = client.chat.completions.create(model="gpt-4", messages=[
         {"role": "system", "content": sys_role},

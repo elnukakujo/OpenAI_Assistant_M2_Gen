@@ -8,25 +8,12 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes: 
-BTMS()
-BusVehicle(string licencePlate, boolean inRepairShop)
-Route(int number)
-RouteAssignment(Date date)
-Driver(string name, string id, boolean onSickLeave)
+BTMS(contain (*) BusVehicle, contain (*) Route, contain (*) RouteAssignment, contain (*) Driver, contain (*) DriverSchedule)
+BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
+Route(int number, associate (*) RouteAssignment)
+RouteAssignment(Date date, associate (*) DriverSchedule)
+Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
 DriverSchedule(Shift shift)
-
-Relationships:
-(1) BTMS contain (*) BusVehicle 
-(1) BTMS contain (*) Route
-(1) BTMS contain (*) RouteAssignment
-(1) BTMS contain (*) Driver
-(1) BTMS contain (*) DriverSchedule
-
-(*) RouteAssignment associate (1) BusVehicle
-(*) RouteAssignment associate (1) Route
-
-(*) DriverSchedule associate (1) Driver
-(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -38,31 +25,14 @@ Enumerations:
 ItemCategory(Baby Clothing, Fridge, ...)
 
 Classes:
-H2S()
-Person(string name, string address, string phoneNumber, string emailAddress)
+H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole, )
 abstract UserRole()
-Volunteer() 
-Resident()
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
+Volunteer(contain (*) Date, inherit UserRole, associate (*) Route) 
+Resident(inherit UserRole, associate (*) Item)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
 abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date)
-
-Relationships:
-(1) H2S contain (*) Item
-(1) H2S contain (*) Route
-(1) H2S contain (*) UserRole
-(1) H2S contain (*) Person
-(1) Volunteer contain (*) Date
-
-Volunteer inherit UserRole
-Resident inherit UserRole
-SecondHandArticle inherit Item
-
-(1) Person associate (*) UserRole
-(1) Volunteer associate (*) Route
-(0..1) Route associate (*) Item
-(0..1) Route associate (*) SecondHandArticle
-(1) Resident associate (*) Item
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -84,42 +54,18 @@ AccessType(reservable, walkIn, dropOff)
 DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
 
 Classes:
-LabTracker()
-Person(string lastName, string firstName, string address, string phoneNumber)
+LabTracker(contain (*) Person, contain (*) PersonRole, contain (*) Requisition, contain (*) TestResult, contain (*) SpecificTest,
+contain (*) Appointment, contain (*) BusinessHour, contain (*) Lab, contain (*) Test, contain (*) TestType)
+Person(string lastName, string firstName, string address, string phoneNumber, associate (0..2) PersonRole)
 abstract PersonRole(idNumber)
-Patient(string dateOfBirth)
-Doctor(string signature)
-Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval)
-TestResult(boolean negative, string report)
+Patient(string dateOfBirth, inherit PersonRole, associate (*) Requisition)
+Doctor(string signature, inherit PersonRole, associate (*) Requisition)
+Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval, associate (*) Appointment, 
+associate (*) SpecificTest)
+TestResult(boolean negative, string report, associate (*) SpecificTest)
 SpecificTest(Data date)
-Appointment(string confirmation, Date date, string startTime, string endTime)
+Appointment(string confirmation, Date date, string startTime, string endTime, associate (*) Requisition)
 BusinessHour(DayOfWeek: dayOfWeek, string startTime, string endTime)
-Lab(string registrationNumber, string name, string address, boolean changeCancelFee)
-Test(string name, string duration)
-TestType(string name, string durationAdditive, AccessType access)
-
-Relationships:
-(1) LabTracker contain (*) Person
-(1) LabTracker contain (*) PersonRole
-(1) LabTracker contain (*) Requisition
-(1) LabTracker contain (*) TestResult
-(1) LabTracker contain (*) SpecificTest
-(1) LabTracker contain (*) Appointment
-(1) LabTracker contain (*) BusinessHour 
-(1) LabTracker contain (*) Lab
-(1) LabTracker contain (*) Test
-(1) LabTracker contain (*) TestType
-
-Patient inherit PersonRole
-Doctor inherit PersonRole
-
-(1) Person associate (0..2) PersonRole
-(1) Patient associate (*) Requisition
-(*) Requisition associate (*) Appointment
-(*) Appointment associate (1) Lab
-(1) Doctor associate (*) Requisition
-(1) Requisition associate (*) SpecificTest
-(0..1) TestResult associate (*) SpecificTest
-(1) Lab associate (7) Business
-(1) Test associate (*) SpecificTest
-(1) TestType associate (*) Test
+Lab(string registrationNumber, string name, string address, boolean changeCancelFee, associate (*) Appointment, associate (7) BusinessHour)
+Test(string name, string duration, associate (*) SpecificTest)
+TestType(string name, string durationAdditive, AccessType access, associate (*) Test)

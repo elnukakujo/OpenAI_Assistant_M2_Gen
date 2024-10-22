@@ -4,46 +4,20 @@ BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY
 PaymentType(PREPAID, PAID_AT_HOTEL)
 
 Classes:
-HotelChain()
-HotelBookingManager()
-Traveller(string name, int reliabilityRating)
+HotelChain(contain (*) Hotel, )
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch, associate (*) Booking)
 BillingInformation(string companyName, string address)
 TravelPreference(string preference, string value)
-Hotel(string city, string country, string area, RoomAvailability availability)
+Hotel(string city, string country, string area, RoomAvailability availability, contain (*) Offer, contain (*) RoomAvailability,
+associate (*) Booking)
 abstract Offer()
-SpecialOffer()
-RegularOffer()
-TravelSearch()
-SearchInfo()
-RoomAvailability()
+SpecialOffer(inherit Offer, associate (1) BookingInfo)
+RegularOffer(inherit Offer, associate (*) TravelSearch)
+TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference, associate (*) RegularOffer)
+SearchInfo(inherit TripInfo)
+RoomAvailability(inherit TripInfo)
 abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo()
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount)
-
-Relationships: 
-(1) HotelChain contain (*) Hotel
-(1) HotelBookingManager contain (*) HotelChain
-(1) HotelBookingManager contain (*) Traveller
-(1) Hotel contain (*) Offer
-(1) Hotel contain (*) RoomAvailability
-(1) Traveller contain (*) TravelSearch
-(1) Traveller contain (*) TravelPreference
-(1) Traveller contain (1) BillingInformation
-(1) TravelSearch contain (1) SearchInfo
-(1) TravelSearch contain (*) TravelPreference
-
-(1) Booking contain (1) BookingInfo
-
-SpecialOffer inherit Offer
-RegularOffer inherit Offer
-RoomAvailability inherit TripInfo
-SearchInfo inherit TripInfo
-BookingInfo inherit TripInfo
-
-(*) RegularOffer associate (*) TravelSearch
-
-(1) Hotel associate (*) Booking
-(1) Booking associate (0..1) Offer
-(*) Booking associate (1) Traveller
-(*) SpecialOffer associate (1) BookingInfo
-(1) BookingInfo associate (0..5) SpecialOffer
+BookingInfo(inherit TripInfo, associate (0..5) SpecialOffer)
+Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, 
+date confirmationDate, float paidAmount, contain (1) BookingInfo, associate (0..1) Offer)

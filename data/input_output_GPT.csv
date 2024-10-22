@@ -1,4 +1,4 @@
-DSL_Name,Description,Prompt,Output,Expected_Output,OutputXMI,Expected_OutputXMI
+DSL_Name,Description,Prompt,Output,Expected_Output,OutputEcore,Expected_OutputEcore
 Tile-O,"The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
 
 A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
@@ -15,25 +15,12 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes: 
-BTMS()
-BusVehicle(string licencePlate, boolean inRepairShop)
-Route(int number)
-RouteAssignment(Date date)
-Driver(string name, string id, boolean onSickLeave)
+BTMS(contain (*) BusVehicle, contain (*) Route, contain (*) RouteAssignment, contain (*) Driver, contain (*) DriverSchedule)
+BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
+Route(int number, associate (*) RouteAssignment)
+RouteAssignment(Date date, associate (*) DriverSchedule)
+Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
 DriverSchedule(Shift shift)
-
-Relationships:
-(1) BTMS contain (*) BusVehicle 
-(1) BTMS contain (*) Route
-(1) BTMS contain (*) RouteAssignment
-(1) BTMS contain (*) Driver
-(1) BTMS contain (*) DriverSchedule
-
-(*) RouteAssignment associate (1) BusVehicle
-(*) RouteAssignment associate (1) Route
-
-(*) DriverSchedule associate (1) Driver
-(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -45,31 +32,14 @@ Enumerations:
 ItemCategory(Baby Clothing, Fridge, ...)
 
 Classes:
-H2S()
-Person(string name, string address, string phoneNumber, string emailAddress)
+H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole, )
 abstract UserRole()
-Volunteer() 
-Resident()
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
+Volunteer(contain (*) Date, inherit UserRole, associate (*) Route) 
+Resident(inherit UserRole, associate (*) Item)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
 abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date)
-
-Relationships:
-(1) H2S contain (*) Item
-(1) H2S contain (*) Route
-(1) H2S contain (*) UserRole
-(1) H2S contain (*) Person
-(1) Volunteer contain (*) Date
-
-Volunteer inherit UserRole
-Resident inherit UserRole
-SecondHandArticle inherit Item
-
-(1) Person associate (*) UserRole
-(1) Volunteer associate (*) Route
-(0..1) Route associate (*) Item
-(0..1) Route associate (*) SecondHandArticle
-(1) Resident associate (*) Item
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -91,46 +61,21 @@ AccessType(reservable, walkIn, dropOff)
 DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
 
 Classes:
-LabTracker()
-Person(string lastName, string firstName, string address, string phoneNumber)
+LabTracker(contain (*) Person, contain (*) PersonRole, contain (*) Requisition, contain (*) TestResult, contain (*) SpecificTest,
+contain (*) Appointment, contain (*) BusinessHour, contain (*) Lab, contain (*) Test, contain (*) TestType)
+Person(string lastName, string firstName, string address, string phoneNumber, associate (0..2) PersonRole)
 abstract PersonRole(idNumber)
-Patient(string dateOfBirth)
-Doctor(string signature)
-Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval)
-TestResult(boolean negative, string report)
+Patient(string dateOfBirth, inherit PersonRole, associate (*) Requisition)
+Doctor(string signature, inherit PersonRole, associate (*) Requisition)
+Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval, associate (*) Appointment, 
+associate (*) SpecificTest)
+TestResult(boolean negative, string report, associate (*) SpecificTest)
 SpecificTest(Data date)
-Appointment(string confirmation, Date date, string startTime, string endTime)
+Appointment(string confirmation, Date date, string startTime, string endTime, associate (*) Requisition)
 BusinessHour(DayOfWeek: dayOfWeek, string startTime, string endTime)
-Lab(string registrationNumber, string name, string address, boolean changeCancelFee)
-Test(string name, string duration)
-TestType(string name, string durationAdditive, AccessType access)
-
-Relationships:
-(1) LabTracker contain (*) Person
-(1) LabTracker contain (*) PersonRole
-(1) LabTracker contain (*) Requisition
-(1) LabTracker contain (*) TestResult
-(1) LabTracker contain (*) SpecificTest
-(1) LabTracker contain (*) Appointment
-(1) LabTracker contain (*) BusinessHour 
-(1) LabTracker contain (*) Lab
-(1) LabTracker contain (*) Test
-(1) LabTracker contain (*) TestType
-
-Patient inherit PersonRole
-Doctor inherit PersonRole
-
-(1) Person associate (0..2) PersonRole
-(1) Patient associate (*) Requisition
-(*) Requisition associate (*) Appointment
-(*) Appointment associate (1) Lab
-(1) Doctor associate (*) Requisition
-(1) Requisition associate (*) SpecificTest
-(0..1) TestResult associate (*) SpecificTest
-(1) Lab associate (7) Business
-(1) Test associate (*) SpecificTest
-(1) TestType associate (*) Test
-
+Lab(string registrationNumber, string name, string address, boolean changeCancelFee, associate (*) Appointment, associate (7) BusinessHour)
+Test(string name, string duration, associate (*) SpecificTest)
+TestType(string name, string durationAdditive, AccessType access, associate (*) Test)
 ### 
 Generate the lists of model classes and associations from the following given description.
 Description: The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
@@ -139,176 +84,196 @@ A designer first defines the whole game including the layout of the game board. 
 
 The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumerations:
-ActionCard(RollDieExtraTurn, ConnectTwoTiles, RemoveConnectionPiece, MoveToAnyTile, LoseNextTurn)
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. ","Enumerations: 
+Color(Red, Green, Blue, Yellow)
+ActionTypes(ExtraTurn, ConnectTiles, RemoveConnection, MoveToTile, LoseTurn)
 
-Classes:
-TileO()
-Board()
-Tile(boolean isVisible, boolean isStartTile, boolean isHiddenTile, boolean visited)
-ConnectionPiece()
-Player(string color)
-Die(int number)
-ActionTile(int restTurns)
-Deck()
-ActionCard(ActionCard action)
-
-Relationships:
-(1) TileO contain (1) Board
-(1) TileO contain (2..4) Player
-(1) TileO contain (1) Die
-(1) TileO contain (1) Deck
-(1) Board contain (*) Tile
-(1) Board contain (*) ConnectionPiece
-(1) Board contain (*) Player
-(1) Player associate (1) Tile
-(1) Tile associate (0..4) Tile
-(1) ConnectionPiece associate (2) Tile
-(1) Deck contain (32) ActionCard
-(#) Tile inherit ActionTile
-(1) ActionCard associate (*) Player","Enumerations:
+Classes: 
+TileO(contain (*) Game, contain (*) Designer, contain (*) Player, contain (*) Die)
+Game(contain (*) Board, contain (*) Deck, contain (1..4) Player, associate (1) Designer)
+Designer(contain (*) BoardDesign, associate (*) Game)
+BoardDesign(contain (*) Tile, contain (*) Connection)
+Player(string name, Color color, contain (*) PlayingPiece, associate (*) Game)
+Die(int roll)
+Board(contain (*) Tile, contain (*) Connection, contain (*) PlayingPiece)
+Tile(string type, boolean hidden, boolean visited, boolean action, int inactiveTurns, associate (*) PlayingPiece)
+Connection(associate (2) Tile)
+PlayingPiece(Color color, associate (*) Connection, associate (*) Tile, associate (*) Player)
+Deck(contain (32) ActionCard)
+ActionCard(ActionTypes actionType)","Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
 Classes:
-TileO()
-Game(int currentConnectionPieces, Mode mode, const int spaceConnectionPieces=32, const int numberOfActionCards=32)
-Connection()
-WinTile()
+TileO(contain (*) Game)
+Game(int currentConnectionPieces, Mode mode, const int spaceConnectionPieces=32, const int numberOfActionCards=32, contain (*) Tile, contain (*) Connection, 
+contain (1) Die, contain (1) Deck, contain (0..1) Player, associate (0..1) WinTile)
+Connection(associate (2) Tile)
 Die()
-Deck()
-abstract Tile(int x, int y)
-abstract ActionCard(string instructions)
-RollDieActionCard()
-ConnectTilesActionCard()
-RemoveConnectionActionCard()
-TeleportActionCard()
-LoseTurnActionCard()
-WinTile()
-ActionTile()
-NormalTile()
-Player(int number, int turnsUntilActive, Color color)
-
-Relationships: 
-(1) TileO contain (*) Game
-(1) Game contain (*) Tile
-(1) Game contain (*) Connection
-(1) Game contain (1) Die
-(1) Game contain (1) Deck
-(1) Game contain (0..1) Player
-(1) Deck contain (0..32) ActionCard
-
-WinTile inherit Tile
-ActionTile inherit Tile
-NormalTile inherit Tile
-RollDieActionCard inherit ActionCard
-ConnectTilesActionCard inherit ActionCard  
-RemoveConnectionActionCard inherit ActionCard
-TeleportActionCard inherit ActionCard
-LoseTurnActionCard inherit ActionCard
-
-(1) Game associate (0..1) WinTile
-(0..4) Connection associate (2) Tile
-(1) Player associate (0..1) Tile
-(0..4) Player associate (0..1) Tile
-(1) Deck associate (0..1) ActionCard","<?xml version=""1.0"" encoding=""UTF-8""?>
-<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
-    <UML:Model name=""ClassDiagram"" visibility=""public"">
-        <UML:Enumeration name=""ActionCard"">
-            <UML:Literal name=""RollDieExtraTurn""/>
-            <UML:Literal name=""ConnectTwoTiles""/>
-            <UML:Literal name=""RemoveConnectionPiece""/>
-            <UML:Literal name=""MoveToAnyTile""/>
-            <UML:Literal name=""LoseNextTurn""/>
-        </UML:Enumeration>
-        <UML:Class name=""TileO"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Board"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Tile"" visibility=""public"">
-            <UML:Attribute name=""isVisible"" type=""boolean""/>
-            <UML:Attribute name=""isStartTile"" type=""boolean""/>
-            <UML:Attribute name=""isHiddenTile"" type=""boolean""/>
-            <UML:Attribute name=""visited"" type=""boolean""/>
-        </UML:Class>
-        <UML:Class name=""ConnectionPiece"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Player"" visibility=""public"">
-            <UML:Attribute name=""color"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Die"" visibility=""public"">
-            <UML:Attribute name=""number"" type=""int""/>
-        </UML:Class>
-        <UML:Class name=""ActionTile"" visibility=""public"">
-            <UML:Attribute name=""restTurns"" type=""int""/>
-        </UML:Class>
-        <UML:Class name=""Deck"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""ActionCard"" visibility=""public"">
-            <UML:Attribute name=""action"" type=""ActionCard""/>
-        </UML:Class>
-    </UML:Model>
-</XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
-<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
-    <UML:Model name=""ClassDiagram"" visibility=""public"">
-        <UML:Enumeration name=""Mode"">
-            <UML:Literal name=""design""/>
-            <UML:Literal name=""game""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""Color"">
-            <UML:Literal name=""red""/>
-            <UML:Literal name=""blue""/>
-            <UML:Literal name=""green""/>
-            <UML:Literal name=""yellow""/>
-        </UML:Enumeration>
-        <UML:Class name=""TileO"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Game"" visibility=""public"">
-            <UML:Attribute name=""currentConnectionPieces"" type=""int""/>
-            <UML:Attribute name=""mode"" type=""Mode""/>
-            <UML:Attribute name=""spaceConnectionPieces"" type=""int""/>
-            <UML:Attribute name=""32"" type=""int""/>
-            <UML:Attribute name=""numberOfActionCards"" type=""int""/>
-            <UML:Attribute name=""32"" type=""int""/>
-        </UML:Class>
-        <UML:Class name=""Connection"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""WinTile"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Die"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Deck"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Tile"" visibility=""abstract"">
-            <UML:Attribute name=""x"" type=""int""/>
-            <UML:Attribute name=""y"" type=""int""/>
-        </UML:Class>
-        <UML:Class name=""ActionCard"" visibility=""abstract"">
-            <UML:Attribute name=""instructions"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""RollDieActionCard"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""ConnectTilesActionCard"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""RemoveConnectionActionCard"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""TeleportActionCard"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""LoseTurnActionCard"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""WinTile"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""ActionTile"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""NormalTile"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Player"" visibility=""public"">
-            <UML:Attribute name=""number"" type=""int""/>
-            <UML:Attribute name=""turnsUntilActive"" type=""int""/>
-            <UML:Attribute name=""color"" type=""Color""/>
-        </UML:Class>
-    </UML:Model>
-</XMI>"
+Deck(contain (0..32) ActionCard)
+abstract Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
+abstract ActionCard(string instructions, associate (0..1) Deck)
+RollDieActionCard(inherit (1) ActionCard)
+ConnectTilesActionCard(inherit (1) ActionCard)
+RemoveConnectionActionCard(inherit (1) ActionCard)
+TeleportActionCard(inherit (1) ActionCard)
+LoseTurnActionCard(inherit (1) ActionCard)
+WinTile(inherit (1) Tile, associate (1) Game)
+ActionTile(inherit (1) Tile)
+NormalTile(inherit (1) Tile)
+Player(int number, int turnsUntilActive, Color color, associate (0..2) Tile)","<?xml version=""1.0"" encoding=""UTF-8""?>
+<ecore:EPackage xmi:version=""2.0"" xmlns:xmi=""http://www.omg.org/XMI"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+    xmlns:ecore=""http://www.eclipse.org/emf/2002/Ecore"" name=""ClassDiagram"" nsURI=""http://www.example.com/ClassDiagram""
+    nsPrefix=""ClassDiagram"">
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""Color"">
+    <eLiterals name=""Red""/>
+    <eLiterals name=""Green""/>
+    <eLiterals name=""Blue""/>
+    <eLiterals name=""Yellow""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""ActionTypes"">
+    <eLiterals name=""ExtraTurn""/>
+    <eLiterals name=""ConnectTiles""/>
+    <eLiterals name=""RemoveConnection""/>
+    <eLiterals name=""MoveToTile""/>
+    <eLiterals name=""LoseTurn""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""TileO"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Game"" eType=""#//Game"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Designer"" eType=""#//Designer"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Player"" eType=""#//Player"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Die"" eType=""#//Die"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Game"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Board"" eType=""#//Board"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Deck"" eType=""#//Deck"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Player"" eType=""#//Player"" containment=""true"" lowerBound=""1"" upperBound=""4""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Designer"" eType=""#//Designer"" containment=""false"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Designer"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""BoardDesign"" eType=""#//BoardDesign"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Game"" eType=""#//Game"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""BoardDesign"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Tile"" eType=""#//Tile"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Connection"" eType=""#//Connection"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Player"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""color"" eType=""#//Color""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""PlayingPiece"" eType=""#//PlayingPiece"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Game"" eType=""#//Game"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Die"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""roll"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Board"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Tile"" eType=""#//Tile"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Connection"" eType=""#//Connection"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""PlayingPiece"" eType=""#//PlayingPiece"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Tile"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""type"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""hidden"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""visited"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""action"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""inactiveTurns"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""PlayingPiece"" eType=""#//PlayingPiece"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Connection"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Tile"" eType=""#//Tile"" containment=""false"" upperBound=""2""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""PlayingPiece"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""color"" eType=""#//Color""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Connection"" eType=""#//Connection"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Tile"" eType=""#//Tile"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Player"" eType=""#//Player"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Deck"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ActionCard"" eType=""#//ActionCard"" containment=""true"" upperBound=""32""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ActionCard"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""actionType"" eType=""#//ActionTypes""/>
+  </eClassifiers>
+</ecore:EPackage>","<?xml version=""1.0"" encoding=""UTF-8""?>
+<ecore:EPackage xmi:version=""2.0"" xmlns:xmi=""http://www.omg.org/XMI"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+    xmlns:ecore=""http://www.eclipse.org/emf/2002/Ecore"" name=""ClassDiagram"" nsURI=""http://www.example.com/ClassDiagram""
+    nsPrefix=""ClassDiagram"">
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""Mode"">
+    <eLiterals name=""design""/>
+    <eLiterals name=""game""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""Color"">
+    <eLiterals name=""red""/>
+    <eLiterals name=""blue""/>
+    <eLiterals name=""green""/>
+    <eLiterals name=""yellow""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""TileO"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Game"" eType=""#//Game"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Game"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""currentConnectionPieces"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""mode"" eType=""#//Mode""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""spaceConnectionPieces"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"" changeable=""false"" defaultValueLiteral=""32""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""numberOfActionCards"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"" changeable=""false"" defaultValueLiteral=""32""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Tile"" eType=""#//Tile"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Connection"" eType=""#//Connection"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Die"" eType=""#//Die"" containment=""true"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Deck"" eType=""#//Deck"" containment=""true"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Player"" eType=""#//Player"" containment=""true"" lowerBound=""0"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""WinTile"" eType=""#//WinTile"" containment=""false"" lowerBound=""0"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Connection"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Tile"" eType=""#//Tile"" containment=""false"" upperBound=""2""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Die"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Deck"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ActionCard"" eType=""#//ActionCard"" containment=""true"" lowerBound=""0"" upperBound=""32""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Tile"" abstract=""true"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""x"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""y"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Connection"" eType=""#//Connection"" containment=""false"" lowerBound=""0"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Player"" eType=""#//Player"" containment=""false"" lowerBound=""0"" upperBound=""4""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ActionCard"" abstract=""true"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""instructions"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Deck"" eType=""#//Deck"" containment=""false"" lowerBound=""0"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RollDieActionCard"">
+    <eSuperTypes href=""#//ActionCard""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ConnectTilesActionCard"">
+    <eSuperTypes href=""#//ActionCard""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RemoveConnectionActionCard"">
+    <eSuperTypes href=""#//ActionCard""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""TeleportActionCard"">
+    <eSuperTypes href=""#//ActionCard""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""LoseTurnActionCard"">
+    <eSuperTypes href=""#//ActionCard""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""WinTile"">
+    <eSuperTypes href=""#//Tile""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Game"" eType=""#//Game"" containment=""false"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ActionTile"">
+    <eSuperTypes href=""#//Tile""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""NormalTile"">
+    <eSuperTypes href=""#//Tile""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Player"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""number"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""turnsUntilActive"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""color"" eType=""#//Color""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Tile"" eType=""#//Tile"" containment=""false"" lowerBound=""0"" upperBound=""2""/>
+  </eClassifiers>
+</ecore:EPackage>"
 SHAS,"A smart home automation system (SHAS) offers various users to automatically manage smart home automation tasks. A smart home (located at a physical address) consists of several rooms, each of which may contain sensor devices and actuator (controller) devices of different types (e.g. temperature sensor, movement sensor, light controller, lock controller). Each sensor and actuator have a unique device identifier. Once a new sensor or actuator is activated or deactivated, SHAS will recognize the change and update its infrastructure map.
 
 When SHAS is operational, a sensor device periodically provides sensor readings (recording the measured value and the timestamp). Similarly, a predefined set of control commands (e.g. lockDoor, turnOnHeating) can be sent to the actuator devices with the timestamp and the status of the command (e.g. requested, completed, failed, etc.). All sensor readings and control commands for a smart home are recorded by SHAS in an activity log.
@@ -327,25 +292,12 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes: 
-BTMS()
-BusVehicle(string licencePlate, boolean inRepairShop)
-Route(int number)
-RouteAssignment(Date date)
-Driver(string name, string id, boolean onSickLeave)
+BTMS(contain (*) BusVehicle, contain (*) Route, contain (*) RouteAssignment, contain (*) Driver, contain (*) DriverSchedule)
+BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
+Route(int number, associate (*) RouteAssignment)
+RouteAssignment(Date date, associate (*) DriverSchedule)
+Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
 DriverSchedule(Shift shift)
-
-Relationships:
-(1) BTMS contain (*) BusVehicle 
-(1) BTMS contain (*) Route
-(1) BTMS contain (*) RouteAssignment
-(1) BTMS contain (*) Driver
-(1) BTMS contain (*) DriverSchedule
-
-(*) RouteAssignment associate (1) BusVehicle
-(*) RouteAssignment associate (1) Route
-
-(*) DriverSchedule associate (1) Driver
-(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -357,31 +309,14 @@ Enumerations:
 ItemCategory(Baby Clothing, Fridge, ...)
 
 Classes:
-H2S()
-Person(string name, string address, string phoneNumber, string emailAddress)
+H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole, )
 abstract UserRole()
-Volunteer() 
-Resident()
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
+Volunteer(contain (*) Date, inherit UserRole, associate (*) Route) 
+Resident(inherit UserRole, associate (*) Item)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
 abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date)
-
-Relationships:
-(1) H2S contain (*) Item
-(1) H2S contain (*) Route
-(1) H2S contain (*) UserRole
-(1) H2S contain (*) Person
-(1) Volunteer contain (*) Date
-
-Volunteer inherit UserRole
-Resident inherit UserRole
-SecondHandArticle inherit Item
-
-(1) Person associate (*) UserRole
-(1) Volunteer associate (*) Route
-(0..1) Route associate (*) Item
-(0..1) Route associate (*) SecondHandArticle
-(1) Resident associate (*) Item
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -403,46 +338,21 @@ AccessType(reservable, walkIn, dropOff)
 DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
 
 Classes:
-LabTracker()
-Person(string lastName, string firstName, string address, string phoneNumber)
+LabTracker(contain (*) Person, contain (*) PersonRole, contain (*) Requisition, contain (*) TestResult, contain (*) SpecificTest,
+contain (*) Appointment, contain (*) BusinessHour, contain (*) Lab, contain (*) Test, contain (*) TestType)
+Person(string lastName, string firstName, string address, string phoneNumber, associate (0..2) PersonRole)
 abstract PersonRole(idNumber)
-Patient(string dateOfBirth)
-Doctor(string signature)
-Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval)
-TestResult(boolean negative, string report)
+Patient(string dateOfBirth, inherit PersonRole, associate (*) Requisition)
+Doctor(string signature, inherit PersonRole, associate (*) Requisition)
+Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval, associate (*) Appointment, 
+associate (*) SpecificTest)
+TestResult(boolean negative, string report, associate (*) SpecificTest)
 SpecificTest(Data date)
-Appointment(string confirmation, Date date, string startTime, string endTime)
+Appointment(string confirmation, Date date, string startTime, string endTime, associate (*) Requisition)
 BusinessHour(DayOfWeek: dayOfWeek, string startTime, string endTime)
-Lab(string registrationNumber, string name, string address, boolean changeCancelFee)
-Test(string name, string duration)
-TestType(string name, string durationAdditive, AccessType access)
-
-Relationships:
-(1) LabTracker contain (*) Person
-(1) LabTracker contain (*) PersonRole
-(1) LabTracker contain (*) Requisition
-(1) LabTracker contain (*) TestResult
-(1) LabTracker contain (*) SpecificTest
-(1) LabTracker contain (*) Appointment
-(1) LabTracker contain (*) BusinessHour 
-(1) LabTracker contain (*) Lab
-(1) LabTracker contain (*) Test
-(1) LabTracker contain (*) TestType
-
-Patient inherit PersonRole
-Doctor inherit PersonRole
-
-(1) Person associate (0..2) PersonRole
-(1) Patient associate (*) Requisition
-(*) Requisition associate (*) Appointment
-(*) Appointment associate (1) Lab
-(1) Doctor associate (*) Requisition
-(1) Requisition associate (*) SpecificTest
-(0..1) TestResult associate (*) SpecificTest
-(1) Lab associate (7) Business
-(1) Test associate (*) SpecificTest
-(1) TestType associate (*) Test
-
+Lab(string registrationNumber, string name, string address, boolean changeCancelFee, associate (*) Appointment, associate (7) BusinessHour)
+Test(string name, string duration, associate (*) SpecificTest)
+TestType(string name, string durationAdditive, AccessType access, associate (*) Test)
 ### 
 Generate the lists of model classes and associations from the following given description.
 Description: A smart home automation system (SHAS) offers various users to automatically manage smart home automation tasks. A smart home (located at a physical address) consists of several rooms, each of which may contain sensor devices and actuator (controller) devices of different types (e.g. temperature sensor, movement sensor, light controller, lock controller). Each sensor and actuator have a unique device identifier. Once a new sensor or actuator is activated or deactivated, SHAS will recognize the change and update its infrastructure map.
@@ -454,37 +364,21 @@ For example, a sample rule could specify:
 when actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room
 
 Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.","Enumerations:
-DeviceType(temperatureSensor, movementSensor, lightController, lockController)
-RuleStatus(active, inactive)
+DeviceType(tempSensor, moveSensor, lightController, lockController)
 CommandStatus(requested, completed, failed)
-BooleanOperator(and, or, not)
+LogicOperator(AND, OR, NOT)
 
 Classes:
-SHAS()
-SmartHome(string address)
-Room(string name)
-Device(string id, DeviceType deviceType)
-SensorReading(int measuredValue, Date date)
-ControlCommand(string command, Date date, CommandStatus status)
-ActivityLog()
-AutomationRule(BooleanOperator operator, RuleStatus status, string action)
-
-Relationships:
-(1) SHAS contain (*) SmartHome
-(1) SHAS contain (*) ActivityLog
-(1) SmartHome contain (*) Room
-(1) SmartHome contain (*) AutomationRule
-(*) Room contain (*) Device
-(1) ActivityLog contain (*) SensorReading
-(1) ActivityLog contain (*) ControlCommand
-(1) AutomationRule contain (*) Action
-(1) AutomationRule contain (*) Precondition
-
-(0..1) Device associate (*) SensorReading
-(0..1) Device associate (*) ControlCommand
-(*) AutomationRule associate (1) Room
-(*) AutomationRule associate (*) AutomationRule
-","Enumerations:
+SHAS(contain (*) SmartHome, contain (*) ActivityLog)
+SmartHome(string address, contain (*) Room, contain (*) Rule)
+Room(string name, contain (*) SensorActuator, associate (*) Rule)
+SensorActuator(string uniqueID, DeviceType deviceType, associate (*) SensorReading, associate (*) ControlCommand)
+SensorReading(float measuredValue, Date timeStamp)
+ControlCommand(string name, Date timeStamp, CommandStatus status)
+ActivityLog(associate (*) SensorReading, associate (*) ControlCommand)
+Rule(string condition, string action, boolean active, Date lastTriggered, associate (*) Rule) 
+Owner(contain (*) Rule, inherit User)
+abstract User()","Enumerations:
 DeviceStatus(Activated, Deactivated)
 CommandType(lockDoor, turnOnHeating)
 CommandStatus(Requested, Completed, Failed)
@@ -492,192 +386,192 @@ RuleStatus(created, edited, activated, deactivated)
 BinaryOp(AND, OR)
 
 Classes:
-SHAS()
-SmartHome()
-User(string name)
+SHAS(contain (*) SmartHome, contain (*) User)
+SmartHome(contain (0..1) Address, contain (0..*) Room, contain (0..1) ActivityLog, associate (*) User)
+User(string name, associate (*) SmartHome)
 Address(string city, string postalCode, string street, string aptNumber)
-Room()
-abstract Device(DeviceStatus deviceStatus, int deviceID)
-SensorDevice()
-ActuatorDevice()
-ActivityLog()
+Room(contain (*) SensorDevice, contain (*) ActuatorDevice, associate (*) RelationalTerm)
+abstract Device(DeviceStatus deviceStatus, int deviceID, contain (0..1) BooleanExpression)
+SensorDevice(inherit Device, associate (*) SensorReading, associate (*) RelationalTerm)
+ActuatorDevice(inherit Device, associate (*) ControlCommand, associate (*) RelationalTerm)
+ActivityLog(contain (*) SensorReading, contain (*) ControlCommand)
 abstract RuntimeElement(time timestamp)
-SensorReading(double value)
-ControlCommand(CommandType commandType, CommandStatus commandStatus)
-AlertRule(RuleStatus ruleStatus)
-abstract BooleanExpression()
+SensorReading(double value, inherit RuntimeElement, associate (*) RelationalTerm)
+ControlCommand(CommandType commandType, CommandStatus commandStatus, associate (*) RelationalTerm)
+AlertRule(RuleStatus ruleStatus, contain (*) CommandSequence)
+abstract BooleanExpression(associate (0..1) NotExpression, associate (0..1) BinaryExpression)
 RelationalTerm()
 NotExpression()
 BinaryExpression(BinaryOp binaryOp)
-CommandSequence()
-
-Relationships: 
-(0..1) SHAS contain (*) SmartHome
-(1) SHAS contain (*) User
-
-(1) SmartHome contain (0..1) Address
-(1) SmartHome contain (0..*) Room
-(1) SmartHome contain (0..1) ActivityLog
-(*) SmartHome associate (*) User
-
-(1) Room contain (*) SensorDevice
-(1) Room contain (*) ActuatorDevice
-
-(1) ActivityLog contain (*) SensorReading
-(1) ActivityLog contain (*) ControlCommand
-
-(*) SensorReading associate (1) SensorDevice
-
-(*) ControlCommand associate (1) ActuatorDevice
-
-(1) D contain (0..1) BooleanExpression
-(1) AlertRule contain (*) CommandSequence
-
-(*) RelationalTerm associate (0..1) Room
-(*) RelationalTerm associate (0..1) SensorDevice
-(*) RelationalTerm associate (0..1) ActuatorDevice
-(*) RelationalTerm associate (0..1) SensorReading
-(*) RelationalTerm associate (0..1) ControlCommand
-
-(0..1) NotExpression associate (1) BooleanExpression
-
-(0..1) BinaryExpression associate (1) BooleanExpression
-(0..1) BinaryExpression associate (1) BooleanExpression
-
-(*) CommandSequence associate (0..1) CommandSequence
-(1) CommandSequence contain (0..1) ControlCommand
-
-SensorDevice inherit Device
-ActuatorDevice inherit Device
-SensorReading inherit RuntimeElement","<?xml version=""1.0"" encoding=""UTF-8""?>
-<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
-    <UML:Model name=""ClassDiagram"" visibility=""public"">
-        <UML:Enumeration name=""DeviceType"">
-            <UML:Literal name=""temperatureSensor""/>
-            <UML:Literal name=""movementSensor""/>
-            <UML:Literal name=""lightController""/>
-            <UML:Literal name=""lockController""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""RuleStatus"">
-            <UML:Literal name=""active""/>
-            <UML:Literal name=""inactive""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""CommandStatus"">
-            <UML:Literal name=""requested""/>
-            <UML:Literal name=""completed""/>
-            <UML:Literal name=""failed""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""BooleanOperator"">
-            <UML:Literal name=""and""/>
-            <UML:Literal name=""or""/>
-            <UML:Literal name=""not""/>
-        </UML:Enumeration>
-        <UML:Class name=""SHAS"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""SmartHome"" visibility=""public"">
-            <UML:Attribute name=""address"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Room"" visibility=""public"">
-            <UML:Attribute name=""name"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Device"" visibility=""public"">
-            <UML:Attribute name=""id"" type=""string""/>
-            <UML:Attribute name=""deviceType"" type=""DeviceType""/>
-        </UML:Class>
-        <UML:Class name=""SensorReading"" visibility=""public"">
-            <UML:Attribute name=""measuredValue"" type=""int""/>
-            <UML:Attribute name=""date"" type=""Date""/>
-        </UML:Class>
-        <UML:Class name=""ControlCommand"" visibility=""public"">
-            <UML:Attribute name=""command"" type=""string""/>
-            <UML:Attribute name=""date"" type=""Date""/>
-            <UML:Attribute name=""status"" type=""CommandStatus""/>
-        </UML:Class>
-        <UML:Class name=""ActivityLog"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""AutomationRule"" visibility=""public"">
-            <UML:Attribute name=""operator"" type=""BooleanOperator""/>
-            <UML:Attribute name=""status"" type=""RuleStatus""/>
-            <UML:Attribute name=""action"" type=""string""/>
-        </UML:Class>
-    </UML:Model>
-</XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
-<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
-    <UML:Model name=""ClassDiagram"" visibility=""public"">
-        <UML:Enumeration name=""DeviceStatus"">
-            <UML:Literal name=""Activated""/>
-            <UML:Literal name=""Deactivated""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""CommandType"">
-            <UML:Literal name=""lockDoor""/>
-            <UML:Literal name=""turnOnHeating""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""CommandStatus"">
-            <UML:Literal name=""Requested""/>
-            <UML:Literal name=""Completed""/>
-            <UML:Literal name=""Failed""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""RuleStatus"">
-            <UML:Literal name=""created""/>
-            <UML:Literal name=""edited""/>
-            <UML:Literal name=""activated""/>
-            <UML:Literal name=""deactivated""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""BinaryOp"">
-            <UML:Literal name=""AND""/>
-            <UML:Literal name=""OR""/>
-        </UML:Enumeration>
-        <UML:Class name=""SHAS"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""SmartHome"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""User"" visibility=""public"">
-            <UML:Attribute name=""name"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Address"" visibility=""public"">
-            <UML:Attribute name=""city"" type=""string""/>
-            <UML:Attribute name=""postalCode"" type=""string""/>
-            <UML:Attribute name=""street"" type=""string""/>
-            <UML:Attribute name=""aptNumber"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Room"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Device"" visibility=""abstract"">
-            <UML:Attribute name=""deviceStatus"" type=""DeviceStatus""/>
-            <UML:Attribute name=""deviceID"" type=""int""/>
-        </UML:Class>
-        <UML:Class name=""SensorDevice"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""ActuatorDevice"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""ActivityLog"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""RuntimeElement"" visibility=""abstract"">
-            <UML:Attribute name=""timestamp"" type=""time""/>
-        </UML:Class>
-        <UML:Class name=""SensorReading"" visibility=""public"">
-            <UML:Attribute name=""value"" type=""double""/>
-        </UML:Class>
-        <UML:Class name=""ControlCommand"" visibility=""public"">
-            <UML:Attribute name=""commandType"" type=""CommandType""/>
-            <UML:Attribute name=""commandStatus"" type=""CommandStatus""/>
-        </UML:Class>
-        <UML:Class name=""AlertRule"" visibility=""public"">
-            <UML:Attribute name=""ruleStatus"" type=""RuleStatus""/>
-        </UML:Class>
-        <UML:Class name=""BooleanExpression"" visibility=""abstract"">
-        </UML:Class>
-        <UML:Class name=""RelationalTerm"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""NotExpression"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""BinaryExpression"" visibility=""public"">
-            <UML:Attribute name=""binaryOp"" type=""BinaryOp""/>
-        </UML:Class>
-        <UML:Class name=""CommandSequence"" visibility=""public"">
-        </UML:Class>
-    </UML:Model>
-</XMI>"
+CommandSequence(contain (0..1) ControlCommand, associate (*) CommandSequence)","<?xml version=""1.0"" encoding=""UTF-8""?>
+<ecore:EPackage xmi:version=""2.0"" xmlns:xmi=""http://www.omg.org/XMI"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+    xmlns:ecore=""http://www.eclipse.org/emf/2002/Ecore"" name=""ClassDiagram"" nsURI=""http://www.example.com/ClassDiagram""
+    nsPrefix=""ClassDiagram"">
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""DeviceType"">
+    <eLiterals name=""tempSensor""/>
+    <eLiterals name=""moveSensor""/>
+    <eLiterals name=""lightController""/>
+    <eLiterals name=""lockController""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""CommandStatus"">
+    <eLiterals name=""requested""/>
+    <eLiterals name=""completed""/>
+    <eLiterals name=""failed""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""LogicOperator"">
+    <eLiterals name=""AND""/>
+    <eLiterals name=""OR""/>
+    <eLiterals name=""NOT""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SHAS"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SmartHome"" eType=""#//SmartHome"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ActivityLog"" eType=""#//ActivityLog"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SmartHome"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""address"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Room"" eType=""#//Room"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Rule"" eType=""#//Rule"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Room"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SensorActuator"" eType=""#//SensorActuator"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Rule"" eType=""#//Rule"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SensorActuator"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""uniqueID"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""deviceType"" eType=""#//DeviceType""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SensorReading"" eType=""#//SensorReading"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ControlCommand"" eType=""#//ControlCommand"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SensorReading"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""measuredValue"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""timeStamp"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ControlCommand"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""timeStamp"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""status"" eType=""#//CommandStatus""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ActivityLog"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SensorReading"" eType=""#//SensorReading"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ControlCommand"" eType=""#//ControlCommand"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Rule"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""condition"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""action"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""active"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""lastTriggered"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Rule"" eType=""#//Rule"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Owner"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Rule"" eType=""#//Rule"" containment=""true"" upperBound=""-1""/>
+    <eSuperTypes href=""#//User""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""User"" abstract=""true"">
+  </eClassifiers>
+</ecore:EPackage>","<?xml version=""1.0"" encoding=""UTF-8""?>
+<ecore:EPackage xmi:version=""2.0"" xmlns:xmi=""http://www.omg.org/XMI"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+    xmlns:ecore=""http://www.eclipse.org/emf/2002/Ecore"" name=""ClassDiagram"" nsURI=""http://www.example.com/ClassDiagram""
+    nsPrefix=""ClassDiagram"">
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""DeviceStatus"">
+    <eLiterals name=""Activated""/>
+    <eLiterals name=""Deactivated""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""CommandType"">
+    <eLiterals name=""lockDoor""/>
+    <eLiterals name=""turnOnHeating""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""CommandStatus"">
+    <eLiterals name=""Requested""/>
+    <eLiterals name=""Completed""/>
+    <eLiterals name=""Failed""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""RuleStatus"">
+    <eLiterals name=""created""/>
+    <eLiterals name=""edited""/>
+    <eLiterals name=""activated""/>
+    <eLiterals name=""deactivated""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""BinaryOp"">
+    <eLiterals name=""AND""/>
+    <eLiterals name=""OR""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SHAS"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SmartHome"" eType=""#//SmartHome"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""User"" eType=""#//User"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SmartHome"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Address"" eType=""#//Address"" containment=""true"" lowerBound=""0"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Room"" eType=""#//Room"" containment=""true"" lowerBound=""0"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ActivityLog"" eType=""#//ActivityLog"" containment=""true"" lowerBound=""0"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""User"" eType=""#//User"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""User"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SmartHome"" eType=""#//SmartHome"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Address"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""city"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""postalCode"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""street"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""aptNumber"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Room"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SensorDevice"" eType=""#//SensorDevice"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ActuatorDevice"" eType=""#//ActuatorDevice"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RelationalTerm"" eType=""#//RelationalTerm"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Device"" abstract=""true"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""deviceStatus"" eType=""#//DeviceStatus""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""deviceID"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""BooleanExpression"" eType=""#//BooleanExpression"" containment=""true"" lowerBound=""0"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SensorDevice"">
+    <eSuperTypes href=""#//Device""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SensorReading"" eType=""#//SensorReading"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RelationalTerm"" eType=""#//RelationalTerm"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ActuatorDevice"">
+    <eSuperTypes href=""#//Device""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ControlCommand"" eType=""#//ControlCommand"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RelationalTerm"" eType=""#//RelationalTerm"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ActivityLog"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SensorReading"" eType=""#//SensorReading"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ControlCommand"" eType=""#//ControlCommand"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RuntimeElement"" abstract=""true"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""timestamp"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ETime""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SensorReading"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""value"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RelationalTerm"" eType=""#//RelationalTerm"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""ControlCommand"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""commandType"" eType=""#//CommandType""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""commandStatus"" eType=""#//CommandStatus""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RelationalTerm"" eType=""#//RelationalTerm"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""AlertRule"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""ruleStatus"" eType=""#//RuleStatus""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CommandSequence"" eType=""#//CommandSequence"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""BooleanExpression"" abstract=""true"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""NotExpression"" eType=""#//NotExpression"" containment=""false"" lowerBound=""0"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""BinaryExpression"" eType=""#//BinaryExpression"" containment=""false"" lowerBound=""0"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RelationalTerm"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""NotExpression"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""BinaryExpression"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""binaryOp"" eType=""#//BinaryOp""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""CommandSequence"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""ControlCommand"" eType=""#//ControlCommand"" containment=""true"" lowerBound=""0"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CommandSequence"" eType=""#//CommandSequence"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+</ecore:EPackage>"
 HBMS,"Hotel Booking Management System (HBMS)
 
 Business travellers use HMBS for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
@@ -698,25 +592,12 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes: 
-BTMS()
-BusVehicle(string licencePlate, boolean inRepairShop)
-Route(int number)
-RouteAssignment(Date date)
-Driver(string name, string id, boolean onSickLeave)
+BTMS(contain (*) BusVehicle, contain (*) Route, contain (*) RouteAssignment, contain (*) Driver, contain (*) DriverSchedule)
+BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
+Route(int number, associate (*) RouteAssignment)
+RouteAssignment(Date date, associate (*) DriverSchedule)
+Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
 DriverSchedule(Shift shift)
-
-Relationships:
-(1) BTMS contain (*) BusVehicle 
-(1) BTMS contain (*) Route
-(1) BTMS contain (*) RouteAssignment
-(1) BTMS contain (*) Driver
-(1) BTMS contain (*) DriverSchedule
-
-(*) RouteAssignment associate (1) BusVehicle
-(*) RouteAssignment associate (1) Route
-
-(*) DriverSchedule associate (1) Driver
-(*) DriverSchedule associate (1) RouteAssignment
 ###
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
@@ -728,31 +609,14 @@ Enumerations:
 ItemCategory(Baby Clothing, Fridge, ...)
 
 Classes:
-H2S()
-Person(string name, string address, string phoneNumber, string emailAddress)
+H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole, )
 abstract UserRole()
-Volunteer() 
-Resident()
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category)
+Volunteer(contain (*) Date, inherit UserRole, associate (*) Route) 
+Resident(inherit UserRole, associate (*) Item)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
 abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date)
-
-Relationships:
-(1) H2S contain (*) Item
-(1) H2S contain (*) Route
-(1) H2S contain (*) UserRole
-(1) H2S contain (*) Person
-(1) Volunteer contain (*) Date
-
-Volunteer inherit UserRole
-Resident inherit UserRole
-SecondHandArticle inherit Item
-
-(1) Person associate (*) UserRole
-(1) Volunteer associate (*) Route
-(0..1) Route associate (*) Item
-(0..1) Route associate (*) SecondHandArticle
-(1) Resident associate (*) Item
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
 ###
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
@@ -774,46 +638,21 @@ AccessType(reservable, walkIn, dropOff)
 DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
 
 Classes:
-LabTracker()
-Person(string lastName, string firstName, string address, string phoneNumber)
+LabTracker(contain (*) Person, contain (*) PersonRole, contain (*) Requisition, contain (*) TestResult, contain (*) SpecificTest,
+contain (*) Appointment, contain (*) BusinessHour, contain (*) Lab, contain (*) Test, contain (*) TestType)
+Person(string lastName, string firstName, string address, string phoneNumber, associate (0..2) PersonRole)
 abstract PersonRole(idNumber)
-Patient(string dateOfBirth)
-Doctor(string signature)
-Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval)
-TestResult(boolean negative, string report)
+Patient(string dateOfBirth, inherit PersonRole, associate (*) Requisition)
+Doctor(string signature, inherit PersonRole, associate (*) Requisition)
+Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval, associate (*) Appointment, 
+associate (*) SpecificTest)
+TestResult(boolean negative, string report, associate (*) SpecificTest)
 SpecificTest(Data date)
-Appointment(string confirmation, Date date, string startTime, string endTime)
+Appointment(string confirmation, Date date, string startTime, string endTime, associate (*) Requisition)
 BusinessHour(DayOfWeek: dayOfWeek, string startTime, string endTime)
-Lab(string registrationNumber, string name, string address, boolean changeCancelFee)
-Test(string name, string duration)
-TestType(string name, string durationAdditive, AccessType access)
-
-Relationships:
-(1) LabTracker contain (*) Person
-(1) LabTracker contain (*) PersonRole
-(1) LabTracker contain (*) Requisition
-(1) LabTracker contain (*) TestResult
-(1) LabTracker contain (*) SpecificTest
-(1) LabTracker contain (*) Appointment
-(1) LabTracker contain (*) BusinessHour 
-(1) LabTracker contain (*) Lab
-(1) LabTracker contain (*) Test
-(1) LabTracker contain (*) TestType
-
-Patient inherit PersonRole
-Doctor inherit PersonRole
-
-(1) Person associate (0..2) PersonRole
-(1) Patient associate (*) Requisition
-(*) Requisition associate (*) Appointment
-(*) Appointment associate (1) Lab
-(1) Doctor associate (*) Requisition
-(1) Requisition associate (*) SpecificTest
-(0..1) TestResult associate (*) SpecificTest
-(1) Lab associate (7) Business
-(1) Test associate (*) SpecificTest
-(1) TestType associate (*) Test
-
+Lab(string registrationNumber, string name, string address, boolean changeCancelFee, associate (*) Appointment, associate (7) BusinessHour)
+Test(string name, string duration, associate (*) SpecificTest)
+TestType(string name, string durationAdditive, AccessType access, associate (*) Test)
 ### 
 Generate the lists of model classes and associations from the following given description.
 Description: Hotel Booking Management System (HBMS)
@@ -826,201 +665,217 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations: 
-RoomType(single, double, twin)
-PaymentType(prePaid, paidAtHotel)
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
+TravelPreference(BreakfastIncluded, FreeWifi, FrontDesk247, etc.)
+RoomType(Single, Double, Twin)
+BookingType(PrePaid, PayAtHotel)
 
-Classes: 
-HBMS()
-Traveler(string name, string billingInfo, string preferences, double reliabilityRating)
-SearchCriteria(string city, Date arrivalDate, Date departureDate, int roomsNeeded, RoomType roomType, double minHotelRating, double budget, string preferences)
-Booking(double price, string area, double hotelRating, string preferences, string bookingID, PaymentType payment, Date confirmationDeadline, Date cancellationDeadline)
-Hotel(string name, string address, string city, double rating, string roomInfo)
-Offer(double price)
-
-Relationships: 
-(1) HBMS contain (*) Traveler
-(1) HBMS contain (*) SearchCriteria
-(1) HBMS contain (*) Booking
-(1) HBMS contain (*) Hotel
-(1) HBMS contain (*) Offer
-
-(*) Traveler associate (1) SearchCriteria
-(1) SearchCriteria associate (*) Booking
-(*) Traveler associate (*) Booking
-(*) Booking associate (1) Hotel
-(*) Booking associate (1) Offer
-(1) Offer associate (*) Hotel
-(1) Hotel associate (*) HBMS","Enumerations:
+Classes:
+HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking, contain (*) PreliminaryBooking, contain (*) 
+SpecialOffer, contain (*) RegularBooking)
+Traveller(string name, string billingInfo, TravelPreference travelPreferences, associate (*) Booking)
+Hotel(string city, string address, string name, associate (*) Booking, associate (*) Room, contain (*) 
+HotelRating)
+Room(RoomType roomType, associate (*) Booking)
+Booking(string arrivalDate, string departureDate, int roomsNeeded, int minHotelRating, float tentativeBudget, 
+string cancellationDeadline, associate (*) Traveller, associate (*) Hotel, associate (*) Room, inherit 
+RegularBooking | PreliminaryBooking)
+RegularBooking(inherit Booking)
+PreliminaryBooking(inherit Booking, contain (*) SpecialOffer)
+HotelRating(int stars)
+SpecialOffer(string offerDetails, float price, string cityArea, int hotelRating, string keyPreferences, string 
+uniqueBookingId, associate (*) PreliminaryBooking)","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
 PaymentType(PREPAID, PAID_AT_HOTEL)
 
 Classes:
-HotelChain()
-HotelBookingManager()
-Traveller(string name, int reliabilityRating)
+HotelChain(contain (*) Hotel, )
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch, associate (*) Booking)
 BillingInformation(string companyName, string address)
 TravelPreference(string preference, string value)
-Hotel(string city, string country, string area, RoomAvailability availability)
+Hotel(string city, string country, string area, RoomAvailability availability, contain (*) Offer, contain (*) RoomAvailability,
+associate (*) Booking)
 abstract Offer()
-SpecialOffer()
-RegularOffer()
-TravelSearch()
-SearchInfo()
-RoomAvailability()
+SpecialOffer(inherit Offer, associate (1) BookingInfo)
+RegularOffer(inherit Offer, associate (*) TravelSearch)
+TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference, associate (*) RegularOffer)
+SearchInfo(inherit TripInfo)
+RoomAvailability(inherit TripInfo)
 abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo()
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount)
-
-Relationships: 
-(1) HotelChain contain (*) Hotel
-(1) HotelBookingManager contain (*) HotelChain
-(1) HotelBookingManager contain (*) Traveller
-(1) Hotel contain (*) Offer
-(1) Hotel contain (*) RoomAvailability
-(1) Traveller contain (*) TravelSearch
-(1) Traveller contain (*) TravelPreference
-(1) Traveller contain (1) BillingInformation
-(1) TravelSearch contain (1) SearchInfo
-(1) TravelSearch contain (*) TravelPreference
-
-(1) Booking contain (1) BookingInfo
-
-SpecialOffer inherit Offer
-RegularOffer inherit Offer
-RoomAvailability inherit TripInfo
-SearchInfo inherit TripInfo
-BookingInfo inherit TripInfo
-
-(*) RegularOffer associate (*) TravelSearch
-
-(1) Hotel associate (*) Booking
-(1) Booking associate (0..1) Offer
-(*) Booking associate (1) Traveller
-(*) SpecialOffer associate (1) BookingInfo
-(1) BookingInfo associate (0..5) SpecialOffer","<?xml version=""1.0"" encoding=""UTF-8""?>
-<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
-    <UML:Model name=""ClassDiagram"" visibility=""public"">
-        <UML:Enumeration name=""RoomType"">
-            <UML:Literal name=""single""/>
-            <UML:Literal name=""double""/>
-            <UML:Literal name=""twin""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""PaymentType"">
-            <UML:Literal name=""prePaid""/>
-            <UML:Literal name=""paidAtHotel""/>
-        </UML:Enumeration>
-        <UML:Class name=""HBMS"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Traveler"" visibility=""public"">
-            <UML:Attribute name=""name"" type=""string""/>
-            <UML:Attribute name=""billingInfo"" type=""string""/>
-            <UML:Attribute name=""preferences"" type=""string""/>
-            <UML:Attribute name=""reliabilityRating"" type=""double""/>
-        </UML:Class>
-        <UML:Class name=""SearchCriteria"" visibility=""public"">
-            <UML:Attribute name=""city"" type=""string""/>
-            <UML:Attribute name=""arrivalDate"" type=""Date""/>
-            <UML:Attribute name=""departureDate"" type=""Date""/>
-            <UML:Attribute name=""roomsNeeded"" type=""int""/>
-            <UML:Attribute name=""roomType"" type=""RoomType""/>
-            <UML:Attribute name=""minHotelRating"" type=""double""/>
-            <UML:Attribute name=""budget"" type=""double""/>
-            <UML:Attribute name=""preferences"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Booking"" visibility=""public"">
-            <UML:Attribute name=""price"" type=""double""/>
-            <UML:Attribute name=""area"" type=""string""/>
-            <UML:Attribute name=""hotelRating"" type=""double""/>
-            <UML:Attribute name=""preferences"" type=""string""/>
-            <UML:Attribute name=""bookingID"" type=""string""/>
-            <UML:Attribute name=""payment"" type=""PaymentType""/>
-            <UML:Attribute name=""confirmationDeadline"" type=""Date""/>
-            <UML:Attribute name=""cancellationDeadline"" type=""Date""/>
-        </UML:Class>
-        <UML:Class name=""Hotel"" visibility=""public"">
-            <UML:Attribute name=""name"" type=""string""/>
-            <UML:Attribute name=""address"" type=""string""/>
-            <UML:Attribute name=""city"" type=""string""/>
-            <UML:Attribute name=""rating"" type=""double""/>
-            <UML:Attribute name=""roomInfo"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Offer"" visibility=""public"">
-            <UML:Attribute name=""price"" type=""double""/>
-        </UML:Class>
-    </UML:Model>
-</XMI>","<?xml version=""1.0"" encoding=""UTF-8""?>
-<XMI xmi.version=""2.1"" xmlns:UML=""http://www.omg.org/spec/UML/20090901"">
-    <UML:Model name=""ClassDiagram"" visibility=""public"">
-        <UML:Enumeration name=""RoomType"">
-            <UML:Literal name=""SINGLE""/>
-            <UML:Literal name=""DOUBLE""/>
-            <UML:Literal name=""TWIN""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""BookingStatus"">
-            <UML:Literal name=""FINALIZED""/>
-            <UML:Literal name=""CONFIRMED""/>
-            <UML:Literal name=""CANCELLED_BY_HBMS""/>
-            <UML:Literal name=""PRELIMINARY""/>
-            <UML:Literal name=""CANCELLED_BY_TRAVELLER""/>
-            <UML:Literal name=""CANCELLED_BY_HOTEL""/>
-        </UML:Enumeration>
-        <UML:Enumeration name=""PaymentType"">
-            <UML:Literal name=""PREPAID""/>
-            <UML:Literal name=""PAID_AT_HOTEL""/>
-        </UML:Enumeration>
-        <UML:Class name=""HotelChain"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""HotelBookingManager"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Traveller"" visibility=""public"">
-            <UML:Attribute name=""name"" type=""string""/>
-            <UML:Attribute name=""reliabilityRating"" type=""int""/>
-        </UML:Class>
-        <UML:Class name=""BillingInformation"" visibility=""public"">
-            <UML:Attribute name=""companyName"" type=""string""/>
-            <UML:Attribute name=""address"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""TravelPreference"" visibility=""public"">
-            <UML:Attribute name=""preference"" type=""string""/>
-            <UML:Attribute name=""value"" type=""string""/>
-        </UML:Class>
-        <UML:Class name=""Hotel"" visibility=""public"">
-            <UML:Attribute name=""city"" type=""string""/>
-            <UML:Attribute name=""country"" type=""string""/>
-            <UML:Attribute name=""area"" type=""string""/>
-            <UML:Attribute name=""availability"" type=""RoomAvailability""/>
-        </UML:Class>
-        <UML:Class name=""Offer"" visibility=""abstract"">
-        </UML:Class>
-        <UML:Class name=""SpecialOffer"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""RegularOffer"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""TravelSearch"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""SearchInfo"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""RoomAvailability"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""TripInfo"" visibility=""abstract"">
-            <UML:Attribute name=""numberOfRooms"" type=""int""/>
-            <UML:Attribute name=""roomType"" type=""RoomType""/>
-            <UML:Attribute name=""arrivalDate"" type=""date""/>
-            <UML:Attribute name=""departureDate"" type=""date""/>
-            <UML:Attribute name=""budgetPerNight"" type=""float""/>
-        </UML:Class>
-        <UML:Class name=""BookingInfo"" visibility=""public"">
-        </UML:Class>
-        <UML:Class name=""Booking"" visibility=""public"">
-            <UML:Attribute name=""bookingId"" type=""int""/>
-            <UML:Attribute name=""cancellationDeadline"" type=""date""/>
-            <UML:Attribute name=""creditCardNumber"" type=""string""/>
-            <UML:Attribute name=""bookingStatus"" type=""BookingStatus""/>
-            <UML:Attribute name=""paymentType"" type=""PaymentType""/>
-            <UML:Attribute name=""confirmationDate"" type=""date""/>
-            <UML:Attribute name=""paidAmount"" type=""float""/>
-        </UML:Class>
-    </UML:Model>
-</XMI>"
+BookingInfo(inherit TripInfo, associate (0..5) SpecialOffer)
+Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, 
+date confirmationDate, float paidAmount, contain (1) BookingInfo, associate (0..1) Offer)","<?xml version=""1.0"" encoding=""UTF-8""?>
+<ecore:EPackage xmi:version=""2.0"" xmlns:xmi=""http://www.omg.org/XMI"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+    xmlns:ecore=""http://www.eclipse.org/emf/2002/Ecore"" name=""ClassDiagram"" nsURI=""http://www.example.com/ClassDiagram""
+    nsPrefix=""ClassDiagram"">
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""TravelPreference"">
+    <eLiterals name=""BreakfastIncluded""/>
+    <eLiterals name=""FreeWifi""/>
+    <eLiterals name=""FrontDesk247""/>
+    <eLiterals name=""etc""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""RoomType"">
+    <eLiterals name=""Single""/>
+    <eLiterals name=""Double""/>
+    <eLiterals name=""Twin""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""BookingType"">
+    <eLiterals name=""PrePaid""/>
+    <eLiterals name=""PayAtHotel""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""HBMS"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Traveller"" eType=""#//Traveller"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""PreliminaryBooking"" eType=""#//PreliminaryBooking"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SpecialOffer"" eType=""#//SpecialOffer"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RegularBooking"" eType=""#//RegularBooking"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Traveller"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""billingInfo"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""travelPreferences"" eType=""#//TravelPreference""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Hotel"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""city"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""address"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Room"" eType=""#//Room"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""HotelRating"" eType=""#//HotelRating"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Room"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""roomType"" eType=""#//RoomType""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Booking"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""arrivalDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""departureDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""roomsNeeded"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""minHotelRating"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""tentativeBudget"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""cancellationDeadline"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Traveller"" eType=""#//Traveller"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Room"" eType=""#//Room"" containment=""false"" upperBound=""-1""/>
+    <eSuperTypes href=""#//RegularBooking""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RegularBooking"">
+    <eSuperTypes href=""#//Booking""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""PreliminaryBooking"">
+    <eSuperTypes href=""#//Booking""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SpecialOffer"" eType=""#//SpecialOffer"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""HotelRating"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""stars"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SpecialOffer"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""offerDetails"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""price"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""cityArea"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""hotelRating"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""keyPreferences"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""uniqueBookingId"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""PreliminaryBooking"" eType=""#//PreliminaryBooking"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+</ecore:EPackage>","<?xml version=""1.0"" encoding=""UTF-8""?>
+<ecore:EPackage xmi:version=""2.0"" xmlns:xmi=""http://www.omg.org/XMI"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+    xmlns:ecore=""http://www.eclipse.org/emf/2002/Ecore"" name=""ClassDiagram"" nsURI=""http://www.example.com/ClassDiagram""
+    nsPrefix=""ClassDiagram"">
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""RoomType"">
+    <eLiterals name=""SINGLE""/>
+    <eLiterals name=""DOUBLE""/>
+    <eLiterals name=""TWIN""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""BookingStatus"">
+    <eLiterals name=""FINALIZED""/>
+    <eLiterals name=""CONFIRMED""/>
+    <eLiterals name=""CANCELLED_BY_HBMS""/>
+    <eLiterals name=""PRELIMINARY""/>
+    <eLiterals name=""CANCELLED_BY_TRAVELLER""/>
+    <eLiterals name=""CANCELLED_BY_HOTEL""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""PaymentType"">
+    <eLiterals name=""PREPAID""/>
+    <eLiterals name=""PAID_AT_HOTEL""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""HotelChain"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""HotelBookingManager"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""HotelChain"" eType=""#//HotelChain"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Traveller"" eType=""#//Traveller"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""TravelPreference"" eType=""#//TravelPreference"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""BillingInformation"" eType=""#//BillingInformation"" containment=""true"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Traveller"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""reliabilityRating"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""TravelSearch"" eType=""#//TravelSearch"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""BillingInformation"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""companyName"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""address"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""TravelPreference"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""preference"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""value"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Hotel"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""city"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""country"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""area"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""availability"" eType=""#//RoomAvailability""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Offer"" eType=""#//Offer"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RoomAvailability"" eType=""#//RoomAvailability"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Offer"" abstract=""true"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SpecialOffer"">
+    <eSuperTypes href=""#//Offer""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""BookingInfo"" eType=""#//BookingInfo"" containment=""false"" upperBound=""1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RegularOffer"">
+    <eSuperTypes href=""#//Offer""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""TravelSearch"" eType=""#//TravelSearch"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""TravelSearch"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SearchInfo"" eType=""#//SearchInfo"" containment=""true"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""TravelPreference"" eType=""#//TravelPreference"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RegularOffer"" eType=""#//RegularOffer"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SearchInfo"">
+    <eSuperTypes href=""#//TripInfo""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RoomAvailability"">
+    <eSuperTypes href=""#//TripInfo""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""TripInfo"" abstract=""true"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""numberOfRooms"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""roomType"" eType=""#//RoomType""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""arrivalDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""departureDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""budgetPerNight"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""BookingInfo"">
+    <eSuperTypes href=""#//TripInfo""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SpecialOffer"" eType=""#//SpecialOffer"" containment=""false"" lowerBound=""0"" upperBound=""5""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Booking"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""bookingId"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""cancellationDeadline"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""creditCardNumber"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""bookingStatus"" eType=""#//BookingStatus""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""paymentType"" eType=""#//PaymentType""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""confirmationDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""paidAmount"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""BookingInfo"" eType=""#//BookingInfo"" containment=""true"" upperBound=""1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Offer"" eType=""#//Offer"" containment=""false"" lowerBound=""0"" upperBound=""1""/>
+  </eClassifiers>
+</ecore:EPackage>"

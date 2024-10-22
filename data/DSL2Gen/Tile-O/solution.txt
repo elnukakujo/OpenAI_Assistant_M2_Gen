@@ -3,44 +3,20 @@ Mode(design, game)
 Color(red, blue, green, yellow)
 
 Classes:
-TileO()
-Game(int currentConnectionPieces, Mode mode, const int spaceConnectionPieces=32, const int numberOfActionCards=32)
-Connection()
-WinTile()
+TileO(contain (*) Game)
+Game(int currentConnectionPieces, Mode mode, const int spaceConnectionPieces=32, const int numberOfActionCards=32, contain (*) Tile, contain (*) Connection, 
+contain (1) Die, contain (1) Deck, contain (0..1) Player, associate (0..1) WinTile)
+Connection(associate (2) Tile)
 Die()
-Deck()
-abstract Tile(int x, int y)
-abstract ActionCard(string instructions)
-RollDieActionCard()
-ConnectTilesActionCard()
-RemoveConnectionActionCard()
-TeleportActionCard()
-LoseTurnActionCard()
-WinTile()
-ActionTile()
-NormalTile()
-Player(int number, int turnsUntilActive, Color color)
-
-Relationships: 
-(1) TileO contain (*) Game
-(1) Game contain (*) Tile
-(1) Game contain (*) Connection
-(1) Game contain (1) Die
-(1) Game contain (1) Deck
-(1) Game contain (0..1) Player
-(1) Deck contain (0..32) ActionCard
-
-WinTile inherit Tile
-ActionTile inherit Tile
-NormalTile inherit Tile
-RollDieActionCard inherit ActionCard
-ConnectTilesActionCard inherit ActionCard  
-RemoveConnectionActionCard inherit ActionCard
-TeleportActionCard inherit ActionCard
-LoseTurnActionCard inherit ActionCard
-
-(1) Game associate (0..1) WinTile
-(0..4) Connection associate (2) Tile
-(1) Player associate (0..1) Tile
-(0..4) Player associate (0..1) Tile
-(1) Deck associate (0..1) ActionCard
+Deck(contain (0..32) ActionCard)
+abstract Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
+abstract ActionCard(string instructions, associate (0..1) Deck)
+RollDieActionCard(inherit (1) ActionCard)
+ConnectTilesActionCard(inherit (1) ActionCard)
+RemoveConnectionActionCard(inherit (1) ActionCard)
+TeleportActionCard(inherit (1) ActionCard)
+LoseTurnActionCard(inherit (1) ActionCard)
+WinTile(inherit (1) Tile, associate (1) Game)
+ActionTile(inherit (1) Tile)
+NormalTile(inherit (1) Tile)
+Player(int number, int turnsUntilActive, Color color, associate (0..2) Tile)

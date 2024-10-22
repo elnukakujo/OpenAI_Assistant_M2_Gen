@@ -30,7 +30,6 @@ def generate_xmi(parsed_data):
 
         # Attributes as EStructuralFeatures
         for attr in attributes:
-            print(attr)
             if attr[0] in ['composition', 'inheritance', 'association']:
                 if attr[0]=='composition':
                     rel = attr[1]
@@ -42,7 +41,6 @@ def generate_xmi(parsed_data):
                         higher = higher if higher !='*)' else '-1)'
                         xmi += f'eType="#//{containing}" containment="true" lowerBound="{lower[1:]}" upperBound="{higher[:-1]}"/>\n'
                     else:
-                        print(mul[1:-1])
                         xmi += f'eType="#//{containing}" containment="true" upperBound="{mul[1:-1]}"/>\n'
                 if attr[0]=='inheritance':
                     xmi += f'    <eSuperTypes href="#//{attr[1]}"/>\n'
@@ -66,10 +64,16 @@ def generate_xmi(parsed_data):
                 
                 # Correct handling of attribute naming and default values
                 xmi += f'    <eStructuralFeatures xsi:type="ecore:EAttribute" name="{attr_name}" '
-                if attr_type == "string" or attr_type== "int" or attr_type== "boolean":
+                
+                # Checks ChatGPT potential incorrect types
+                attr_type = 'boolean' if attr_type.lower()=='bool' else attr_type
+                attr_type = 'string' if attr_type.lower()=='identifier' or attr_type.lower()=='id' else attr_type
+                
+                ecore_types = ["string", "int", "boolean", "float", "double", "time", "date", "array"]
+                if attr_type.lower() in ecore_types:
                     xmi += f'eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//E{attr_type.capitalize()}"'
                 else:
-                    xmi += f'eType="#//{attr_type.capitalize()}"'
+                    xmi += f'eType="#//{attr_type.capitalize() if attr_type.islower()==attr_type else attr_type}"'
                 
                 # Handle constants and default values
                 if is_const:
@@ -160,9 +164,19 @@ def conversion(input_ebnf):
 def csv_convertion():
     df = pd.read_csv("data/input_output_GPT.csv")
         
-    # Create a new column "test" and apply the conversion function to each row in the "Prompt" column
-    df['OutputXMI'] = df['Output'].apply(conversion)
-    df['Expected_OutputXMI'] = df['Expected_Output'].apply(conversion)
+    df['OutputEcore'] = df['Output'].apply(conversion)
+    df['Expected_OutputEcore'] = df['Expected_Output'].apply(conversion)
 
     # Save the updated dataframe to a new CSV file
+    df.to_csv("data/input_output_GPT.csv", index=False)
+
+def unique_dsl_csv_convertion(dsl_name):
+    # Read the CSV into a DataFrame
+    df = pd.read_csv("data/input_output_GPT.csv")
+
+    # Modify only the 'Tile-O' row for the 'OutputEcore' and 'Expected_OutputEcore' columns
+    df.loc[df['DSL_Name'] == dsl_name, 'OutputEcore'] = df.loc[df['DSL_Name'] == dsl_name, 'Output'].apply(conversion)
+    df.loc[df['DSL_Name'] == dsl_name, 'Expected_OutputEcore'] = df.loc[df['DSL_Name'] == dsl_name, 'Expected_Output'].apply(conversion)
+
+    # Save the modified DataFrame back to the CSV
     df.to_csv("data/input_output_GPT.csv", index=False)
