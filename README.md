@@ -27,3 +27,7 @@ To run the antlr conversion, run in the corresponding folder: 'python3 conversio
 cd antlrConversion
 java -jar antlr-4.13.2-complete.jar -Dlanguage=Python3 ClassDiagram.g4
 cd ..
+
+## TODO
+- [ ] Add LLama 3.2 lightweight (and multimodal if free)
+- [ ] Find a way to automatize the removal of unwanted/extra characters

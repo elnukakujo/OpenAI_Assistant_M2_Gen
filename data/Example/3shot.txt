@@ -1,4 +1,4 @@
-A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
 
 The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
 
@@ -14,7 +14,8 @@ Route(int number, associate (*) RouteAssignment)
 RouteAssignment(Date date, associate (*) DriverSchedule)
 Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
 DriverSchedule(Shift shift)
-###
+
+
 Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
 
 At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of 134 categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
@@ -33,7 +34,8 @@ Resident(inherit UserRole, associate (*) Item)
 SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
 abstract Item(string description, string dimension, int weight, Date requestedPickedDate)
 Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
-###
+
+
 Description: The LabTracker software helps (i) doctors manage the requisition of tests and examinations for patients and (ii) patients book appointments for tests and examinations at a lab. For the remainder of this description, tests and examinations are used interchangeably. 
 
 For a requisition, a doctor must provide their numeric practitioner number and signature for verification as well as their full name, their address, and their phone number. The signature is a digital signature, i.e., an image of the actual signature of the doctor. Furthermore, the doctor indicates the date from which the requisition is valid. The requisition must also show the patient’s information including their alpha-numeric health number, first name and last name, date of birth, address, and phone number. A doctor cannot prescribe a test for themselves but can prescribe tests to someone else who is a doctor. 

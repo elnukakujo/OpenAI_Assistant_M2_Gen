@@ -1,10 +1,14 @@
-from generateDsls import generateDsls
-from antlrConversion.conversion import csv_convertion
-from exportEcore import export_ecore
+import os
 
-print("Generating DSLs in the csv...")
-generateDsls()
-print("Converting Outputs and Solutions in XMI in the csv...")
-csv_convertion()
-print("Extracting xmi elements from the csv to data/extracted...")
-export_ecore()
+from prepare_prompt import prepare_prompt
+from call_llm import call_llm
+from convert_ecore import convert_ecore
+
+print("Preparing the prompt...")
+prompt = prepare_prompt("3shot", "HBMS")
+print("----------------------")
+print("Preparing the call to the API...")
+call_llm(prompt, 0, "HBMS")
+print("----------------------")
+print("Converting the output to Ecore...")
+convert_ecore("HBMS")

@@ -1,0 +1,13 @@
+Enumerations:
+RoomType(single, double, twin)
+HotelRating(1, 2, 3, 4, 5)
+
+Classes:
+HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
+Traveller(string name, string billingInformation, string company, string address, string travelPreferences, string creditCardInformation, float reliabilityRating, boolean prePaid)
+Hotel(string name, string city, string address, string hotelChain, contain (*) RoomTypeAvailability, contain (*) SpecialOffer, associate (0..*) Booking, associate (*) CompetitorHotel)
+RoomTypeAvailability(RoomType type, int availableRooms)
+SpecialOffer(float price, string cityArea, HotelRating hotelRating, string bookingPreferences, string uniqueBookingID)
+Booking(Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, HotelRating minHotelRating, float maxCostPerNight, string furtherTravelPreferences, associate (*) Hotel, associate (*) Confirmation)
+Confirmation(boolean confirmed, Date confirmationDate, Date cancellationDeadline)
+CompetitorHotel
