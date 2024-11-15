@@ -44,5 +44,5 @@ pip install -r requirements.txt
 - [ ] Add LLama 3.2 lightweight (and multimodal if free)
 - [ ] Add new prompt methods for the examples (maybe 3shots CoT)
 - [ ] Add docu
-- [ ] Add support for situation with no solution.txt
+- [x] Add support for situation with no solution.txt
 - [ ] (Finish implementing evaluation sys in eclispe java)

@@ -5,13 +5,24 @@ import pandas as pd
 import os
 
 def save_data(prompt,output, DSL_path, llm_name):
-    solution = read_file(f'{DSL_path}/solution.txt')
     if os.path.exists(f'{DSL_path}/input_output_GPT.csv'):
         df = pd.read_csv(f'{DSL_path}/input_output_GPT.csv', index_col=0)
-        df = df[['Prompt', 'Output', 'Solution']]
-        df.loc[llm_name] = [prompt, output, solution]
+        if 'Solution' in df.columns:
+            if os.path.exists(f'{DSL_path}/solution.txt'):
+                solution = read_file(f'{DSL_path}/solution.txt')
+                df = df[['Prompt', 'Output', 'Solution']]
+                df.loc[llm_name] = [prompt, output, solution]
+            else:
+                raise Exception("The solution.txt file is missing.")
+        else:
+            df= df[['Prompt', 'Output']]
+            df.loc[llm_name] = [prompt, output]
     else:
-        df = pd.DataFrame([[prompt, output, solution]], columns=['Prompt', 'Output', 'Solution'], index=[llm_name])
+        if os.path.exists(f'{DSL_path}/solution.txt'):
+            solution = read_file(f'{DSL_path}/solution.txt')
+            df = pd.DataFrame([[prompt, output, solution]], columns=['Prompt', 'Output', 'Solution'], index=[llm_name])
+        else:
+            df = pd.DataFrame([[prompt, output]], columns=['Prompt', 'Output'], index=[llm_name])
     df.index.name = 'LLM_name'
     df.to_csv(f'{DSL_path}/input_output_GPT.csv', index=True)
 
