@@ -75,18 +75,16 @@ TestType(string name, string durationAdditive, AccessType access, associate (*) 
 ### 
 Base model:
 Enumerations:
-RoomType(single, double, twin)
-HotelRating(1, 2, 3, 4, 5)
+RoomType(SINGLE, DOUBLE, TWIN)
+BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
+PaymentType(PREPAID, PAID_AT_HOTEL)
 
 Classes:
-HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-Traveller(string name, string billingInformation, string company, string address, string travelPreferences, string creditCardInformation, float reliabilityRating, boolean prePaid)
-Hotel(string name, string city, string address, string hotelChain, contain (*) RoomTypeAvailability, contain (*) SpecialOffer, associate (0..*) Booking, associate (*) CompetitorHotel)
-RoomTypeAvailability(RoomType type, int availableRooms)
-SpecialOffer(float price, string cityArea, HotelRating hotelRating, string bookingPreferences, string uniqueBookingID)
-Booking(Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, HotelRating minHotelRating, float maxCostPerNight, string furtherTravelPreferences, associate (*) Hotel, associate (*) Confirmation)
-Confirmation(boolean confirmed, Date confirmationDate, Date cancellationDeadline)
-CompetitorHotel
+HotelChain(contain (*) Hotel, )
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch, associate (*) Booking)
+BillingInformation(string companyName, string address)
+TravelPreference(string preference, string value)
 Task instructions: Using the previous model as a base, generate the lists of model classes and associations from the following given description.
 Description:
 Hotel Booking Management System (HBMS)
@@ -99,19 +97,29 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations: 
-- RoomType(single, double, twin)
-- HotelRating(1, 2, 3, 4, 5)
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
+RoomType(SINGLE, DOUBLE, TWIN)
+BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
+PaymentType(PREPAID, PAID_AT_HOTEL)
+Interval(weekly, monthly, everyHalfYear, yearly)
+AccessType(reservable, walkIn, dropOff)
+DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
 
 Classes:
-- HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-- Traveller(string name, string billingInformation, string company, string address, string travelPreferences, string creditCardInformation, float reliabilityRating, boolean prePaid, associate (0..*) Booking)
-- Hotel(string name, string city, string address, string hotelChain, associate (*) RoomTypeAvailability, associate (*) SpecialOffer, associate (0..*) Booking, associate (*) CompetitorHotel)
-- RoomTypeAvailability(RoomType type, int availableRooms)
-- SpecialOffer(float price, string cityArea, HotelRating hotelRating, string bookingPreferences, string uniqueBookingID, associate (*) Hotel, associate (*) Confirmation)
-- Booking(Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, HotelRating minHotelRating, float maxCostPerNight, string furtherTravelPreferences, associate (*) Hotel, associate (*) Confirmation)
-- Confirmation(boolean confirmed, Date confirmationDate, Date cancellationDeadline, associate (*) Booking)
-- CompetitorHotel","Enumerations:
+HotelChain(contain (*) Hotel)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation, contain (*) Booking)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch, contain (*) CreditCard, associate (*) Booking)
+BillingInformation(string companyName, string address)
+TravelPreference(string preference, string value)
+CreditCard()
+Booking(Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, int minHotelRating, double maxCostPerNight, BookingStatus status, int cancellationDeadlineHours, PaymentType paymentType, associate (*) Hotel, associate (*) Hotel, associate (5) SpecialOffer, associate (*) CreditCard, associate (*) Hotel, associate (*) Hotel, associate (*) CompetitorHotel, associate (*) CompetitorHotel)
+Hotel(string address, associate (*) RoomType, associate (*) RoomType, associate (*) Booking, associate (*) Booking, associate (*) CompetitorHotel, contain (*) HotelChain)
+SpecialOffer(double price, string cityArea, int hotelRating, string keyPreferences, string uniqueBookingIdentifier, associate (*) CompetitorHotel)
+CompetitorHotel(associate (*) SpecialOffer, associate (*) Traveller)
+RoomType(SINGLE, DOUBLE, TWIN)
+BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
+PaymentType(PREPAID, PAID_AT_HOTEL)
+###","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
 PaymentType(PREPAID, PAID_AT_HOTEL)
@@ -138,69 +146,127 @@ date confirmationDate, float paidAmount, contain (1) BookingInfo, associate (0..
     xmlns:ecore=""http://www.eclipse.org/emf/2002/Ecore"" name=""ClassDiagram"" nsURI=""http://www.example.com/ClassDiagram""
     nsPrefix=""ClassDiagram"">
   <eClassifiers xsi:type=""ecore:EEnum"" name=""RoomType"">
-    <eLiterals name=""single""/>
-    <eLiterals name=""double""/>
-    <eLiterals name=""twin""/>
+    <eLiterals name=""SINGLE""/>
+    <eLiterals name=""DOUBLE""/>
+    <eLiterals name=""TWIN""/>
   </eClassifiers>
-  <eClassifiers xsi:type=""ecore:EEnum"" name=""HotelRating"">
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""BookingStatus"">
+    <eLiterals name=""FINALIZED""/>
+    <eLiterals name=""CONFIRMED""/>
+    <eLiterals name=""CANCELLED_BY_HBMS""/>
+    <eLiterals name=""PRELIMINARY""/>
+    <eLiterals name=""CANCELLED_BY_TRAVELLER""/>
+    <eLiterals name=""CANCELLED_BY_HOTEL""/>
   </eClassifiers>
-  <eClassifiers xsi:type=""ecore:EClass"" name=""HBMS"">
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Traveller"" eType=""#//Traveller"" containment=""true"" upperBound=""-1""/>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""PaymentType"">
+    <eLiterals name=""PREPAID""/>
+    <eLiterals name=""PAID_AT_HOTEL""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""Interval"">
+    <eLiterals name=""weekly""/>
+    <eLiterals name=""monthly""/>
+    <eLiterals name=""everyHalfYear""/>
+    <eLiterals name=""yearly""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""AccessType"">
+    <eLiterals name=""reservable""/>
+    <eLiterals name=""walkIn""/>
+    <eLiterals name=""dropOff""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EEnum"" name=""DayOfWeek"">
+    <eLiterals name=""Monday""/>
+    <eLiterals name=""Tuesday""/>
+    <eLiterals name=""Wednesday""/>
+    <eLiterals name=""Thursday""/>
+    <eLiterals name=""Friday""/>
+    <eLiterals name=""Saturday""/>
+    <eLiterals name=""Sunday""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""HotelChain"">
     <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""HotelBookingManager"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""HotelChain"" eType=""#//HotelChain"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Traveller"" eType=""#//Traveller"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""TravelPreference"" eType=""#//TravelPreference"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""BillingInformation"" eType=""#//BillingInformation"" containment=""true"" upperBound=""1""/>
     <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""true"" upperBound=""-1""/>
   </eClassifiers>
   <eClassifiers xsi:type=""ecore:EClass"" name=""Traveller"">
     <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""billingInformation"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""company"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""reliabilityRating"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""TravelSearch"" eType=""#//TravelSearch"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CreditCard"" eType=""#//CreditCard"" containment=""true"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""BillingInformation"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""companyName"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
     <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""address"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""travelPreferences"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""creditCardInformation"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""reliabilityRating"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""prePaid"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" lowerBound=""0"" upperBound=""-1""/>
   </eClassifiers>
-  <eClassifiers xsi:type=""ecore:EClass"" name=""Hotel"">
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""name"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""city"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""address"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""hotelChain"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RoomTypeAvailability"" eType=""#//RoomTypeAvailability"" containment=""false"" upperBound=""-1""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SpecialOffer"" eType=""#//SpecialOffer"" containment=""false"" upperBound=""-1""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" lowerBound=""0"" upperBound=""-1""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CompetitorHotel"" eType=""#//CompetitorHotel"" containment=""false"" upperBound=""-1""/>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""TravelPreference"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""preference"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""value"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
   </eClassifiers>
-  <eClassifiers xsi:type=""ecore:EClass"" name=""RoomTypeAvailability"">
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""type"" eType=""#//RoomType""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""availableRooms"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
-  </eClassifiers>
-  <eClassifiers xsi:type=""ecore:EClass"" name=""SpecialOffer"">
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""price"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""cityArea"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""hotelRating"" eType=""#//HotelRating""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""bookingPreferences"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""uniqueBookingID"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""false"" upperBound=""-1""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Confirmation"" eType=""#//Confirmation"" containment=""false"" upperBound=""-1""/>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""CreditCard"">
   </eClassifiers>
   <eClassifiers xsi:type=""ecore:EClass"" name=""Booking"">
     <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""arrivalDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
     <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""departureDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
     <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""numberOfRooms"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
     <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""roomType"" eType=""#//RoomType""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""minHotelRating"" eType=""#//HotelRating""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""maxCostPerNight"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""furtherTravelPreferences"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""minHotelRating"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""maxCostPerNight"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""status"" eType=""#//BookingStatus""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""cancellationDeadlineHours"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""paymentType"" eType=""#//PaymentType""/>
     <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""false"" upperBound=""-1""/>
-    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Confirmation"" eType=""#//Confirmation"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SpecialOffer"" eType=""#//SpecialOffer"" containment=""false"" upperBound=""5""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CreditCard"" eType=""#//CreditCard"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Hotel"" eType=""#//Hotel"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CompetitorHotel"" eType=""#//CompetitorHotel"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CompetitorHotel"" eType=""#//CompetitorHotel"" containment=""false"" upperBound=""-1""/>
   </eClassifiers>
-  <eClassifiers xsi:type=""ecore:EClass"" name=""Confirmation"">
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""confirmed"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""confirmationDate"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
-    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""cancellationDeadline"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate""/>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""Hotel"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""address"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RoomType"" eType=""#//RoomType"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""RoomType"" eType=""#//RoomType"" containment=""false"" upperBound=""-1""/>
     <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Booking"" eType=""#//Booking"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CompetitorHotel"" eType=""#//CompetitorHotel"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""HotelChain"" eType=""#//HotelChain"" containment=""true"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""SpecialOffer"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""price"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""cityArea"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""hotelRating"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""keyPreferences"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""uniqueBookingIdentifier"" eType=""ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""CompetitorHotel"" eType=""#//CompetitorHotel"" containment=""false"" upperBound=""-1""/>
   </eClassifiers>
   <eClassifiers xsi:type=""ecore:EClass"" name=""CompetitorHotel"">
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""SpecialOffer"" eType=""#//SpecialOffer"" containment=""false"" upperBound=""-1""/>
+    <eStructuralFeatures xsi:type=""ecore:EReference"" name=""Traveller"" eType=""#//Traveller"" containment=""false"" upperBound=""-1""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""RoomType"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""DOUBLE"" eType=""#//SINGLE""/>
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""BookingStatus"" eType=""#//TWIN""/>
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""FINALIZED"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""CONFIRMED"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""CANCELLED_BY_HBMS"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""PRELIMINARY"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""CANCELLED_BY_TRAVELLER"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""CANCELLED_BY_HOTEL"">
+  </eClassifiers>
+  <eClassifiers xsi:type=""ecore:EClass"" name=""PaymentType"">
+    <eStructuralFeatures xsi:type=""ecore:EAttribute"" name=""PAID_AT_HOTEL"" eType=""#//PREPAID""/>
   </eClassifiers>
 </ecore:EPackage>","<?xml version=""1.0"" encoding=""UTF-8""?>
 <ecore:EPackage xmi:version=""2.0"" xmlns:xmi=""http://www.omg.org/XMI"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""

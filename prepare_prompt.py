@@ -21,4 +21,4 @@ def prepare_prompt(selected_type, DSL_folder):
     path_domain_description = "data/DSL2Gen/"+DSL_folder
     prompt_ex = prepare_prompt_ex(selected_type)
     user_prompt = prepare_user_prompt(path_domain_description)
-    return prompt_ex+"\n### \n"+user_prompt
+    return prompt_ex+"\n \n"+user_prompt

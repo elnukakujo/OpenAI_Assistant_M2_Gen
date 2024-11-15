@@ -1,13 +1,11 @@
 Enumerations:
-RoomType(single, double, twin)
-HotelRating(1, 2, 3, 4, 5)
+RoomType(SINGLE, DOUBLE, TWIN)
+BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
+PaymentType(PREPAID, PAID_AT_HOTEL)
 
 Classes:
-HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-Traveller(string name, string billingInformation, string company, string address, string travelPreferences, string creditCardInformation, float reliabilityRating, boolean prePaid)
-Hotel(string name, string city, string address, string hotelChain, contain (*) RoomTypeAvailability, contain (*) SpecialOffer, associate (0..*) Booking, associate (*) CompetitorHotel)
-RoomTypeAvailability(RoomType type, int availableRooms)
-SpecialOffer(float price, string cityArea, HotelRating hotelRating, string bookingPreferences, string uniqueBookingID)
-Booking(Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, HotelRating minHotelRating, float maxCostPerNight, string furtherTravelPreferences, associate (*) Hotel, associate (*) Confirmation)
-Confirmation(boolean confirmed, Date confirmationDate, Date cancellationDeadline)
-CompetitorHotel
+HotelChain(contain (*) Hotel, )
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch, associate (*) Booking)
+BillingInformation(string companyName, string address)
+TravelPreference(string preference, string value)
