@@ -5,7 +5,7 @@ This project aims at designing a Model assistant to design metamodels for Domain
 
 Based on the findings of the article called [Automated Domain Modeling with Large Language Models: A Comparative Study](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10344012), and with the supervision of my IFT6253 professor.
 
-Using poetry for package management
+Currently supports gpt-3-turbo and gpt-4, plans to include llama 3.2 lightweight models
 
 ## The data folder
 - The folder **DSL2Gen** contains the problem descriptions and the outputs of the DSLs. 
