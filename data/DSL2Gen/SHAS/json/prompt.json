@@ -1,0 +1,181 @@
+{
+    "prompt_ex": [
+        [
+            "Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. \n\nAt the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S\u2019s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of 134 categories (e.g., baby clothing, women\u2019s winter boots, fridge, microwave\u2026). \n\nH2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.",
+            {
+                "enum": [
+                    {
+                        "name": "ItemCategory",
+                        "values": [
+                            "Baby Clothing",
+                            "Fridge"
+                        ]
+                    }
+                ],
+                "class": [
+                    {
+                        "name": "H2S",
+                        "attributes": [],
+                        "contains": [
+                            {
+                                "to": "Item",
+                                "mul": "*"
+                            },
+                            {
+                                "to": "Route",
+                                "mul": "*"
+                            },
+                            {
+                                "to": "UserRole",
+                                "mul": "*"
+                            },
+                            {
+                                "to": "Person",
+                                "mul": "*"
+                            }
+                        ],
+                        "associate": [],
+                        "inherit": []
+                    },
+                    {
+                        "name": "Person",
+                        "attributes": [
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "address",
+                                "type": "string"
+                            },
+                            {
+                                "name": "phoneNumber",
+                                "type": "string"
+                            },
+                            {
+                                "name": "emailAddress",
+                                "type": "string"
+                            }
+                        ],
+                        "contains": [],
+                        "associate": [
+                            {
+                                "to": "UserRole",
+                                "mul": "*"
+                            }
+                        ],
+                        "inherit": []
+                    },
+                    {
+                        "name": "UserRole",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": []
+                    },
+                    {
+                        "name": "Volunteer",
+                        "attributes": [],
+                        "contains": [
+                            {
+                                "to": "Date",
+                                "mul": "*"
+                            }
+                        ],
+                        "associate": [
+                            {
+                                "to": "Route",
+                                "mul": "*"
+                            }
+                        ],
+                        "inherit": [
+                            "UserRole"
+                        ]
+                    },
+                    {
+                        "name": "Resident",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [
+                            {
+                                "to": "Item",
+                                "mul": "*"
+                            }
+                        ],
+                        "inherit": [
+                            "UserRole"
+                        ]
+                    },
+                    {
+                        "name": "SecondHandArticle",
+                        "attributes": [
+                            {
+                                "name": "codeRFID",
+                                "type": "string"
+                            },
+                            {
+                                "name": "discarded",
+                                "type": "boolean"
+                            },
+                            {
+                                "name": "category",
+                                "type": "ItemCategory"
+                            }
+                        ],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [
+                            "Item"
+                        ]
+                    },
+                    {
+                        "name": "Item",
+                        "attributes": [
+                            {
+                                "name": "description",
+                                "type": "string"
+                            },
+                            {
+                                "name": "dimension",
+                                "type": "string"
+                            },
+                            {
+                                "name": "weight",
+                                "type": "int"
+                            },
+                            {
+                                "name": "requestedPickedDate",
+                                "type": "Date"
+                            }
+                        ],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": []
+                    },
+                    {
+                        "name": "Route",
+                        "attributes": [
+                            {
+                                "name": "date",
+                                "type": "Date"
+                            }
+                        ],
+                        "contains": [],
+                        "associate": [
+                            {
+                                "to": "Item",
+                                "mul": "*"
+                            },
+                            {
+                                "to": "SecondHandArticle",
+                                "mul": "*"
+                            }
+                        ],
+                        "inherit": []
+                    }
+                ]
+            }
+        ]
+    ],
+    "user_prompt": "Task instructions: Generate the lists of model classes and associations from the following given description.\nDescription:\nA smart home automation system (SHAS) offers various users to automatically manage smart home automation tasks. A smart home (located at a physical address) consists of several rooms, each of which may contain sensor devices and actuator (controller) devices of different types (e.g. temperature sensor, movement sensor, light controller, lock controller). Each sensor and actuator have a unique device identifier. Once a new sensor or actuator is activated or deactivated, SHAS will recognize the change and update its infrastructure map.\n\nWhen SHAS is operational, a sensor device periodically provides sensor readings (recording the measured value and the timestamp). Similarly, a predefined set of control commands (e.g. lockDoor, turnOnHeating) can be sent to the actuator devices with the timestamp and the status of the command (e.g. requested, completed, failed, etc.). All sensor readings and control commands for a smart home are recorded by SHAS in an activity log.\n\nRelevant alerts in a smart home can be set up and managed by its owner by setting up automation rules. An automation rule has a precondition and an action. The precondition is a Boolean expression constructed from relational terms connected by basic Boolean operators (AND, OR, NOT). Atomic relational terms may refer to rooms, sensors, actuators, sensor readings and control commands. The action is a sequence of control commands. \nFor example, a sample rule could specify:\nwhen actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room\n\nAutomation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp."
+}

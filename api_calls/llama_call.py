@@ -8,9 +8,10 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 # This software may be used and distributed in accordance with the terms of the Llama 3 Community License Agreement.
 import os
+import json
 from llama_models.llama3.api.datatypes import (
     SystemMessage,
-    UserMessage,
+    UserMessage
 )
 import torch.distributed as dist
 
@@ -37,9 +38,17 @@ def cleanup_distributed():
     if dist.is_initialized():
         dist.destroy_process_group()
 
+def llama_messages(system_role, prompt):
+    messages = [SystemMessage(content=system_role)]
+    for shot in prompt["prompt_ex"]:
+        messages.append(UserMessage(content=shot[0]))
+        messages.append(SystemMessage(content=json.dumps(shot[1])))
+    messages.append(UserMessage(content=prompt["user_prompt"]))
+    return messages
+
 def llama_call(
     system_role: str,
-    prompt: str,
+    prompt,
     llm_name: str
 ):
     """
@@ -57,22 +66,17 @@ def llama_call(
         print("Building the Llama generator ...")
         generator = Llama.build(
             ckpt_dir=os.path.expanduser(f"~/.llama/checkpoints/{llm_name}"),
-            max_seq_len=2000, # The maximum sequence length supported by the model
-            max_batch_size=16,
+            max_seq_len=2024, # The maximum sequence length supported by the model
+            max_batch_size=8,
             model_parallel_size=1
         )
-        print("System role: ",system_role)
-        print("User prompt", prompt)
+        messages = llama_messages(system_role, prompt)
         result = generator.chat_completion(
-            messages=[
-                SystemMessage(content=system_role),
-                UserMessage(content=prompt)
-            ],
+            messages=messages,
             temperature=0.6,
             top_p=0.9
         )
         dist.destroy_process_group()
-        print("Result: ",result.generation.content)
         return result.generation.content
     except Exception as e:
         print(f"Error during llama_call processing: {e}")
