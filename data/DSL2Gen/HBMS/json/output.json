@@ -1,0 +1,173 @@
+{
+    "enum": [
+        {
+            "name": "RoomType",
+            "values": [
+                "single",
+                "double",
+                "twin"
+            ]
+        },
+        {
+            "name": "PaymentType",
+            "values": [
+                "prePaid",
+                "atHotel"
+            ]
+        }
+    ],
+    "class": [
+        {
+            "name": "HBMS",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Traveller",
+                    "mul": "*"
+                },
+                {
+                    "to": "Hotel",
+                    "mul": "*"
+                },
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                },
+                {
+                    "to": "Room",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Traveller",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "billingInfo",
+                    "type": "string"
+                },
+                {
+                    "name": "travelPreferences",
+                    "type": "string"
+                },
+                {
+                    "name": "creditCardInfo",
+                    "type": "string"
+                },
+                {
+                    "name": "reliabilityRating",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Hotel",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "address",
+                    "type": "string"
+                },
+                {
+                    "name": "chain",
+                    "type": "string"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Room",
+                    "mul": "*"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Room",
+            "attributes": [
+                {
+                    "name": "type",
+                    "type": "RoomType"
+                },
+                {
+                    "name": "availability",
+                    "type": "boolean"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Hotel",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Booking",
+            "attributes": [
+                {
+                    "name": "bookingID",
+                    "type": "string"
+                },
+                {
+                    "name": "price",
+                    "type": "double"
+                },
+                {
+                    "name": "cityArea",
+                    "type": "string"
+                },
+                {
+                    "name": "rating",
+                    "type": "int"
+                },
+                {
+                    "name": "preferences",
+                    "type": "string"
+                },
+                {
+                    "name": "status",
+                    "type": "string"
+                },
+                {
+                    "name": "creditCardInfo",
+                    "type": "string"
+                },
+                {
+                    "name": "paymentType",
+                    "type": "PaymentType"
+                },
+                {
+                    "name": "cancellationDeadline",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        }
+    ]
+}

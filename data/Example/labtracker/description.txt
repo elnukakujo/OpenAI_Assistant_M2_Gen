@@ -11,25 +11,3 @@ The doctor and the patient can view the results of each test (either negative or
 A patient is required to make an appointment for some tests while others are walk-in only. For example, x-ray examinations require an appointment, but blood tests are walk-in only (i.e., it is not possible to make an appointment for a blood test). On the other hand, some tests only require a sample to be dropped off (e.g., a urine or stool sample). 
 
 To make an appointment for a requisition, a patient selects the desired lab based on the lab’s address and business hours. For requisitions with repeated tests, a patient is only allowed to make one appointment at a time. The confirmation for an appointment also shows a confirmation number, the date as well as start/end times, and the name of the lab as well as its registration number. It is possible to change or cancel an appointment at any time but doing so within 24 hours of the appointment incurs a change/cancellation fee. Each lab determines its own fee and business hours. All labs are open every day of the year and offer all tests. The business hours of a lab do not change from one week to the next. Each day a lab is open from the day’s start time to its end time, i.e., there are no breaks. 
-
-Enumerations:
-Interval(weekly, monthly, everyHalfYear, yearly)
-AccessType(reservable, walkIn, dropOff)
-DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
-
-Classes:
-LabTracker(contain (*) Person, contain (*) PersonRole, contain (*) Requisition, contain (*) TestResult, contain (*) SpecificTest,
-contain (*) Appointment, contain (*) BusinessHour, contain (*) Lab, contain (*) Test, contain (*) TestType)
-Person(string lastName, string firstName, string address, string phoneNumber, associate (0..2) PersonRole)
-abstract PersonRole(idNumber)
-Patient(string dateOfBirth, inherit PersonRole, associate (*) Requisition)
-Doctor(string signature, inherit PersonRole, associate (*) Requisition)
-Requisition(string effectiveDate, int repetitionCount, Interval repetitionInterval, associate (*) Appointment, 
-associate (*) SpecificTest)
-TestResult(boolean negative, string report, associate (*) SpecificTest)
-SpecificTest(Data date)
-Appointment(string confirmation, Date date, string startTime, string endTime, associate (*) Requisition)
-BusinessHour(DayOfWeek: dayOfWeek, string startTime, string endTime)
-Lab(string registrationNumber, string name, string address, boolean changeCancelFee, associate (*) Appointment, associate (7) BusinessHour)
-Test(string name, string duration, associate (*) SpecificTest)
-TestType(string name, string durationAdditive, AccessType access, associate (*) Test)

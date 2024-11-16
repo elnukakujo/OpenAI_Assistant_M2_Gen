@@ -1,0 +1,173 @@
+{
+    "enum": [
+        {
+            "name": "ItemCategory",
+            "values": [
+                "Baby Clothing",
+                "Fridge"
+            ]
+        }
+    ],
+    "class": [
+        {
+            "name": "H2S",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                },
+                {
+                    "to": "Route",
+                    "mul": "*"
+                },
+                {
+                    "to": "UserRole",
+                    "mul": "*"
+                },
+                {
+                    "to": "Person",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Person",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "address",
+                    "type": "string"
+                },
+                {
+                    "name": "phoneNumber",
+                    "type": "string"
+                },
+                {
+                    "name": "emailAddress",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "UserRole",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "UserRole",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Volunteer",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Date",
+                    "mul": "*"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "Route",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "UserRole"
+            ]
+        },
+        {
+            "name": "Resident",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "UserRole"
+            ]
+        },
+        {
+            "name": "SecondHandArticle",
+            "attributes": [
+                {
+                    "name": "codeRFID",
+                    "type": "string"
+                },
+                {
+                    "name": "discarded",
+                    "type": "boolean"
+                },
+                {
+                    "name": "category",
+                    "type": "ItemCategory"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Item"
+            ]
+        },
+        {
+            "name": "Item",
+            "attributes": [
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "dimension",
+                    "type": "string"
+                },
+                {
+                    "name": "weight",
+                    "type": "int"
+                },
+                {
+                    "name": "requestedPickedDate",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Route",
+            "attributes": [
+                {
+                    "name": "date",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                },
+                {
+                    "to": "SecondHandArticle",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        }
+    ]
+}

@@ -1,0 +1,261 @@
+{
+    "enum": [
+        {
+            "name": "Mode",
+            "values": [
+                "design",
+                "game"
+            ]
+        },
+        {
+            "name": "Color",
+            "values": [
+                "red",
+                "blue",
+                "green",
+                "yellow"
+            ]
+        }
+    ],
+    "class": [
+        {
+            "name": "TileO",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Game",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Game",
+            "attributes": [
+                {
+                    "name": "currentConnectionPieces",
+                    "type": "int"
+                },
+                {
+                    "name": "mode",
+                    "type": "Mode"
+                },
+                {
+                    "name": "spaceConnectionPieces",
+                    "type": "int",
+                    "default": "32"
+                },
+                {
+                    "name": "numberOfActionCards",
+                    "type": "int",
+                    "default": "32"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Tile",
+                    "mul": "*"
+                },
+                {
+                    "to": "Connection",
+                    "mul": "*"
+                },
+                {
+                    "to": "Die",
+                    "mul": "1"
+                },
+                {
+                    "to": "Deck",
+                    "mul": "1"
+                },
+                {
+                    "to": "Player",
+                    "mul": "0..1"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "WinTile",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Connection",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Tile",
+                    "mul": "2"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Die",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Deck",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "ActionCard",
+                    "mul": "0..32"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Tile",
+            "attributes": [
+                {
+                    "name": "x",
+                    "type": "int"
+                },
+                {
+                    "name": "y",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Connection",
+                    "mul": "0..*"
+                },
+                {
+                    "to": "Player",
+                    "mul": "0..4"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "ActionCard",
+            "attributes": [
+                {
+                    "name": "instructions",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Deck",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "RollDieActionCard",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "ActionCard"
+            ]
+        },
+        {
+            "name": "ConnectTilesActionCard",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "ActionCard"
+            ]
+        },
+        {
+            "name": "RemoveConnectionActionCard",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "ActionCard"
+            ]
+        },
+        {
+            "name": "TeleportActionCard",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "ActionCard"
+            ]
+        },
+        {
+            "name": "LoseTurnActionCard",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "ActionCard"
+            ]
+        },
+        {
+            "name": "WinTile",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Game",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [
+                "Tile"
+            ]
+        },
+        {
+            "name": "ActionTile",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Tile"
+            ]
+        },
+        {
+            "name": "NormalTile",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Tile"
+            ]
+        },
+        {
+            "name": "Player",
+            "attributes": [
+                {
+                    "name": "number",
+                    "type": "int"
+                },
+                {
+                    "name": "turnsUntilActive",
+                    "type": "int"
+                },
+                {
+                    "name": "color",
+                    "type": "Color"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Tile",
+                    "mul": "0..2"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        }
+    ]
+}

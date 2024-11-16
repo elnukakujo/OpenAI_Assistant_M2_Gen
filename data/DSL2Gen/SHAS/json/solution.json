@@ -1,0 +1,350 @@
+{
+    "enum": [
+        {
+            "name": "DeviceStatus",
+            "values": [
+                "Activated",
+                "Deactivated"
+            ]
+        },
+        {
+            "name": "CommandType",
+            "values": [
+                "lockDoor",
+                "turnOnHeating"
+            ]
+        },
+        {
+            "name": "CommandStatus",
+            "values": [
+                "Requested",
+                "Completed",
+                "Failed"
+            ]
+        },
+        {
+            "name": "RuleStatus",
+            "values": [
+                "created",
+                "edited",
+                "activated",
+                "deactivated"
+            ]
+        },
+        {
+            "name": "BinaryOp",
+            "values": [
+                "AND",
+                "OR"
+            ]
+        }
+    ],
+    "class": [
+        {
+            "name": "SHAS",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "SmartHome",
+                    "mul": "*"
+                },
+                {
+                    "to": "User",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "SmartHome",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Address",
+                    "mul": "0..1"
+                },
+                {
+                    "to": "Room",
+                    "mul": "*"
+                },
+                {
+                    "to": "ActivityLog",
+                    "mul": "0..1"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "User",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "User",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "SmartHome",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Address",
+            "attributes": [
+                {
+                    "name": "city",
+                    "type": "string"
+                },
+                {
+                    "name": "postalCode",
+                    "type": "string"
+                },
+                {
+                    "name": "street",
+                    "type": "string"
+                },
+                {
+                    "name": "aptNumber",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Room",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "SensorDevice",
+                    "mul": "*"
+                },
+                {
+                    "to": "ActuatorDevice",
+                    "mul": "*"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "RelationalTerm",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Device",
+            "attributes": [
+                {
+                    "name": "deviceStatus",
+                    "type": "DeviceStatus"
+                },
+                {
+                    "name": "deviceID",
+                    "type": "int"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "BooleanExpression",
+                    "mul": "0..1"
+                }
+            ],
+            "associate": [],
+            "inherit": [
+                "DeviceStatus"
+            ]
+        },
+        {
+            "name": "SensorDevice",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "SensorReading",
+                    "mul": "*"
+                },
+                {
+                    "to": "RelationalTerm",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "Device"
+            ]
+        },
+        {
+            "name": "ActuatorDevice",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "ControlCommand",
+                    "mul": "*"
+                },
+                {
+                    "to": "RelationalTerm",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "Device"
+            ]
+        },
+        {
+            "name": "ActivityLog",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "SensorReading",
+                    "mul": "*"
+                },
+                {
+                    "to": "ControlCommand",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "RuntimeElement",
+            "attributes": [
+                {
+                    "name": "timestamp",
+                    "type": "time"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "SensorReading",
+            "attributes": [
+                {
+                    "name": "value",
+                    "type": "double"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "RelationalTerm",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "RuntimeElement"
+            ]
+        },
+        {
+            "name": "ControlCommand",
+            "attributes": [
+                {
+                    "name": "commandType",
+                    "type": "CommandType"
+                },
+                {
+                    "name": "commandStatus",
+                    "type": "CommandStatus"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "RelationalTerm",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "AlertRule",
+            "attributes": [
+                {
+                    "name": "ruleStatus",
+                    "type": "RuleStatus"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "CommandSequence",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "BooleanExpression",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "NotExpression",
+                    "mul": "0..1"
+                },
+                {
+                    "to": "BinaryExpression",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "RelationalTerm",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "NotExpression",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "BinaryExpression",
+            "attributes": [
+                {
+                    "name": "binaryOp",
+                    "type": "BinaryOp"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "CommandSequence",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "ControlCommand",
+                    "mul": "0..1"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "CommandSequence",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        }
+    ]
+}

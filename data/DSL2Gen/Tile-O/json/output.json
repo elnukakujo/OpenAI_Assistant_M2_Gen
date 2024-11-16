@@ -1,0 +1,190 @@
+{
+    "class": [
+        {
+            "name": "TileO",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Game",
+                    "mul": "1"
+                },
+                {
+                    "to": "Board",
+                    "mul": "1"
+                },
+                {
+                    "to": "ActionCard",
+                    "mul": "1..*"
+                },
+                {
+                    "to": "Player",
+                    "mul": "1..4"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Game",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Player",
+                    "mul": "*"
+                },
+                {
+                    "to": "Board",
+                    "mul": "1"
+                },
+                {
+                    "to": "ActionCard",
+                    "mul": "1"
+                },
+                {
+                    "to": "Tile",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Player",
+            "attributes": [
+                {
+                    "name": "playerNumber",
+                    "type": "int"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "PlayingPiece",
+                    "mul": "1"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "Board",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Board",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Tile",
+                    "mul": "*"
+                },
+                {
+                    "to": "Player",
+                    "mul": "*"
+                },
+                {
+                    "to": "ConnectionPiece",
+                    "mul": "*"
+                },
+                {
+                    "to": "ActionTile",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Tile",
+            "attributes": [
+                {
+                    "name": "color",
+                    "type": "string"
+                },
+                {
+                    "name": "isHidden",
+                    "type": "boolean"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Tile",
+                    "mul": "*"
+                },
+                {
+                    "to": "ConnectionPiece",
+                    "mul": "*"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "Player",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "ConnectionPiece",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Board",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "ActionCard",
+            "attributes": [
+                {
+                    "name": "instruction",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Game",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "ActionTile",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Tile",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "PlayingPiece",
+            "attributes": [
+                {
+                    "name": "color",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Player",
+                    "mul": "1"
+                },
+                {
+                    "to": "Tile",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        }
+    ]
+}
