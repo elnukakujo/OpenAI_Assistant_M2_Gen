@@ -9,3 +9,12 @@ pandas==2.2.3
 
 # ANTLR runtime for Python 3
 antlr4-python3-runtime==4.13.2
+
+# To use Llama Cli
+llama-stack
+
+# To excute LLama calls
+torch 
+fairscale 
+fire 
+blobfile

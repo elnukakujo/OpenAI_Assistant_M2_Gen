@@ -17,7 +17,6 @@ Currently supports gpt-3-turbo and gpt-4, plans to include llama 3.2 lightweight
     - **3shot.txt** gives the problem description followed by the solution of 3 DSLs found in the article.
 
 ## How to use
-
 1. Go to DSL2Gen: `cd data/DSL2Gen`
 2. Create a new folder with the name of your DSL: `mkdir <your_dsl>`
 3. Create the DSL files:
@@ -40,9 +39,11 @@ pip install -r requirements.txt
     2. LLM might not always return a valid outputs for ANTLR, meaning you might need to run the program a second or third time.
 7. After the program ran, open the **input_output_GPT.csv** file located in your DSL directory to see the inputs, outputs and ecore outputs for each llm model you tried.
 
+### How to use with Llama
+You need to register on the Meta website and get a key to install the model, after installing the requirements file, using `llama model download --source meta --model-id  MODEL_ID` ([follow the procedure on Meta website](https://www.llama.com/))
+
 ## TODO
 - [ ] Add LLama 3.2 lightweight (and multimodal if free)
 - [ ] Add new prompt methods for the examples (maybe 3shots CoT)
 - [ ] Add docu
-- [x] Add support for situation with no solution.txt
 - [ ] (Finish implementing evaluation sys in eclispe java)

@@ -2,6 +2,7 @@ from common import *
 from openai import OpenAI
 from dotenv import load_dotenv
 import pandas as pd
+from api_calls.llama_call import llama_call
 import os
 
 def save_data(prompt,output, DSL_path, llm_name):
@@ -26,9 +27,8 @@ def save_data(prompt,output, DSL_path, llm_name):
     df.index.name = 'LLM_name'
     df.to_csv(f'{DSL_path}/input_output_GPT.csv', index=True)
 
-def gpt_call(prompt, llm_name):
+def gpt_call(prompt, llm_name, sys_role):
     load_dotenv()
-    sys_role = "You are an expert class diagram design assistant for domain models. Please strictly follow the given ANTLR grammar for this task. Do not add any additional characters, Java code, or unnecessary formatting. Provide only the output that matches the grammar. Additionally, remember that every class you reference must be defined."+read_file("antlrConversion/ClassDiagram.g4")
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     response = client.chat.completions.create(model=llm_name, messages=[
         {"role": "system", "content": sys_role},
@@ -40,5 +40,9 @@ def call_llm(prompt, llm_idx, DSL_folder):
     DSL_path = "data/DSL2Gen/"+DSL_folder
     llm_list = ["gpt-3.5-turbo","gpt-4","llama-3.2-3b-instruct"]
     llm_name = llm_list[llm_idx]
-    output_M2 = gpt_call(prompt,llm_name)
+    sys_role = "You are an expert class diagram design assistant for domain models. Please strictly follow the given ANTLR grammar for this task. Do not add any additional characters, Java code, or unnecessary formatting. Provide only the output that matches the grammar. Additionally, remember that every class you reference must be defined."+read_file("antlrConversion/ClassDiagram.g4")
+    if llm_idx == 2:
+        output_M2 = llama_call(sys_role,prompt)
+    else:
+        output_M2 = gpt_call(prompt,llm_name, sys_role)
     save_data(prompt, output_M2, DSL_path , llm_name)
