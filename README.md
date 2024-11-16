@@ -43,7 +43,6 @@ pip install -r requirements.txt
 You need to register on the Meta website and get a key to install the model, after installing the requirements file, using `llama model download --source meta --model-id  MODEL_ID` ([follow the procedure on Meta website](https://www.llama.com/))
 
 ## TODO
-- [x] Add LLama 3.2 lightweight (and multimodal if free)
 - [ ] Add new prompt methods for the examples (maybe 3shots CoT)
 - [ ] Add docu
 - [ ] (Finish implementing evaluation sys in eclispe java)

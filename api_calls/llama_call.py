@@ -11,7 +11,9 @@ import os
 import json
 from llama_models.llama3.api.datatypes import (
     SystemMessage,
-    UserMessage
+    UserMessage,
+    CompletionMessage,
+    StopReason
 )
 import torch.distributed as dist
 
@@ -38,13 +40,17 @@ def cleanup_distributed():
     if dist.is_initialized():
         dist.destroy_process_group()
 
-def llama_messages(system_role, prompt):
-    messages = [SystemMessage(content=system_role)]
+def llama_dialogs(system_role, prompt):
+    dialogs = []
     for shot in prompt["prompt_ex"]:
-        messages.append(UserMessage(content=shot[0]))
-        messages.append(SystemMessage(content=json.dumps(shot[1])))
-    messages.append(UserMessage(content=prompt["user_prompt"]))
-    return messages
+        # Create the n_prompt examples with dialogs
+        dialogs.append(SystemMessage(content=system_role))
+        dialogs.append(UserMessage(content=shot[0]))
+        dialogs.append(CompletionMessage(content=json.dumps(shot[1]), stop_reason=StopReason.end_of_turn))    
+    # Create the real task prompt
+    dialogs.append(SystemMessage(content=system_role))
+    dialogs.append(UserMessage(content=prompt["user_prompt"]))
+    return dialogs
 
 def llama_call(
     system_role: str,
@@ -66,17 +72,18 @@ def llama_call(
         print("Building the Llama generator ...")
         generator = Llama.build(
             ckpt_dir=os.path.expanduser(f"~/.llama/checkpoints/{llm_name}"),
-            max_seq_len=2024, # The maximum sequence length supported by the model
-            max_batch_size=8,
+            max_seq_len=3000, # The maximum sequence length supported by the model
+            max_batch_size=12,
             model_parallel_size=1
         )
-        messages = llama_messages(system_role, prompt)
+        dialogs = llama_dialogs(system_role, prompt)
         result = generator.chat_completion(
-            messages=messages,
+            messages=dialogs,
             temperature=0.6,
             top_p=0.9
         )
         dist.destroy_process_group()
+        print(result.generation.content)
         return result.generation.content
     except Exception as e:
         print(f"Error during llama_call processing: {e}")
