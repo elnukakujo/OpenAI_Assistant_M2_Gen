@@ -21,6 +21,8 @@ def initialize_distributed():
     Initialize distributed processing if necessary.
     """
     if not dist.is_initialized():
+        os.environ['MASTER_ADDR'] = 'localhost'  # Set this to the IP of the master node
+        os.environ['MASTER_PORT'] = '29500'      # Use any available port
         dist.init_process_group(
             backend='nccl',  # or 'gloo' depending on your setup
             init_method='env://',  # Use the environment variable-based init method
@@ -38,6 +40,7 @@ def cleanup_distributed():
 def llama_call(
     system_role: str,
     prompt: str,
+    llm_name: str
 ):
     """
     Examples to run with the models finetuned for chat. Prompts correspond of chat
@@ -52,17 +55,10 @@ def llama_call(
     initialize_distributed()
     try:
         print("Building the Llama generator ...")
-        if not dist.is_initialized():
-            dist.init_process_group(
-                backend='nccl',  # or 'gloo' depending on your setup
-                init_method='env://',  # Use the environment variable-based init method
-                world_size=1,  # Only one process in this case (single node)
-                rank=0,  # The rank of the current process
-            )
         generator = Llama.build(
-            ckpt_dir=os.path.expanduser("~/.llama/checkpoints/Llama3.2-3B-Instruct"),
-            max_seq_len=512,
-            max_batch_size=4,
+            ckpt_dir=os.path.expanduser(f"~/.llama/checkpoints/{llm_name}"),
+            max_seq_len=2000, # The maximum sequence length supported by the model
+            max_batch_size=16,
             model_parallel_size=1
         )
         print("System role: ",system_role)

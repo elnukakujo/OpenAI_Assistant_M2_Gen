@@ -38,11 +38,11 @@ def gpt_call(prompt, llm_name, sys_role):
 
 def call_llm(prompt, llm_idx, DSL_folder):
     DSL_path = "data/DSL2Gen/"+DSL_folder
-    llm_list = ["gpt-3.5-turbo","gpt-4","llama-3.2-3b-instruct"]
+    llm_list = ["gpt-3.5-turbo","gpt-4","Llama3.2-3B-Instruct", "Llama3.2-3B"]
     llm_name = llm_list[llm_idx]
-    sys_role = "You are an expert class diagram design assistant for domain models. Please strictly follow the given ANTLR grammar for this task. Do not add any additional characters, Java code, or unnecessary formatting. Provide only the output that matches the grammar. Additionally, remember that every class you reference must be defined."+read_file("antlrConversion/ClassDiagram.g4")
-    if llm_idx == 2:
-        output_M2 = llama_call(sys_role,prompt)
+    sys_role = "You are an expert in designing and validating class diagrams for domain models. Follow the provided ANTLR grammar strictly, ensuring output adheres precisely to its structure. Do not add Java code, extraneous characters, or unnecessary formatting. Ensure all referenced classes are explicitly defined within the input."+read_file("antlrConversion/ClassDiagram.g4")
+    if llm_idx == 2 or llm_idx==3:
+        output_M2 = llama_call(sys_role,prompt, llm_name)
     else:
         output_M2 = gpt_call(prompt,llm_name, sys_role)
     save_data(prompt, output_M2, DSL_path , llm_name)
