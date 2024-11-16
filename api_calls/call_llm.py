@@ -10,18 +10,20 @@ import json
 def save_data(prompt,output, DSL_path, llm_name):
     write_json(f'{DSL_path}/json/prompt.json', prompt)
     write_json(f'{DSL_path}/json/output.json', output)
+    prompt = prompt_list2string(prompt)
     if os.path.exists(f'{DSL_path}/input_output_GPT.csv'):
         df = pd.read_csv(f'{DSL_path}/input_output_GPT.csv', index_col=0)
-        prompt = prompt_list2string(prompt)
-        if 'Solution' in df.columns: 
-            if os.path.exists(f'{DSL_path}/json/solution.json'):
-                solution = convert_json2nl(read_json(f'{DSL_path}/json/solution.json'))
-                df = df[['Prompt', 'Output', 'Solution']]
-                df.loc[llm_name] = [prompt, convert_json2nl(output), solution]
-            else:
-                raise Exception("The solution.txt file is missing.")
+        if 'Solution' in df.columns and os.path.exists(f'{DSL_path}/json/solution.json'): 
+            solution = convert_json2nl(read_json(f'{DSL_path}/json/solution.json'))
+            df = df[['Prompt', 'Output', 'Solution']]
+            df.loc[llm_name] = [prompt, convert_json2nl(output), solution]
+            
+        elif 'Solution' in df.columns and not os.path.exists(f'{DSL_path}/json/solution.json'):
+            df = df[['Prompt', 'Output', 'Solution']]
+            df.loc[llm_name] = [prompt, convert_json2nl(output), ""]
+            
         else:
-            df= df[['Prompt', 'Output']]
+            df = df[['Prompt', 'Output']]
             df.loc[llm_name] = [prompt, convert_json2nl(output)]
     else:
         if os.path.exists(f'{DSL_path}/json/solution.json'):

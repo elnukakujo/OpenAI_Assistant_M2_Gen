@@ -80,10 +80,6 @@ def convert_json2ecore(data, dsl_name, file_name):
                     
     tree = ET.ElementTree(ecore_model)
     tree.write(f"data/DSL2Gen/{dsl_name}/ecore/{file_name}.ecore")
-    
-    output = io.StringIO()
-    tree.write(output, encoding="unicode")
-    return output.getvalue()
 
 def convert_json2nl(data):
     if isinstance(data, str):

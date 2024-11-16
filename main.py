@@ -31,7 +31,7 @@ def main(example_method, DSL_name, llm_idx):
 if __name__ == "__main__":
     # Edit your parameters here
     example_method = "3shot"
-    DSL_name = "Tile-O"
+    DSL_name = "HBMS"
     llm_idx = 0
     # Edit your parameters here
     main(example_method, DSL_name, llm_idx)
