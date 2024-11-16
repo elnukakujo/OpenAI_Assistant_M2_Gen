@@ -1,0 +1,44 @@
+{
+    "enum": [
+        {
+            "name": "RoomType",
+            "values": [
+                "SINGLE",
+                "DOUBLE",
+                "TWIN"
+            ]
+        },
+        {
+            "name": "BookingStatus",
+            "values": [
+                "FINALIZED",
+                "CONFIRMED",
+                "CANCELLED_BY_HBMS",
+                "PRELIMINARY",
+                "CANCELLED_BY_TRAVELLER",
+                "CANCELLED_BY_HOTEL"
+            ]
+        },
+        {
+            "name": "PaymentType",
+            "values": [
+                "PREPAID",
+                "PAID_AT_HOTEL"
+            ]
+        }
+    ],
+    "class": [
+        {
+            "name": "HotelChain",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Hotel",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        }
+    ]
+}

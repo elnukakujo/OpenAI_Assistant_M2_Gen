@@ -1,4 +1,5 @@
 from common import *
+from conversion import convert_json2nl
 import os
 
 def prepare_prompt_ex(selected_type):
@@ -35,13 +36,13 @@ def prepare_prompt_ex(selected_type):
 
 def prepare_user_prompt(folder_path):
     user_domain_description=read_txt(f"{folder_path}/description.txt")
-    path_start_model = f"{folder_path}/pre_model.txt"
+    path_start_model = f"{folder_path}/json/pre_model.json"
     
     if os.path.exists(path_start_model):
-        user_start_model=read_txt(path_start_model)
+        user_start_model=read_json(path_start_model)
         if user_start_model != "":
             task = "Task instructions: Using the previous model as a base, generate the lists of model classes and associations from the following given description."
-            prompt = "Base model:\n"+user_start_model+"\n"+task+"\nDescription:\n" + user_domain_description
+            prompt = "Base model:\n"+convert_json2nl(user_start_model)+"\n"+task+"\nDescription:\n" + user_domain_description
             return prompt
         
     task = "Task instructions: Generate the lists of model classes and associations from the following given description."

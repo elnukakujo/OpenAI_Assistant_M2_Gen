@@ -1,4 +1,32 @@
 {
+    "enum": [
+        {
+            "name": "RoomType",
+            "values": [
+                "SINGLE",
+                "DOUBLE",
+                "TWIN"
+            ]
+        },
+        {
+            "name": "BookingStatus",
+            "values": [
+                "FINALIZED",
+                "CONFIRMED",
+                "CANCELLED_BY_HBMS",
+                "PRELIMINARY",
+                "CANCELLED_BY_TRAVELLER",
+                "CANCELLED_BY_HOTEL"
+            ]
+        },
+        {
+            "name": "PaymentType",
+            "values": [
+                "PREPAID",
+                "PAID_AT_HOTEL"
+            ]
+        }
+    ],
     "class": [
         {
             "name": "HotelBookingManagementSystem",
@@ -6,14 +34,10 @@
             "contains": [
                 {
                     "to": "Traveller",
-                    "mul": "*"
+                    "mul": "1..*"
                 },
                 {
                     "to": "Hotel",
-                    "mul": "*"
-                },
-                {
-                    "to": "Booking",
                     "mul": "*"
                 }
             ],
@@ -29,43 +53,19 @@
                 },
                 {
                     "name": "billingInformation",
-                    "type": "BillingInformation"
+                    "type": "string"
                 },
                 {
                     "name": "travelPreferences",
                     "type": "string"
-                },
-                {
-                    "name": "creditCardInformation",
-                    "type": "string"
-                },
-                {
-                    "name": "reliabilityRating",
-                    "type": "int"
                 }
             ],
             "contains": [
                 {
-                    "to": "Booking",
-                    "mul": "*"
+                    "to": "HotelBooking",
+                    "mul": "1..*"
                 }
             ],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "BillingInformation",
-            "attributes": [
-                {
-                    "name": "companyName",
-                    "type": "string"
-                },
-                {
-                    "name": "companyAddress",
-                    "type": "string"
-                }
-            ],
-            "contains": [],
             "associate": [],
             "inherit": []
         },
@@ -73,7 +73,7 @@
             "name": "Hotel",
             "attributes": [
                 {
-                    "name": "name",
+                    "name": "city",
                     "type": "string"
                 },
                 {
@@ -82,12 +82,12 @@
                 },
                 {
                     "name": "hotelChain",
-                    "type": "string"
+                    "type": "HotelChain"
                 }
             ],
             "contains": [
                 {
-                    "to": "RoomType",
+                    "to": "RoomAvailability",
                     "mul": "*"
                 }
             ],
@@ -95,15 +95,55 @@
             "inherit": []
         },
         {
-            "name": "RoomType",
+            "name": "HotelChain",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Hotel",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "HotelBooking",
             "attributes": [
                 {
-                    "name": "type",
+                    "name": "price",
+                    "type": "double"
+                },
+                {
+                    "name": "cityArea",
                     "type": "string"
                 },
                 {
-                    "name": "status",
+                    "name": "hotelRating",
+                    "type": "int"
+                },
+                {
+                    "name": "bookingIdentifier",
                     "type": "string"
+                },
+                {
+                    "name": "creditCardInformation",
+                    "type": "string"
+                },
+                {
+                    "name": "paymentType",
+                    "type": "PaymentType"
+                },
+                {
+                    "name": "cancellationDeadline",
+                    "type": "Date"
+                },
+                {
+                    "name": "reliabilityRating",
+                    "type": "int"
+                },
+                {
+                    "name": "bookingStatus",
+                    "type": "BookingStatus"
                 }
             ],
             "contains": [],
@@ -111,35 +151,19 @@
             "inherit": []
         },
         {
-            "name": "Booking",
+            "name": "RoomAvailability",
             "attributes": [
                 {
-                    "name": "bookingId",
-                    "type": "string"
-                },
-                {
-                    "name": "price",
-                    "type": "int"
-                },
-                {
-                    "name": "arrivalDate",
+                    "name": "date",
                     "type": "Date"
                 },
                 {
-                    "name": "departureDate",
-                    "type": "Date"
+                    "name": "roomType",
+                    "type": "RoomType"
                 },
                 {
-                    "name": "paymentType",
-                    "type": "string"
-                },
-                {
-                    "name": "confirmation",
+                    "name": "fullyBooked",
                     "type": "boolean"
-                },
-                {
-                    "name": "cancellationDeadline",
-                    "type": "Date"
                 }
             ],
             "contains": [],
