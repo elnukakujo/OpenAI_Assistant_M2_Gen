@@ -51,5 +51,4 @@ In the file api_calls/llama_call.py, you might need to play a bit with the param
 
 ## TODO
 - [ ] Add new prompt methods for the examples (maybe 3shots CoT)
-- [x] Add docu
 - [ ] (Finish implementing evaluation sys in eclispe java)
