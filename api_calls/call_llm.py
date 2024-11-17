@@ -7,7 +7,17 @@ from api_calls.llama_call import llama_call
 import os
 import json
 
-def save_data(prompt,output, DSL_path, llm_name):
+def save_data(prompt, output, DSL_path, llm_name):
+    """
+    Save the prompt and output data to JSON and CSV files.
+    This function saves the provided prompt and output data to JSON files and updates a CSV file with the data.
+    If a solution JSON file exists, it also includes the solution in the CSV file.
+    Args:
+        prompt (list): The prompt data to be saved.
+        output (dict): The output data to be saved.
+        DSL_path (str): The directory path where the JSON and CSV files are stored.
+        llm_name (str): The name of the language model, used as an index in the CSV file.
+    """
     write_json(f'{DSL_path}/json/prompt.json', prompt)
     write_json(f'{DSL_path}/json/output.json', output)
     prompt = prompt_list2string(prompt)
@@ -35,6 +45,19 @@ def save_data(prompt,output, DSL_path, llm_name):
     df.to_csv(f'{DSL_path}/input_output_GPT.csv', index=True)
 
 def gpt_message(prompt, sys_role):
+    """
+    Constructs a list of messages formatted for a GPT model conversation.
+
+    Args:
+        prompt (dict): A dictionary containing the following keys:
+            - "prompt_ex" (list): A list of tuples where each tuple contains a user message and the corresponding assistant response.
+            - "user_prompt" (str): The final user prompt to be added to the messages.
+        sys_role (str): The system role message to be included at the beginning of the conversation.
+
+    Returns:
+        list: A list of dictionaries, each representing a message in the conversation. The list starts with the system role message,
+              followed by alternating user and assistant messages from the "prompt_ex" list, and ends with the final user prompt.
+    """
     messages =[{"role": "system", "content": sys_role}]
     for shot in prompt["prompt_ex"]:
         messages.append({"role": "user", "content": shot[0]})
@@ -43,12 +66,43 @@ def gpt_message(prompt, sys_role):
     return messages
 
 def gpt_call(prompt, llm_name, sys_role):
+    """
+    Makes a call to the GPT model using the OpenAI API.
+
+    Args:
+        prompt (str): The input prompt to be sent to the GPT model.
+        llm_name (str): The name of the language model to be used.
+        sys_role (str): The system role to be used in the GPT message.
+
+    Returns:
+        str: The content of the response message from the GPT model.
+    """
     load_dotenv()
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     response = client.chat.completions.create(model=llm_name, messages=gpt_message(prompt, sys_role))
     return response.choices[0].message.content
 
 def call_llm(prompt, llm_idx, DSL_folder):
+    """
+    Calls a specified language model (LLM) with a given prompt and saves the output.
+
+    Args:
+        prompt (str): The input prompt to be sent to the LLM.
+        llm_idx (int): The index of the LLM to be used from the predefined list.
+        DSL_folder (str): The folder path where the output data will be saved.
+
+    Returns:
+        None
+
+    Raises:
+        IndexError: If llm_idx is out of the range of the llm_list.
+        Exception: If there is an error in calling the LLM or saving the data.
+
+    Notes:
+        The function supports different LLMs including "gpt-3.5-turbo", "gpt-4", 
+        "Llama3.2-3B-Instruct", and "Llama3.2-3B". Depending on the LLM selected, 
+        it calls either `llama_call` or `gpt_call` with appropriate parameters.
+    """
     DSL_path = "data/DSL2Gen/"+DSL_folder
     llm_list = ["gpt-3.5-turbo","gpt-4","Llama3.2-3B-Instruct", "Llama3.2-3B"]
     llm_name = llm_list[llm_idx]

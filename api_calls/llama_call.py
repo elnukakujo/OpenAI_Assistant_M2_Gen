@@ -55,7 +55,11 @@ def llama_dialogs(system_role, prompt):
 def llama_call(
     system_role: str,
     prompt,
-    llm_name: str
+    llm_name: str,
+    max_seq_len: int = 3000, # The maximum sequence length supported by the model
+    max_batch_size: int = 12, # The maximum batch size supported by the model
+    temperature:float =0.6,
+    top_p:float =0.9
 ):
     """
     Examples to run with the models finetuned for chat. Prompts correspond of chat
@@ -72,15 +76,14 @@ def llama_call(
         print("Building the Llama generator ...")
         generator = Llama.build(
             ckpt_dir=os.path.expanduser(f"~/.llama/checkpoints/{llm_name}"),
-            max_seq_len=3000, # The maximum sequence length supported by the model
-            max_batch_size=12,
-            model_parallel_size=1
+            max_seq_len=max_seq_len,
+            max_batch_size=max_batch_size
         )
         dialogs = llama_dialogs(system_role, prompt)
         result = generator.chat_completion(
             messages=dialogs,
-            temperature=0.6,
-            top_p=0.9
+            temperature=temperature,
+            top_p=top_p
         )
         dist.destroy_process_group()
         print(result.generation.content)

@@ -1,10 +1,60 @@
 import json
 from common import *
 import xml.etree.ElementTree as ET
-from xml.dom import minidom
-import io
 
 def convert_json2ecore(data, dsl_name, file_name):
+    """
+    Converts a JSON representation of a class diagram into an Ecore model and saves it as an .ecore file.
+    Args:
+        data (str or dict): The JSON data representing the class diagram. Can be a JSON string or a dictionary.
+        dsl_name (str): The name of the DSL (Domain-Specific Language) to be used in the file path.
+        file_name (str): The name of the output .ecore file (without extension).
+    Raises:
+        Exception: If the input data is a string and cannot be parsed as valid JSON.
+    The JSON data should have the following structure:
+    {
+        "enum": [
+            {
+                "name": "EnumName",
+                "values": ["Value1", "Value2", ...]
+            },
+            ...
+        ],
+        "class": [
+            {
+                "name": "ClassName",
+                "attributes": [
+                    {
+                        "name": "attributeName",
+                        "type": "string" | "int" | "boolean" | "float" | "double" | "time" | "date" | "array" | "customType"
+                    },
+                    ...
+                ],
+                "contains": [
+                    {
+                        "to": "ContainedClassName",
+                        "mul": "1" | "*"
+                    },
+                    ...
+                ],
+                "associate": [
+                    {
+                        "to": "AssociatedClassName",
+                        "mul": "1" | "*"
+                    },
+                    ...
+                ],
+                "inherit": ["SuperClassName", ...]
+            },
+            ...
+        ]
+    }
+    The function creates an Ecore model with the following elements:
+    - EPackage: The root element of the Ecore model.
+    - EEnum: Enumeration types defined in the JSON data.
+    - EClass: Classes defined in the JSON data, with attributes, containment relationships, association relationships, and inheritance.
+    The resulting Ecore model is saved to the specified file path.
+    """
     if isinstance(data, str):
         try:
             data = json.loads(data)
@@ -82,6 +132,39 @@ def convert_json2ecore(data, dsl_name, file_name):
     tree.write(f"data/DSL2Gen/{dsl_name}/ecore/{file_name}.ecore")
 
 def convert_json2nl(data):
+    """
+    Convert JSON data to a natural language representation.
+    This function takes a JSON object or a JSON string and converts it into a 
+    human-readable natural language format. The JSON data is expected to contain 
+    information about enumerations and classes.
+    Args:
+        data (str or dict): The JSON data to be converted. It can be a JSON string 
+                            or a dictionary.
+    Returns:
+        str: A string containing the natural language representation of the JSON data.
+    Raises:
+        Exception: If the input data is a string and cannot be parsed as JSON.
+    Example:
+        >>> json_data = {
+        ...     "enum": [
+        ...         {"name": "Color", "values": ["Red", "Green", "Blue"]}
+        ...     ],
+        ...     "class": [
+        ...         {
+        ...             "name": "Car",
+        ...             "attributes": [{"type": "string", "name": "model"}],
+        ...             "contains": [{"mul": "1..*", "to": "Wheel"}],
+        ...             "inherit": ["Vehicle"],
+        ...             "associate": [{"mul": "0..1", "to": "Driver"}]
+        ...         }
+        ...     ]
+        ... }
+        >>> print(convert_json2nl(json_data))
+        Enumerations:
+        Color(Red, Green, Blue)
+        Classes:
+        Car(string model, inherit Vehicle contain (1..*) Wheel associate (0..1) Driver)
+    """
     if isinstance(data, str):
         try:
             data = json.loads(data)
@@ -141,6 +224,20 @@ def convert_json2nl(data):
     return "\n".join(nl_output)
 
 def prompt_list2string(prompt):
+    """
+    Converts a prompt dictionary into a formatted string.
+
+    Args:
+        prompt (dict): A dictionary containing the following keys:
+            - "prompt_ex" (list): A list of tuples, where each tuple contains:
+                - A string representing the example domain description.
+                - A JSON object representing the example solution.
+            - "user_prompt" (str): A string representing the user's prompt.
+
+    Returns:
+        str: A formatted string combining the example domain descriptions, 
+             example solutions, and the user prompt.
+    """
     prompt_str = ""
     for shot in prompt["prompt_ex"]:
         prompt_str += "Example domain description: \n"+shot[0]+ "Example solution: \n" + convert_json2nl(shot[1]) + "\n###\n"

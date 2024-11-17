@@ -3,6 +3,16 @@ from conversion import convert_json2nl
 import os
 
 def prepare_prompt_ex(selected_type):
+    """
+    Prepares a list of prompt examples based on the selected type.
+    Args:
+        selected_type (str): The type of examples to prepare. It can be "nshot" for all examples
+                             or a specific number of examples in the format "{n}shot_{example1}_{example2}_...".
+    Returns:
+        list: A list of prompt examples, where each example is a list containing a description (str) and a solution (dict).
+    Raises:
+        ValueError: If the selected_type format is invalid or the number of specified examples does not match the expected count.
+    """
     examples_path="data/Example"
     prompt_ex = []
     
@@ -29,6 +39,17 @@ def prepare_prompt_ex(selected_type):
 
 
 def prepare_user_prompt(folder_path):
+    """
+    Prepares a user prompt based on the provided folder path.
+    This function reads a domain description from a text file and optionally 
+    includes a starting model from a JSON file if it exists. It then constructs 
+    a prompt for generating model classes and associations based on the description.
+    Args:
+        folder_path (str): The path to the folder containing the description 
+                           and optional starting model files.
+    Returns:
+        str: The constructed prompt for the user.
+    """
     user_domain_description=read_txt(f"{folder_path}/description.txt")
     path_start_model = f"{folder_path}/json/pre_model.json"
     
@@ -45,6 +66,18 @@ def prepare_user_prompt(folder_path):
 
 
 def prepare_prompt(selected_type, DSL_folder):
+    """
+    Prepares a prompt based on the selected type and DSL folder.
+
+    Args:
+        selected_type (str): The type of prompt to prepare.
+        DSL_folder (str): The folder containing the DSL data.
+
+    Returns:
+        dict: A dictionary containing the prepared example prompt and user prompt.
+            - "prompt_ex" (str): The prepared example prompt.
+            - "user_prompt" (str): The prepared user prompt.
+    """
     path_domain_description = "data/DSL2Gen/"+DSL_folder
     prompt_ex = prepare_prompt_ex(selected_type)
     user_prompt = prepare_user_prompt(path_domain_description)

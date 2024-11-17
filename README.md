@@ -10,23 +10,25 @@ Currently supports gpt-3-turbo and gpt-4, plans to include llama 3.2 lightweight
 ## The data folder
 - The folder **DSL2Gen** contains the problem descriptions and the outputs of the DSLs. 
     - **description.txt** is the domain description for the LLM to build from. It is mandatory for the assistant to work.
-    - **pre_model.txt** is, in the case the user has an existing version of a model related to the domain he wants the LLM to complete/upgrade, made to contain this *pre* model.
-    - **solution.txt** is for evaluation of the output purpose, comparing the LLM output with the product of a domain expert with the same domain description.
+    - **pre_model.json** is, in the case the user has an existing version of a model related to the domain he wants the LLM to complete/upgrade, made to contain this *pre* model.
+    - **solution.json** is for evaluation of the output purpose, comparing the LLM output with the product of a domain expert with the same domain description.
 
-- The folder **Example** contains the prompt methods for the domain description/solution examples to pass to the LLM.
-    - **3shot.txt** gives the problem description followed by the solution of 3 DSLs found in the article.
+- The folder **Example** contains the domain description/solution examples to pass to the LLM. The folder requires:
+    - **description.txt** the problem description
+    - **solution.json** The solution model defined using the json format you want
 
 ## How to use
 1. Go to DSL2Gen: `cd data/DSL2Gen`
 2. Create a new folder with the name of your DSL: `mkdir <your_dsl>`
 3. Create the DSL files:
     1. Create **description.txt** and add the domain description
-    2. (If you have a *pre* model, create **pre_model.txt** and put the model inside. **Note**: Try to define it using the ANTLR grammar defined in the root directory in **/antlrConversion/ClassDiagram.g4**)
-    3. (If you have a solution you want the parser to also transform in ecore, create **solution.txt** and put the solution model there defined using the ANTLR grammar, see previous point)
-4. In the root directory, open **main.py**
-    1. **example_method**: The example prompt you want, the name correspond to the .txt file in data/Example/ with the prompt explanation you give
-    2. **DSL_name**: The name of your DSL corresponding to the folder in **data/DSL2Gen**
-    3. **llm_idx**: Which LLM model you want to use, the number corresponds to the index in the list of possible model names (see main() documentation for more info)
+    2. Create two directories named json, for the model and prompts before ecore conversion, and ecore, for output and solution ecore files
+    2. (If you have a *pre* model, create **pre_model.json** and put the model inside /json. **Note**: Try to define it using the same json format as json files you pass as examples)
+    3. (If you have a solution you want the parser to also transform in ecore, create **solution.json** and put the solution model there defined using the same json format, see previous point)
+4. In the root directory, open **main.py**, define the dsl you want the model as well as the type of LLM model and prompting method you want:
+    1. **example_method**: The example prompt you want, defining how many dsl example you want, and specifying the names corresponding to the dsl folders in data/Example/. Note: Need to add a description.txt and a solution.json
+    2. **DSL_name**: The name of your DSL corresponding to the folder in **data/DSL2Gen**. You need a **description.txt** and json and ecore folders
+    3. **llm_idx**: Which LLM model you want to use, the number corresponds to the index in the list of possible model names (see main() documentation for more info). There are options for gpt3-turbo and gpt4, as well as Llama3.2-3B and Llama3.2-3B-Instruct even though I recommend the gpts.
 5. In the root directory, create a **.env** file and place your OpenAI Api key as follow:`OPENAI_API_KEY = <your_key>`
 6. With the terminal inside the root directory, enter:
 ```
@@ -39,10 +41,15 @@ pip install -r requirements.txt
     2. LLM might not always return a valid outputs for ANTLR, meaning you might need to run the program a second or third time.
 7. After the program ran, open the **input_output_GPT.csv** file located in your DSL directory to see the inputs, outputs and ecore outputs for each llm model you tried.
 
+### How to use with OpenAI API
+As described earlier you need to create a .env file in the root of the repository and define your OpenAI api key as the variable **OPENAI_API_KEY**
+
 ### How to use with Llama
 You need to register on the Meta website and get a key to install the model, after installing the requirements file, using `llama model download --source meta --model-id  MODEL_ID` ([follow the procedure on Meta website](https://www.llama.com/))
 
+In the file api_calls/llama_call.py, you might need to play a bit with the parameters like **max_seq_len** and **max_batch_size**.
+
 ## TODO
 - [ ] Add new prompt methods for the examples (maybe 3shots CoT)
-- [ ] Add docu
+- [x] Add docu
 - [ ] (Finish implementing evaluation sys in eclispe java)
