@@ -49,6 +49,9 @@ You need to register on the Meta website and get a key to install the model, aft
 
 In the file api_calls/llama_call.py, you might need to play a bit with the parameters like **max_seq_len** and **max_batch_size**.
 
+## How the system works
+![image](https://github.com/user-attachments/assets/96a1c801-681f-4d0c-a0a1-048b7f87f3e8)
+
 ## TODO
 - [ ] Add new prompt methods for the examples (maybe 3shots CoT)
 - [ ] (Finish implementing evaluation sys in eclispe java)
