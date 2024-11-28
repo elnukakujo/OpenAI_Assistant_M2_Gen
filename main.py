@@ -20,9 +20,7 @@ def main(example_method, DSL_name, llm_idx):
         llm_idx (int): The index of the LLM model to be called. The four current options are:
         {
             0: "gpt-3.5-turbo",
-            1: "gpt-4",
-            2: "Llama3.2-3B-Instruct",
-            3: "Llama3.2-3B"
+            1: "gpt-4"
         }.
 
     Returns:

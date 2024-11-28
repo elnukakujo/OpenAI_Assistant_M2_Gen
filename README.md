@@ -5,7 +5,7 @@ This project aims at designing a Model assistant to design metamodels for Domain
 
 Based on the findings of the article called [Automated Domain Modeling with Large Language Models: A Comparative Study](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10344012), and with the supervision of my IFT6253 professor.
 
-Currently supports gpt-3-turbo and gpt-4, plans to include llama 3.2 lightweight models
+Currently supports gpt-3-turbo and gpt-4 models
 
 ## The data folder
 - The folder **DSL2Gen** contains the problem descriptions and the outputs of the DSLs. 
@@ -28,7 +28,7 @@ Currently supports gpt-3-turbo and gpt-4, plans to include llama 3.2 lightweight
 4. In the root directory, open **main.py**, define the dsl you want the model as well as the type of LLM model and prompting method you want:
     1. **example_method**: The example prompt you want, defining how many dsl example you want, and specifying the names corresponding to the dsl folders in data/Example/. Note: Need to add a description.txt and a solution.json
     2. **DSL_name**: The name of your DSL corresponding to the folder in **data/DSL2Gen**. You need a **description.txt** and json and ecore folders
-    3. **llm_idx**: Which LLM model you want to use, the number corresponds to the index in the list of possible model names (see main() documentation for more info). There are options for gpt3-turbo and gpt4, as well as Llama3.2-3B and Llama3.2-3B-Instruct even though I recommend the gpts.
+    3. **llm_idx**: Which LLM model you want to use, the number corresponds to the index in the list of possible model names (see main() documentation for more info). There are options for gpt3-turbo and gpt4.
 5. In the root directory, create a **.env** file and place your OpenAI Api key as follow:`OPENAI_API_KEY = <your_key>`
 6. With the terminal inside the root directory, enter:
 ```
@@ -43,11 +43,6 @@ pip install -r requirements.txt
 
 ### How to use with OpenAI API
 As described earlier you need to create a .env file in the root of the repository and define your OpenAI api key as the variable **OPENAI_API_KEY**
-
-### How to use with Llama
-You need to register on the Meta website and get a key to install the model, after installing the requirements file, using `llama model download --source meta --model-id  MODEL_ID` ([follow the procedure on Meta website](https://www.llama.com/))
-
-In the file api_calls/llama_call.py, you might need to play a bit with the parameters like **max_seq_len** and **max_batch_size**.
 
 ## How the system works
 ![image](https://github.com/user-attachments/assets/96a1c801-681f-4d0c-a0a1-048b7f87f3e8)

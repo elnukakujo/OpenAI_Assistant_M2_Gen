@@ -18,3 +18,9 @@ torch
 fairscale 
 fire 
 blobfile
+transformers
+bitsandbytes
+protobuf
+sentencepiece
+accelerate>=0.26.0
+llama-cpp-python
