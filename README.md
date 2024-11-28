@@ -45,7 +45,7 @@ pip install -r requirements.txt
 As described earlier you need to create a .env file in the root of the repository and define your OpenAI api key as the variable **OPENAI_API_KEY**
 
 ## How the system works
-![image](https://github.com/user-attachments/assets/96a1c801-681f-4d0c-a0a1-048b7f87f3e8)
+![SystemStateDiagram drawio](https://github.com/user-attachments/assets/70e3bc16-8e50-4e74-b2da-cc49bf760036)
 
 ## TODO
 - [ ] Add new prompt methods for the examples (maybe 3shots CoT)
