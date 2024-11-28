@@ -48,5 +48,4 @@ As described earlier you need to create a .env file in the root of the repositor
 ![SystemStateDiagram drawio](https://github.com/user-attachments/assets/70e3bc16-8e50-4e74-b2da-cc49bf760036)
 
 ## TODO
-- [ ] Add new prompt methods for the examples (maybe 3shots CoT)
-- [ ] (Finish implementing evaluation sys in eclispe java)
+- [ ] Do the evaluation for 1 shots of 3 distinct ex of DSL on 3 DSL2Gen on turbo and gpt4
