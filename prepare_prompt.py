@@ -56,11 +56,11 @@ def prepare_user_prompt(folder_path):
     if os.path.exists(path_start_model):
         user_start_model=read_json(path_start_model)
         if user_start_model != "":
-            task = "Task instructions: Using the previous model as a base, generate the lists of model classes and associations from the following given description."
+            task = "Task instructions: Using this previous low recall model as a base to work on, add more enumerations, classes, attributes and relationships from the problem description to the metamodel from the following given description. Additionally prioritize inheritance rel and enumerations when possible rather than additional attributes. For example, BigCity inherit City, rather than having a size attribute or an enumeration CitySize with Big medium, and small."
             prompt = "Base model:\n"+convert_json2nl(user_start_model)+"\n"+task+"\nDescription:\n" + user_domain_description
             return prompt
         
-    task = "Task instructions: Generate the lists of model classes and associations from the following given description."
+    task = "Task instructions: Focus on not losing any infos from the description to generate a metamodel from the following given description. Additionally prioritize inheritance rel and enumerations when possible rather than additional attributes. For example, BigCity inherit City, rather than having a size attribute or an enumeration CitySize with Big medium, and small."
     prompt = task+"\nDescription:\n" + user_domain_description
     return prompt
 

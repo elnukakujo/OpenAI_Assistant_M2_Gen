@@ -1,5 +1,5 @@
 from prepare_prompt import prepare_prompt
-from api_calls.call_llm import call_llm
+from call_llm import call_llm
 from convert_ecore import convert_ecore
 
 def main(example_method, DSL_name, llm_idx):
@@ -37,8 +37,8 @@ def main(example_method, DSL_name, llm_idx):
     
 if __name__ == "__main__":
     # Edit your parameters here
-    example_method = "1shot_h2s"
-    DSL_name = "SHAS"
-    llm_idx = 2
+    example_method = "1shot_btms"
+    DSL_name = "Tile-O"
+    llm_idx = 0
     # Edit your parameters here
     main(example_method, DSL_name, llm_idx)
