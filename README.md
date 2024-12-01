@@ -48,4 +48,6 @@ As described earlier you need to create a .env file in the root of the repositor
 ![SystemStateDiagram drawio](https://github.com/user-attachments/assets/70e3bc16-8e50-4e74-b2da-cc49bf760036)
 
 ## TODO
-- [ ] Do the evaluation for 1 shots of 3 distinct ex of DSL on 3 DSL2Gen on turbo and gpt4
+- [ ] Try automatic prompt engineering to divide generated tasks and then do the tasks to generate the model
+- [ ] Try adding free gemini option
+- [ ] (Do the evaluation for 1 shots of 3 distinct ex of DSL on 3 DSL2Gen on turbo and gpt4)
