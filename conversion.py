@@ -129,6 +129,8 @@ def convert_json2ecore(data, dsl_name, file_name):
                     e_inherit.set("href", f"#//{super_type}")
                     
     tree = ET.ElementTree(ecore_model)
+    if not os.path.exists(f"data/DSL2Gen/{dsl_name}/ecore/"):
+        os.makedirs(f"data/DSL2Gen/{dsl_name}/ecore/")
     tree.write(f"data/DSL2Gen/{dsl_name}/ecore/{file_name}.ecore")
 
 def convert_json2nl(data):

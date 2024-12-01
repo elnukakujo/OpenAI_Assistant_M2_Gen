@@ -7,8 +7,7 @@
                 "ConnectTwoTiles",
                 "RemoveConnectionPiece",
                 "MoveToArbitraryTile",
-                "LoseNextTurn",
-                "ChangeTileColor"
+                "LoseNextTurn"
             ]
         },
         {
@@ -25,15 +24,6 @@
             "values": [
                 "White",
                 "Black"
-            ]
-        },
-        {
-            "name": "Side",
-            "values": [
-                "Right",
-                "Left",
-                "Top",
-                "Bottom"
             ]
         }
     ],
@@ -93,43 +83,10 @@
             "contains": [
                 {
                     "to": "ConnectionPiece",
-                    "mul": "*"
+                    "mul": "1"
                 }
             ],
-            "associate": [
-                {
-                    "to": "Tile",
-                    "mul": "1",
-                    "roles": [
-                        "connectedTile"
-                    ],
-                    "assoc": "ConnectionPiece"
-                },
-                {
-                    "to": "Tile",
-                    "mul": "1",
-                    "roles": [
-                        "connectedTile"
-                    ],
-                    "assoc": "ConnectionPiece"
-                },
-                {
-                    "to": "Tile",
-                    "mul": "1",
-                    "roles": [
-                        "connectedTile"
-                    ],
-                    "assoc": "ConnectionPiece"
-                },
-                {
-                    "to": "Tile",
-                    "mul": "1",
-                    "roles": [
-                        "connectedTile"
-                    ],
-                    "assoc": "ConnectionPiece"
-                }
-            ],
+            "associate": [],
             "inherit": []
         },
         {
@@ -204,6 +161,13 @@
             "inherit": []
         },
         {
+            "name": "ActionCard",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
             "name": "PlayerOrder",
             "attributes": [],
             "contains": [],
@@ -212,20 +176,6 @@
         },
         {
             "name": "TileColor",
-            "attributes": [],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "Side",
-            "attributes": [],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "ActionCard",
             "attributes": [],
             "contains": [],
             "associate": [],

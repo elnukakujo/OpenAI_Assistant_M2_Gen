@@ -44,33 +44,59 @@ def save_data(prompt, output, DSL_path, llm_name):
     df.index.name = 'LLM_name'
     df.to_csv(f'{DSL_path}/input_output_GPT.csv', index=True)
 
-def gpt_message(prompt, sys_role):
+def gpt_shot_prompt_messages(shots, prompt, sys_role):
     """
-    Constructs a list of messages formatted for a GPT model conversation.
+    Constructs a list of messages for a GPT model based on provided shots, prompt, and system role.
 
     Args:
-        prompt (dict): A dictionary containing the following keys:
-            - "prompt_ex" (list): A list of tuples where each tuple contains a user message and the corresponding assistant response.
-            - "user_prompt" (str): The final user prompt to be added to the messages.
-        sys_role (str): The system role message to be included at the beginning of the conversation.
+        shots (list of tuples): A list of tuples where each tuple contains a user input and the corresponding assistant response.
+        prompt (str): The main prompt to be sent to the GPT model.
+        sys_role (str): The role of the system to be included in the messages.
 
     Returns:
-        list: A list of dictionaries, each representing a message in the conversation. The list starts with the system role message,
-              followed by alternating user and assistant messages from the "prompt_ex" list, and ends with the final user prompt.
+        list: A list of dictionaries representing the messages to be sent to the GPT model.
     """
     messages =[{"role": "system", "content": sys_role}]
-    for shot in prompt["prompt_ex"]:
-        messages.append({"role": "user", "content": shot[0]})
-        messages.append({"role": "assistant", "content": json.dumps(shot[1])})
-    messages.append({"role": "user", "content": prompt["user_prompt"]})
+    if len(shots)>0:
+        for shot in shots:
+            messages.append({"role": "user", "content": shot[0]})
+            messages.append({"role": "assistant", "content": json.dumps(shot[1])})
+    messages.append({"role": "user", "content": prompt})
     return messages
 
-def gpt_call(prompt, llm_name, sys_role):
+def gpt_taskgen_messages(client, llm_name, prompt):
+    messages =[{"role": "system", "content": "From a textual description, you generate a list of tasks, in a json array of str format, for another LLM to build a metamodel. Don't give general instructions and instructions an LLM can't follow like build a metamodel, or create a class diagram."}]
+    messages.append({"role": "user", "content": prompt})
+    return client.chat.completions.create(model=llm_name, messages=messages).choices[0].message.content
+
+def gpt_tasks(client, prompt, divide, llm_name, sys_role):
+    if divide == "manual":
+        goal = prompt["user_prompt"].split('\n\n')[0]
+        tasks = prompt["user_prompt"].split('\n\n')[1:]
+    elif divide == "auto":
+        goal = prompt["user_prompt"].split('\n\n')[0]
+        tasks = gpt_taskgen_messages(client, llm_name, '.\n'.join(prompt["user_prompt"].split('\n\n')[1:]))
+        try:
+            tasks = json.loads(tasks.strip("```json\n").strip("```"))
+        except:
+            print(tasks)
+            raise Exception("Failed to parse tasks from GPT response")
+    i=0
+    for task in tasks:
+        print(f"Task {i}: {task}")
+        messages = gpt_shot_prompt_messages(prompt['prompt_ex'], goal+'\n'+task, sys_role)
+        response = client.chat.completions.create(model=llm_name, messages=messages)
+        goal = 'Using this previous model, add more elements to the model or modify the model using this text problem description. ' + json.dumps(response.choices[0].message.content)
+        i+=1
+    return response
+
+def gpt_call(prompt, divide, llm_name, sys_role):
     """
     Makes a call to the GPT model using the OpenAI API.
 
     Args:
         prompt (str): The input prompt to be sent to the GPT model.
+        divide (str): The divide method to prepare. It can be "" for no divide, "manual" for manual divide, or "auto" for auto divide.
         llm_name (str): The name of the language model to be used.
         sys_role (str): The system role to be used in the GPT message.
 
@@ -79,15 +105,20 @@ def gpt_call(prompt, llm_name, sys_role):
     """
     load_dotenv()
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    response = client.chat.completions.create(model=llm_name, messages=gpt_message(prompt, sys_role))
+    if divide != "":
+        response = gpt_tasks(client, prompt, divide, llm_name, sys_role)
+    else:
+        messages = gpt_shot_prompt_messages(prompt['prompt_ex'], prompt['user_prompt'], sys_role)
+        response = client.chat.completions.create(model=llm_name, messages=messages)
     return response.choices[0].message.content
 
-def call_llm(prompt, llm_idx, DSL_folder):
+def call_llm(prompt, divide, llm_idx, DSL_folder):
     """
     Calls a specified language model (LLM) with a given prompt and saves the output.
 
     Args:
         prompt (str): The input prompt to be sent to the LLM.
+        divide (str): The divide method to prepare. It can be "" for no divide, "manual" for manual divide, or "auto" for auto divide.
         llm_idx (int): The index of the LLM to be used from the predefined list.
         DSL_folder (str): The folder path where the output data will be saved.
 
@@ -107,5 +138,5 @@ def call_llm(prompt, llm_idx, DSL_folder):
     llm_list = ["gpt-3.5-turbo","gpt-4"]
     llm_name = llm_list[llm_idx]
     sys_role = "You are an expert in designing and validating class diagrams from a textual description for domain models returning only valid Json files with only components from the description. RETURN A JSON, RETURN A JSON, RETURN A JSON. FOLLOW THE EXAMPLES AND RETURN A JSON. Ensure all referenced classes are explicitly defined within the input."
-    output_M2 = gpt_call(prompt,llm_name, sys_role)
+    output_M2 = gpt_call(prompt, divide, llm_name, sys_role)
     save_data(prompt, output_M2, DSL_path , llm_name)
