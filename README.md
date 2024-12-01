@@ -45,7 +45,7 @@ pip install -r requirements.txt
 As described earlier you need to create a .env file in the root of the repository and define your OpenAI api key as the variable **OPENAI_API_KEY**
 
 ## How the system works
-![SystemStateDiagram drawio](https://github.com/user-attachments/assets/70e3bc16-8e50-4e74-b2da-cc49bf760036)
+![SystemStateDiagram drawio(1)](https://github.com/user-attachments/assets/bddcdbff-bc56-4bb0-8eb1-d69a23adb0cf)
 
 ## TODO
 - [ ] Divide task description into smaller task line by line and generate models
