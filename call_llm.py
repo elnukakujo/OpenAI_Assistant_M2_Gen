@@ -69,7 +69,7 @@ def gpt_taskgen_messages(client, llm_name, prompt):
     messages.append({"role": "user", "content": prompt})
     return client.chat.completions.create(model=llm_name, messages=messages).choices[0].message.content
 
-def gpt_tasks(client, prompt, divide, llm_name, sys_role):
+def gpt_tasks(client, prompt, divide, llm_name):
     if divide == "manual":
         goal = prompt["user_prompt"].split('\n\n')[0]
         tasks = prompt["user_prompt"].split('\n\n')[1:]
@@ -81,16 +81,19 @@ def gpt_tasks(client, prompt, divide, llm_name, sys_role):
         except:
             print(tasks)
             raise Exception("Failed to parse tasks from GPT response")
+    else:
+        raise Exception("Invalid divide method")
     i=0
     for task in tasks:
         print(f"Task {i}: {task}")
+        sys_role = "You are an expert in designing and validating class diagrams for domain models returning only valid Json files. You follow a set of instruction that you receive one by one to build a metamodel in a systematic way."
         messages = gpt_shot_prompt_messages(prompt['prompt_ex'], goal+'\n'+task, sys_role)
         response = client.chat.completions.create(model=llm_name, messages=messages)
         goal = 'Using this previous model, add more elements to the model or modify the model using this text problem description. ' + json.dumps(response.choices[0].message.content)
         i+=1
     return response
 
-def gpt_call(prompt, divide, llm_name, sys_role):
+def gpt_call(prompt, divide, llm_name):
     """
     Makes a call to the GPT model using the OpenAI API.
 
@@ -98,7 +101,6 @@ def gpt_call(prompt, divide, llm_name, sys_role):
         prompt (str): The input prompt to be sent to the GPT model.
         divide (str): The divide method to prepare. It can be "" for no divide, "manual" for manual divide, or "auto" for auto divide.
         llm_name (str): The name of the language model to be used.
-        sys_role (str): The system role to be used in the GPT message.
 
     Returns:
         str: The content of the response message from the GPT model.
@@ -106,8 +108,9 @@ def gpt_call(prompt, divide, llm_name, sys_role):
     load_dotenv()
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     if divide != "":
-        response = gpt_tasks(client, prompt, divide, llm_name, sys_role)
+        response = gpt_tasks(client, prompt, divide, llm_name)
     else:
+        sys_role = "You are an expert in designing and validating class diagrams from a textual description for domain models returning only valid Json files with only components from the description. Ensure all referenced classes are explicitly defined within the input."
         messages = gpt_shot_prompt_messages(prompt['prompt_ex'], prompt['user_prompt'], sys_role)
         response = client.chat.completions.create(model=llm_name, messages=messages)
     return response.choices[0].message.content
@@ -137,6 +140,5 @@ def call_llm(prompt, divide, llm_idx, DSL_folder):
     DSL_path = "data/DSL2Gen/"+DSL_folder
     llm_list = ["gpt-3.5-turbo","gpt-4"]
     llm_name = llm_list[llm_idx]
-    sys_role = "You are an expert in designing and validating class diagrams from a textual description for domain models returning only valid Json files with only components from the description. RETURN A JSON, RETURN A JSON, RETURN A JSON. FOLLOW THE EXAMPLES AND RETURN A JSON. Ensure all referenced classes are explicitly defined within the input."
-    output_M2 = gpt_call(prompt, divide, llm_name, sys_role)
+    output_M2 = gpt_call(prompt, divide, llm_name)
     save_data(prompt, output_M2, DSL_path , llm_name)

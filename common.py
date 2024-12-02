@@ -73,6 +73,7 @@ def write_json(path, content):
         try:
             content = json.loads(content)
         except json.JSONDecodeError:
+            print(content)
             raise Exception("The content to save is not a valid JSON string.")
     directory = os.path.dirname(path)
     if not os.path.exists(directory):

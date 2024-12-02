@@ -44,9 +44,9 @@ def main(shots, divide, DSL_name, llm_idx):
     
 if __name__ == "__main__":
     # Edit your parameters here
-    shots = "1shot_labtracker"
-    divide = "auto"
+    shots = "nshot"
+    divide = "manual"
     DSL_name = "HBMS"
-    llm_idx = 0
+    llm_idx = 1
     # Edit your parameters here
     main(shots, divide, DSL_name, llm_idx)

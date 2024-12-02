@@ -1,62 +1,181 @@
 {
-    "enum": [],
+    "enum": [
+        {
+            "name": "TravelPreferences",
+            "values": [
+                "BreakfastIncluded",
+                "FreeWifi",
+                "24/7FrontDesk"
+            ]
+        },
+        {
+            "name": "RoomType",
+            "values": [
+                "Single",
+                "Double",
+                "Twin"
+            ]
+        },
+        {
+            "name": "HotelRating",
+            "values": [
+                "OneStar",
+                "TwoStar",
+                "ThreeStar",
+                "FourStar",
+                "FiveStar"
+            ]
+        },
+        {
+            "name": "PaymentMode",
+            "values": [
+                "PrePaid",
+                "PayAtHotel"
+            ]
+        }
+    ],
     "class": [
         {
-            "name": "Traveller",
+            "name": "HBMS",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Search",
+                    "mul": "*"
+                },
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                },
+                {
+                    "to": "Offer",
+                    "mul": "*"
+                },
+                {
+                    "to": "BillingInformation",
+                    "mul": "*"
+                },
+                {
+                    "to": "HotelChain",
+                    "mul": "*"
+                },
+                {
+                    "to": "RoomAvailability",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Search",
             "attributes": [],
             "contains": [],
             "associate": [
                 {
-                    "to": "Booking",
-                    "methods": [
-                        "makeBooking"
-                    ]
-                },
-                {
                     "to": "Hotel",
-                    "methods": [
-                        "confirmBooking"
-                    ]
+                    "mul": "*"
                 }
             ],
             "inherit": []
         },
         {
-            "name": "Person",
+            "name": "Booking",
             "attributes": [
                 {
-                    "name": "name",
+                    "name": "isPreliminary",
+                    "type": "boolean"
+                },
+                {
+                    "name": "bookingId",
                     "type": "string"
                 },
                 {
-                    "name": "billingInformation",
-                    "type": "string"
+                    "name": "payMode",
+                    "type": "PaymentMode"
                 },
                 {
-                    "name": "companyName",
-                    "type": "string"
+                    "name": "cancellationDeadline",
+                    "type": "Date"
                 },
                 {
-                    "name": "companyAddress",
-                    "type": "string"
+                    "name": "isConfirmed",
+                    "type": "boolean"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "BusinessTraveller",
+                    "mul": "1"
                 },
                 {
-                    "name": "travelPreferences",
+                    "to": "Deal",
+                    "mul": "1"
+                },
+                {
+                    "to": "Hotel",
+                    "mul": "1"
+                },
+                {
+                    "to": "BillingInformation",
+                    "mul": "1"
+                },
+                {
+                    "to": "RoomAvailability",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "BusinessTraveller",
+            "attributes": [
+                {
+                    "name": "reliabilityRating",
+                    "type": "float"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                },
+                {
+                    "to": "BillingInformation",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "BillingInformation",
+            "attributes": [
+                {
+                    "name": "creditCardInfo",
                     "type": "string"
                 }
             ],
             "contains": [],
-            "associate": [],
-            "inherit": [
-                "Traveller"
-            ]
+            "associate": [
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                },
+                {
+                    "to": "BusinessTraveller",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
         },
         {
-            "name": "Booking",
+            "name": "Hotel",
             "attributes": [
                 {
                     "name": "price",
-                    "type": "double"
+                    "type": "float"
                 },
                 {
                     "name": "cityArea",
@@ -64,40 +183,12 @@
                 },
                 {
                     "name": "hotelRating",
-                    "type": "int"
+                    "type": "HotelRating"
                 },
                 {
-                    "name": "keyPreferences",
-                    "type": "string"
+                    "name": "preferences",
+                    "type": "TravelPreferences"
                 },
-                {
-                    "name": "uniqueBookingIdentifier",
-                    "type": "string"
-                },
-                {
-                    "name": "creditCardInformation",
-                    "type": "string"
-                },
-                {
-                    "name": "bookingStatus",
-                    "type": "string"
-                },
-                {
-                    "name": "paymentMethod",
-                    "type": "string"
-                },
-                {
-                    "name": "cancellationDeadline",
-                    "type": "string"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "Hotel",
-            "attributes": [
                 {
                     "name": "city",
                     "type": "string"
@@ -105,70 +196,127 @@
                 {
                     "name": "address",
                     "type": "string"
-                },
-                {
-                    "name": "hotelChain",
-                    "type": "string"
-                },
-                {
-                    "name": "availableRoomTypes",
-                    "type": "string"
-                },
-                {
-                    "name": "fullyBookedRoomTypes",
-                    "type": "string"
                 }
             ],
-            "contains": [],
+            "contains": [
+                {
+                    "to": "Deal",
+                    "mul": "*"
+                },
+                {
+                    "to": "RoomAvailability",
+                    "mul": "*"
+                }
+            ],
             "associate": [
                 {
-                    "to": "Traveller",
-                    "methods": [
-                        "announceAvailableRoomTypes",
-                        "informFullyBookedRoomType",
-                        "sendConfirmation"
-                    ]
+                    "to": "Booking",
+                    "mul": "*"
+                },
+                {
+                    "to": "Offer",
+                    "mul": "*"
+                },
+                {
+                    "to": "Search",
+                    "mul": "*"
+                },
+                {
+                    "to": "HotelChain",
+                    "mul": "1"
                 }
             ],
             "inherit": []
         },
         {
-            "name": "HBMS",
+            "name": "Deal",
             "attributes": [],
             "contains": [],
             "associate": [
                 {
-                    "to": "Booking",
-                    "mul": "*",
-                    "methods": [
-                        "searchAccommodation",
-                        "createPreliminaryBooking",
-                        "finalizeBooking",
-                        "confirmBooking",
-                        "cancelBooking",
-                        "reimburseTravellers",
-                        "calculateReliabilityRating"
-                    ]
+                    "to": "Search",
+                    "mul": "*"
                 },
                 {
-                    "to": "CompetitorHotel",
-                    "methods": [
-                        "forwardPreliminaryBookingInfo"
-                    ]
+                    "to": "Booking",
+                    "mul": "*"
+                },
+                {
+                    "to": "Offer",
+                    "mul": "*"
                 }
             ],
             "inherit": []
         },
         {
-            "name": "CompetitorHotel",
+            "name": "Offer",
             "attributes": [
                 {
-                    "name": "specialOffers",
+                    "name": "offeredPrice",
+                    "type": "float"
+                },
+                {
+                    "name": "offerExpires",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Hotel",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "HotelChain",
+            "attributes": [
+                {
+                    "name": "name",
                     "type": "string"
                 }
             ],
             "contains": [],
-            "associate": [],
+            "associate": [
+                {
+                    "to": "Hotel",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "RoomAvailability",
+            "attributes": [
+                {
+                    "name": "roomType",
+                    "type": "RoomType"
+                },
+                {
+                    "name": "startDate",
+                    "type": "Date"
+                },
+                {
+                    "name": "endDate",
+                    "type": "Date"
+                },
+                {
+                    "name": "isFullyBooked",
+                    "type": "boolean"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Hotel",
+                    "mul": "1"
+                },
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                }
+            ],
             "inherit": []
         }
     ]
