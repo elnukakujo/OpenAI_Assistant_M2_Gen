@@ -38,14 +38,13 @@ def prepare_prompt_ex(shots):
     raise ValueError("Invalid shot method selected: Look for typos in the example method name or the dsl names, and conform to the documentation.")
 
 
-def prepare_user_prompt(divide, folder_path):
+def prepare_user_prompt(folder_path):
     """
     Prepares a user prompt based on the provided folder path.
     This function reads a domain description from a text file and optionally 
     includes a starting model from a JSON file if it exists. It then constructs 
     a prompt for generating model classes and associations based on the description.
     Args:
-        divide (str): The divide method to prepare. It can be "" for no divide, "manual" for manual divide, or "auto" for auto divide.
         folder_path (str): The path to the folder containing the description 
                            and optional starting model files.
     Returns:
@@ -55,13 +54,12 @@ def prepare_user_prompt(divide, folder_path):
     return user_domain_description
 
 
-def prepare_prompt(shots, divide, DSL_folder):
+def prepare_prompt(shots, DSL_folder):
     """
     Prepares a prompt based on the selected type and DSL folder.
 
     Args:
         shots (str): The shots to prepare. It can be "0shot" for no shot, "nshot" for all examples or a specific number of examples in the format "{n}shot_{example1}_{example2}_...".
-        divide (str): The divide method to prepare. It can be "" for no divide, "manual" for manual divide, or "auto" for auto divide.
         DSL_folder (str): The folder containing the DSL data.
 
     Returns:
@@ -74,7 +72,7 @@ def prepare_prompt(shots, divide, DSL_folder):
         prompt_ex = []
     else:
         prompt_ex = prepare_prompt_ex(shots)
-    user_prompt = prepare_user_prompt(divide, path_domain_description)
+    user_prompt = prepare_user_prompt(path_domain_description)
     return {
         "prompt_ex": prompt_ex,
         "user_prompt": user_prompt

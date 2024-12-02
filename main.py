@@ -34,7 +34,7 @@ def main(shots, divide, DSL_name, llm_idx):
         None
     """
     print("Preparing the prompt...")
-    prompt = prepare_prompt(shots, divide, DSL_name)
+    prompt = prepare_prompt(shots, DSL_name)
     print("----------------------")
     print("Preparing the call to the API...")
     call_llm(prompt, divide, llm_idx, DSL_name)

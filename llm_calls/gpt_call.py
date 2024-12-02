@@ -46,11 +46,11 @@ def gpt_task_call(client, prompt, divide, llm_name):
         raise Exception("Invalid divide method")
     
     response = {}
+    sys_role = "You are an expert in designing and validating class diagrams for domain models returning only valid Json files. You receive tasks with the format of CRUD operations as well as a model from previous tasks and return a valid json object using the same format as the shots above. A metamodel is composed of enumerations and classes. Classes are composed of attributes with types (int, double, boolean, Date, string, and enumerations custom types) and relationships which have mul and can be inherit, associate or contain. Return only valid Json files as shown in the shots, and USE THE PREVIOUS METAMODEL AS BASE! USE THE PREVIOUS METAMODEL AS BASE! USE THE PREVIOUS METAMODEL AS BASE!"
     i=0
     for task in tasks:
         print("----------------------")
         print(f"Task {i}: {task}")
-        sys_role = "You are an expert in designing and validating class diagrams for domain models returning only valid Json files. You receive tasks with the format of CRUD operations as well as a model from previous tasks and return a valid json object using the same format as the shots above. A metamodel is composed of enumerations and classes. Classes are composed of attributes with types (int, double, boolean, Date, string, and enumerations custom types) and relationships which have mul and can be inherit, associate or contain. Return only valid Json files as shown in the shots, and USE THE PREVIOUS METAMODEL AS BASE! USE THE PREVIOUS METAMODEL AS BASE! USE THE PREVIOUS METAMODEL AS BASE!"
         messages = gpt_prepare_shots_prompt(prompt['prompt_ex'], task +"\n Previous metamodel: \n"+json.dumps(response), sys_role)
         response = client.chat.completions.create(model=llm_name, messages=messages).choices[0].message.content
         print(convert_json2nl(response))
