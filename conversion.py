@@ -20,7 +20,7 @@ def convert_json2ecore(data, dsl_name, file_name):
             },
             ...
         ],
-        "class": [
+        "class_": [
             {
                 "name": "ClassName",
                 "attributes": [
@@ -82,8 +82,8 @@ def convert_json2ecore(data, dsl_name, file_name):
                 enum_value = ET.SubElement(enum_class, "eLiterals", name=value)
     
     # Add classes
-    if "class" in data:
-        for cls in data["class"]:
+    if "class_" in data:
+        for cls in data["class_"]:
             e_class = ET.SubElement(ecore_model, "eClassifiers")
             e_class.set("xsi:type", "ecore:EClass")
             e_class.set("name", cls["name"])
@@ -151,7 +151,7 @@ def convert_json2nl(data):
         ...     "enum": [
         ...         {"name": "Color", "values": ["Red", "Green", "Blue"]}
         ...     ],
-        ...     "class": [
+        ...     "class_": [
         ...         {
         ...             "name": "Car",
         ...             "attributes": [{"type": "string", "name": "model"}],
@@ -171,6 +171,7 @@ def convert_json2nl(data):
         try:
             data = json.loads(data)
         except json.JSONDecodeError:
+            print(data)
             raise Exception("The LLM output data is not a valid JSON string.")
     
     nl_output = []
@@ -183,16 +184,16 @@ def convert_json2nl(data):
         nl_output.append("")  # Blank line for separation
 
     # Process Classes
-    if "class" in data:
+    if "class_" in data:
         nl_output.append("Classes:")
-        for cls in data["class"]:
+        for cls in data["class_"]:
             contains = ", ".join(
                 [f"contain ({item['mul']}) {item['to']}" for item in cls.get("contains", [])]
             )
             attributes = ", ".join(
                 [f"{attr['type']} {attr['name']}" for attr in cls.get("attributes", [])]
             )
-            inherits = ", ".join(cls.get("inherit", []))
+            inherits = "".join(cls.get("inherit", []))
             associates = ", ".join(
                 [f"associate ({item['mul']}) {item['to']}" for item in cls.get("associate", [])]
             )

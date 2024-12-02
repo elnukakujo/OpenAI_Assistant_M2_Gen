@@ -30,7 +30,7 @@
             ]
         }
     ],
-    "class": [
+    "class_": [
         {
             "name": "LabTracker",
             "attributes": [],

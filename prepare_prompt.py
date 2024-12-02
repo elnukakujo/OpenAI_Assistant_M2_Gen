@@ -52,19 +52,7 @@ def prepare_user_prompt(divide, folder_path):
         str: The constructed prompt for the user.
     """
     user_domain_description=read_txt(f"{folder_path}/description.txt")
-    path_start_model = f"{folder_path}/json/pre_model.json"
-    
-    if divide == "":
-        if os.path.exists(path_start_model):
-            user_start_model=read_json(path_start_model)
-            if user_start_model != "":
-                goal = "Task instructions: Using this previous low recall model as a base to work on, add more enumerations, classes, attributes and relationships from the problem description to the metamodel from the following given description. Additionally prioritize inheritance rel and enumerations when possible rather than additional attributes. For example, BigCity inherit City, rather than having a size attribute or an enumeration CitySize with Big medium, and small."
-                prompt = "Base model:\n"+convert_json2nl(user_start_model)+"\n"+goal+"\nDescription:\n" + user_domain_description
-                return prompt
-        
-    goal = "Task instructions: Focus on not losing any infos from the description below to generate a metamodel. Additionally prioritize inheritance rel and enumerations when possible rather than additional attributes."
-    prompt = goal+"\nDescription:\n\n" + user_domain_description
-    return prompt
+    return user_domain_description
 
 
 def prepare_prompt(shots, divide, DSL_folder):

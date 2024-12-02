@@ -7,20 +7,5 @@ python-dotenv==1.0.1
 # Data analysis and manipulation
 pandas==2.2.3
 
-# ANTLR runtime for Python 3
-antlr4-python3-runtime==4.13.2
-
-# To use Llama Cli
-llama-stack
-
-# To excute LLama calls
-torch 
-fairscale 
-fire 
-blobfile
-transformers
-bitsandbytes
-protobuf
-sentencepiece
-accelerate>=0.26.0
-llama-cpp-python
+# Gemini
+google-generativeai

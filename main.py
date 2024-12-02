@@ -26,7 +26,8 @@ def main(shots, divide, DSL_name, llm_idx):
         llm_idx (int): The index of the LLM model to be called. The four current options are:
         {
             0: "gpt-3.5-turbo",
-            1: "gpt-4"
+            1: "gpt-4",
+            2: "gemini-1.5-flash"
         }.
 
     Returns:
@@ -45,8 +46,8 @@ def main(shots, divide, DSL_name, llm_idx):
 if __name__ == "__main__":
     # Edit your parameters here
     shots = "nshot"
-    divide = "manual"
+    divide = "auto"
     DSL_name = "HBMS"
-    llm_idx = 1
+    llm_idx = 2
     # Edit your parameters here
     main(shots, divide, DSL_name, llm_idx)
