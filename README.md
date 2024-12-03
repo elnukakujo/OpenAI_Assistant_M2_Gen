@@ -58,4 +58,5 @@ As described earlier you need to create a .env file in the root of the repositor
 
 ## TODO
 - [ ] When certain final version, finish adding docu
-- [ ] (Do the evaluation for 1 shots of 3 distinct ex of DSL on 3 DSL2Gen on turbo and gpt4)
+- [ ] Add more parameters info in the output csv like shots examples, and tasks
+- [ ] Make the evaluation
