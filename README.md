@@ -44,7 +44,7 @@ pip install -r requirements.txt
 ```
 7. Still with a terminal in the root directory, run the program by entering: `python3 main.py`. Be wary that:
     1. LLM models might have varying costs and delays
-    2. LLM might not always return a valid outputs for ANTLR, meaning you might need to run the program a second or third time.
+    2. LLM might not always return valid outputs you might need to restart the program more than 2 time if unlucky.
 8. After the program ran, open the **generated.csv** file located in your DSL directory to see the inputs, outputs and ecore outputs for each llm model and parameters you tried.
 
 ### How to use with OpenAI API
