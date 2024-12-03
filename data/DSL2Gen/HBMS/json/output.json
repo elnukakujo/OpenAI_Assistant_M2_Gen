@@ -1,39 +1,51 @@
 {
     "enum": [
         {
-            "name": "TravelPreference",
+            "name": "PaymentMethod",
             "values": [
-                "BreakfastIncluded",
-                "FreeWifi",
-                "_24_7FrontDesk"
+                "pre-paid",
+                "paidAtHotel"
             ]
         },
         {
             "name": "RoomType",
             "values": [
-                "Single",
-                "Double",
-                "Twin"
+                "single",
+                "double",
+                "twin"
             ]
         },
         {
             "name": "BookingStatus",
             "values": [
-                "PreliminaryBooking",
-                "FinalizedBooking",
-                "ConfirmedBooking",
-                "CancelledBooking"
-            ]
-        },
-        {
-            "name": "PaymentType",
-            "values": [
-                "Prepaid",
-                "PayAtHotel"
+                "preliminary",
+                "finalized",
+                "confirmed",
+                "cancelled"
             ]
         }
     ],
     "class_": [
+        {
+            "name": "HBMS",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Traveller",
+                    "mul": "*"
+                },
+                {
+                    "to": "Hotel",
+                    "mul": "*"
+                },
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
         {
             "name": "Traveller",
             "attributes": [
@@ -47,14 +59,6 @@
                 },
                 {
                     "name": "travelPreferences",
-                    "type": "list of TravelPreference"
-                },
-                {
-                    "name": "reliabilityRating",
-                    "type": "double"
-                },
-                {
-                    "name": "creditCardInformation",
                     "type": "string"
                 }
             ],
@@ -79,26 +83,22 @@
                     "type": "string"
                 },
                 {
-                    "name": "city",
-                    "type": "string"
-                },
-                {
                     "name": "hotelChain",
                     "type": "string"
                 },
                 {
                     "name": "rating",
                     "type": "int"
-                },
-                {
-                    "name": "availableRoomTypes",
-                    "type": "list of RoomType"
                 }
             ],
             "contains": [],
             "associate": [
                 {
                     "to": "Booking",
+                    "mul": "*"
+                },
+                {
+                    "to": "RoomAvailability",
                     "mul": "*"
                 }
             ],
@@ -108,12 +108,8 @@
             "name": "Booking",
             "attributes": [
                 {
-                    "name": "traveller",
-                    "type": "Traveller"
-                },
-                {
-                    "name": "hotel",
-                    "type": "Hotel"
+                    "name": "bookingId",
+                    "type": "string"
                 },
                 {
                     "name": "arrivalDate",
@@ -128,16 +124,16 @@
                     "type": "int"
                 },
                 {
-                    "name": "roomTypes",
-                    "type": "list of RoomType"
+                    "name": "roomType",
+                    "type": "RoomType"
                 },
                 {
-                    "name": "totalPrice",
+                    "name": "price",
                     "type": "double"
                 },
                 {
-                    "name": "paymentType",
-                    "type": "PaymentType"
+                    "name": "paymentMethod",
+                    "type": "PaymentMethod"
                 },
                 {
                     "name": "cancellationDeadline",
@@ -148,16 +144,67 @@
                     "type": "BookingStatus"
                 },
                 {
-                    "name": "bookingIdentifier",
-                    "type": "string"
-                },
-                {
-                    "name": "specialOffer",
+                    "name": "creditCardInformation",
                     "type": "string"
                 }
             ],
             "contains": [],
-            "associate": [],
+            "associate": [
+                {
+                    "to": "Traveller",
+                    "mul": "1"
+                },
+                {
+                    "to": "Hotel",
+                    "mul": "1"
+                },
+                {
+                    "to": "SpecialOffer",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "RoomAvailability",
+            "attributes": [
+                {
+                    "name": "roomType",
+                    "type": "RoomType"
+                },
+                {
+                    "name": "availableFrom",
+                    "type": "Date"
+                },
+                {
+                    "name": "availableTo",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Hotel",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "SpecialOffer",
+            "attributes": [
+                {
+                    "name": "offerDetails",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Booking",
+                    "mul": "1"
+                }
+            ],
             "inherit": []
         }
     ]

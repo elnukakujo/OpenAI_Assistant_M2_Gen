@@ -45,8 +45,8 @@ def main(shots, divide, DSL_name, llm_idx):
     
 if __name__ == "__main__":
     # Edit your parameters here
-    shots = "nshot"
-    divide = "auto"
+    shots = "1shot_btms"
+    divide = ""
     DSL_name = "HBMS"
     llm_idx = 2
     # Edit your parameters here

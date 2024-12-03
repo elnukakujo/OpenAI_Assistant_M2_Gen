@@ -3,6 +3,7 @@ from conversion import *
 from llm_calls.gpt_call import gpt_call
 from llm_calls.gemini_call import gemini_call
 import pandas as pd
+import numpy as np
 import os
 
 def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
@@ -28,6 +29,10 @@ def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
     if isinstance(tasks, list) and all(isinstance(task, str) for task in tasks):
         tasks = "\n\n".join(tasks)
     
+    if divide == "":
+        divide = "None"
+        tasks = "None"
+    
     prompt = prompt_list2string(prompt)
     output = convert_json2nl(output)
     
@@ -49,6 +54,8 @@ def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
             new_row['Solution'] = solution
 
         # Update or insert the row in the DataFrame
+        if (llm_name, shots, np.nan) in df.index:
+            df.drop(index=(llm_name, shots, np.nan), inplace=True)
         df.loc[(llm_name, shots, divide)] = list(new_row.values())
 
     else:
