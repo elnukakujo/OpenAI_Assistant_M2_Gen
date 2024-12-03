@@ -63,14 +63,15 @@ def gemini_task_call(model, prompt, divide):
         response = gemini_generate(model, message).text
         print(convert_json2nl(response))
         i+=1
-    return response
+    return response, tasks
 
 def gemini_call(prompt, divide, llm_name):
     load_dotenv()
     genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
     model = genai.GenerativeModel(llm_name)
     if divide != "":
-        response = gemini_task_call(model, prompt, divide)
+        response, tasks = gemini_task_call(model, prompt, divide)
     else:
         response = gemini_unique_call(model, prompt)
-    return response
+        tasks = ""
+    return response, tasks

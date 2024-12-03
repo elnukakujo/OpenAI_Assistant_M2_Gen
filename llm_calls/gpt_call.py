@@ -55,7 +55,7 @@ def gpt_task_call(client, prompt, divide, llm_name):
         response = client.chat.completions.create(model=llm_name, messages=messages).choices[0].message.content
         print(convert_json2nl(response))
         i+=1
-    return response
+    return response, tasks
 
 def gpt_call(prompt, divide, llm_name):
     """
@@ -72,7 +72,8 @@ def gpt_call(prompt, divide, llm_name):
     load_dotenv()
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     if divide != "":
-        response = gpt_task_call(client, prompt, divide, llm_name)
+        response, tasks = gpt_task_call(client, prompt, divide, llm_name)
     else:
         response = gpt_unique_call(client, prompt, llm_name)
-    return response
+        tasks = ""
+    return response, tasks

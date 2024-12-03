@@ -1,37 +1,35 @@
 {
     "enum": [
         {
-            "name": "bookingStatus",
-            "values": [
-                "Preliminary",
-                "Finalized",
-                "Cancelled"
-            ]
-        },
-        {
-            "name": "paymentType",
-            "values": [
-                "Pre-paid",
-                "PayAtHotel"
-            ]
-        },
-        {
-            "name": "confirmationStatus",
-            "values": [
-                "Confirmed",
-                "Not Confirmed"
-            ]
-        },
-        {
-            "name": "City",
-            "values": []
-        },
-        {
             "name": "TravelPreference",
             "values": [
-                "breakfastIncluded",
-                "freeWifi",
-                "24_7FrontDesk"
+                "BreakfastIncluded",
+                "FreeWifi",
+                "_24_7FrontDesk"
+            ]
+        },
+        {
+            "name": "RoomType",
+            "values": [
+                "Single",
+                "Double",
+                "Twin"
+            ]
+        },
+        {
+            "name": "BookingStatus",
+            "values": [
+                "PreliminaryBooking",
+                "FinalizedBooking",
+                "ConfirmedBooking",
+                "CancelledBooking"
+            ]
+        },
+        {
+            "name": "PaymentType",
+            "values": [
+                "Prepaid",
+                "PayAtHotel"
             ]
         }
     ],
@@ -39,10 +37,6 @@
         {
             "name": "Traveller",
             "attributes": [
-                {
-                    "name": "travellerId",
-                    "type": "int"
-                },
                 {
                     "name": "name",
                     "type": "string"
@@ -53,15 +47,15 @@
                 },
                 {
                     "name": "travelPreferences",
-                    "type": "TravelPreference"
-                },
-                {
-                    "name": "creditCardInformation",
-                    "type": "string"
+                    "type": "list of TravelPreference"
                 },
                 {
                     "name": "reliabilityRating",
                     "type": "double"
+                },
+                {
+                    "name": "creditCardInformation",
+                    "type": "string"
                 }
             ],
             "contains": [],
@@ -70,22 +64,56 @@
                     "to": "Booking",
                     "mul": "*"
                 }
-            ]
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Hotel",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "address",
+                    "type": "string"
+                },
+                {
+                    "name": "city",
+                    "type": "string"
+                },
+                {
+                    "name": "hotelChain",
+                    "type": "string"
+                },
+                {
+                    "name": "rating",
+                    "type": "int"
+                },
+                {
+                    "name": "availableRoomTypes",
+                    "type": "list of RoomType"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
         },
         {
             "name": "Booking",
             "attributes": [
                 {
-                    "name": "bookingId",
-                    "type": "int"
+                    "name": "traveller",
+                    "type": "Traveller"
                 },
                 {
-                    "name": "travellerId",
-                    "type": "int"
-                },
-                {
-                    "name": "hotelId",
-                    "type": "int"
+                    "name": "hotel",
+                    "type": "Hotel"
                 },
                 {
                     "name": "arrivalDate",
@@ -100,128 +128,37 @@
                     "type": "int"
                 },
                 {
-                    "name": "roomType",
-                    "type": "string"
+                    "name": "roomTypes",
+                    "type": "list of RoomType"
                 },
                 {
                     "name": "totalPrice",
                     "type": "double"
                 },
                 {
-                    "name": "bookingStatus",
-                    "type": "bookingStatus"
-                },
-                {
                     "name": "paymentType",
-                    "type": "paymentType"
+                    "type": "PaymentType"
                 },
                 {
                     "name": "cancellationDeadline",
                     "type": "Date"
                 },
                 {
-                    "name": "confirmationStatus",
-                    "type": "confirmationStatus"
-                }
-            ],
-            "contains": [],
-            "associate": [
-                {
-                    "to": "Hotel",
-                    "mul": "1"
+                    "name": "status",
+                    "type": "BookingStatus"
                 },
                 {
-                    "to": "Traveller",
-                    "mul": "1"
-                },
-                {
-                    "to": "SpecialOffer",
-                    "mul": "*"
-                }
-            ]
-        },
-        {
-            "name": "Hotel",
-            "attributes": [
-                {
-                    "name": "hotelId",
-                    "type": "int"
-                },
-                {
-                    "name": "name",
+                    "name": "bookingIdentifier",
                     "type": "string"
                 },
                 {
-                    "name": "address",
-                    "type": "string"
-                },
-                {
-                    "name": "city",
-                    "type": "City"
-                },
-                {
-                    "name": "hotelChain",
+                    "name": "specialOffer",
                     "type": "string"
                 }
             ],
             "contains": [],
-            "associate": [
-                {
-                    "to": "RoomType",
-                    "mul": "*"
-                },
-                {
-                    "to": "Booking",
-                    "mul": "*"
-                }
-            ]
-        },
-        {
-            "name": "RoomType",
-            "attributes": [
-                {
-                    "name": "roomTypeId",
-                    "type": "int"
-                },
-                {
-                    "name": "type",
-                    "type": "string"
-                }
-            ],
-            "contains": [],
-            "associate": [
-                {
-                    "to": "Hotel",
-                    "mul": "1"
-                }
-            ]
-        },
-        {
-            "name": "SpecialOffer",
-            "attributes": [
-                {
-                    "name": "specialOfferId",
-                    "type": "int"
-                },
-                {
-                    "name": "bookingId",
-                    "type": "int"
-                },
-                {
-                    "name": "hotelId",
-                    "type": "int"
-                },
-                {
-                    "name": "price",
-                    "type": "double"
-                },
-                {
-                    "name": "description",
-                    "type": "string"
-                }
-            ],
-            "contains": [],
-            "associate": []
+            "associate": [],
+            "inherit": []
         }
     ]
 }
