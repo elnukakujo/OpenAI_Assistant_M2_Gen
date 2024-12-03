@@ -4,14 +4,19 @@ import os
 
 def prepare_prompt_ex(shots):
     """
-    Prepares a list of prompt examples based on the selected type.
+    Prepares a list of prompt examples based on the specified shot method.
     Args:
-        shots (str): The type of examples to prepare. It can be "nshot" for all examples
-                             or a specific number of examples in the format "{n}shot_{example1}_{example2}_...".
+        shots (str): A string specifying the shot method. It can be "nshot" for 
+                     including all examples in the directory, or a string in the 
+                     format "{n}shot_{example1}_{example2}_..." where {n} is the 
+                     number of examples to include and {example1}, {example2}, etc. 
+                     are the names of the specific examples.
     Returns:
-        list: A list of prompt examples, where each example is a list containing a description (str) and a solution (dict).
+        list: A list of prompt examples, where each example is a list containing 
+              the description text and the solution JSON.
     Raises:
-        ValueError: If the shots format is invalid or the number of specified examples does not match the expected count.
+        ValueError: If the number of specified examples does not match {n} or if 
+                    an invalid shot method is provided.
     """
     examples_path="data/Example"
     prompt_ex = []

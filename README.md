@@ -45,7 +45,7 @@ pip install -r requirements.txt
 7. Still with a terminal in the root directory, run the program by entering: `python3 main.py`. Be wary that:
     1. LLM models might have varying costs and delays
     2. LLM might not always return a valid outputs for ANTLR, meaning you might need to run the program a second or third time.
-8. After the program ran, open the **input_output_GPT.csv** file located in your DSL directory to see the inputs, outputs and ecore outputs for each llm model you tried.
+8. After the program ran, open the **generated.csv** file located in your DSL directory to see the inputs, outputs and ecore outputs for each llm model and parameters you tried.
 
 ### How to use with OpenAI API
 As described earlier you need to create a .env file in the root of the repository and define your OpenAI api key as the variable **OPENAI_API_KEY**
@@ -57,6 +57,4 @@ As described earlier you need to create a .env file in the root of the repositor
 ![SystemStateDiagram](https://github.com/user-attachments/assets/a0ac112b-08ea-4e21-89f7-f7be61dcc5ac)
 
 ## TODO
-- [ ] When certain final version, finish adding docu
-- [ ] Add more parameters info in the output csv like shots examples, and tasks
-- [ ] Make the evaluation
+- [ ] Evaluate

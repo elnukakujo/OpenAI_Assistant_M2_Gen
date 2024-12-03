@@ -7,14 +7,17 @@ import os
 
 def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
     """
-    Save the prompt and output data to JSON and CSV files.
-    This function saves the provided prompt and output data to JSON files and updates a CSV file with the data.
-    If a solution JSON file exists, it also includes the solution in the CSV file.
+    Save the provided data to JSON files and update or create a CSV file with the data.
     Args:
-        prompt (list): The prompt data to be saved.
+        prompt (dict): The prompt data to be saved.
         output (dict): The output data to be saved.
-        DSL_path (str): The directory path where the JSON and CSV files are stored.
-        llm_name (str): The name of the language model, used as an index in the CSV file.
+        DSL_path (str): The directory path where the files will be saved.
+        llm_name (str): The name of the language model.
+        shots (str): The number of shots (examples) used in the prompt.
+        divide (str): The method used to divide the data.
+        tasks (list): A list of tasks to be saved.
+    Returns:
+        None
     """
     write_json(f'{DSL_path}/json/prompt.json', prompt)
     write_json(f'{DSL_path}/json/output.json', output)
@@ -68,25 +71,20 @@ def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
 
 def call_llm(prompt, divide, llm_idx, DSL_folder, shots):
     """
-    Calls a specified language model (LLM) with a given prompt and saves the output.
+    Calls a language model (LLM) based on the provided index and saves the generated data.
 
     Args:
         prompt (str): The input prompt to be sent to the LLM.
-        divide (str): The divide method to prepare. It can be "" for no divide, "manual" for manual divide, or "auto" for auto divide.
-        llm_idx (int): The index of the LLM to be used from the predefined list.
-        DSL_folder (str): The folder path where the output data will be saved.
-
-    Returns:
-        None
-
+        divide (int): A parameter to control the division of tasks.
+        llm_idx (int): Index of the LLM to be used. 
+                       0 for "gpt-3.5-turbo", 
+                       1 for "gpt-4", 
+                       2 for "gemini-1.5-flash".
+        DSL_folder (str): The folder path where the DSL data will be saved.
+        shots (int): Number of shots or examples to be used in the prompt.
+    
     Raises:
-        IndexError: If llm_idx is out of the range of the llm_list.
-        Exception: If there is an error in calling the LLM or saving the data.
-
-    Notes:
-        The function supports different LLMs including "gpt-3.5-turbo", "gpt-4",
-        and "gemini-1.5-flash". Depending on the LLM selected, 
-        it calls either `gemini_call` or `gpt_call` with appropriate parameters.
+        IndexError: If an invalid llm_idx is provided.
     """
     DSL_path = "data/DSL2Gen/"+DSL_folder
     llm_list = ["gpt-3.5-turbo", "gpt-4", "gemini-1.5-flash"]

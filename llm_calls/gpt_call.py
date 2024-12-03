@@ -5,21 +5,35 @@ import os
 from conversion import convert_json2nl
 
 def gpt_unique_call(client, prompt, llm_name):
+    """
+    Generates a unique GPT call to create a class diagram from a textual description.
+
+    Args:
+        client: The client object used to interact with the GPT model.
+        prompt: A dictionary containing 'prompt_ex' and 'user_prompt' keys with their respective prompts.
+        llm_name: The name of the language model to be used for the GPT call.
+
+    Returns:
+        str: The content of the GPT model's response message.
+
+    The function prepares the prompt messages by combining example prompts and user prompts with a system role description.
+    It then makes a call to the GPT model to generate a response based on the provided prompts.
+    """
     sys_role = "You are an expert in designing and validating class diagrams from a textual description for domain models returning only valid Json files with only components from the description. Ensure all referenced classes are explicitly defined within the input."
     messages = gpt_prepare_shots_prompt(prompt['prompt_ex'], prompt['user_prompt'], sys_role)
     return client.chat.completions.create(model=llm_name, messages=messages).choices[0].message.content
 
 def gpt_prepare_shots_prompt(shots, prompt, sys_role):
     """
-    Constructs a list of messages for a GPT model based on provided shots, prompt, and system role.
+    Prepares a list of shot messages for a GPT model prompt.
 
     Args:
-        shots (list of tuples): A list of tuples where each tuple contains a user input and the corresponding assistant response.
-        prompt (str): The main prompt to be sent to the GPT model.
-        sys_role (str): The role of the system to be included in the messages.
+        shots (list of tuples): A list of (user_input, assistant_response) pairs to be used as examples.
+        prompt (str): The main user prompt to be sent to the GPT model.
+        sys_role (str): The system role message to set the context for the GPT model.
 
     Returns:
-        list: A list of dictionaries representing the messages to be sent to the GPT model.
+        list of dict: A list of message dictionaries formatted for the GPT model.
     """
     messages =[{"role": "system", "content": sys_role}]
     if len(shots)>0:
@@ -30,6 +44,18 @@ def gpt_prepare_shots_prompt(shots, prompt, sys_role):
     return messages
 
 def gpt_task_call(client, prompt, divide, llm_name):
+    """
+    Executes a GPT task call to generate tasks to build a metamodel, and then apply them incrementaly.
+    Args:
+        client: The client object used to interact with the GPT model.
+        prompt (dict): A dictionary containing the user prompt and example prompts.
+        divide (str): The method to divide tasks, either "auto" or "manual".
+        llm_name (str): The name of the language model to use for generating completions.
+    Returns:
+        tuple: A tuple containing the final response and the list of tasks.
+    Raises:
+        Exception: If the divide method is invalid or if task parsing fails.
+    """
     if divide == "auto":
         sys_role = "You are an expert in designing CRUD operation tasks for another LLM to build a metamodel. A metamodel is composed of enumerations and classes. Classes are composed of attributes with types (int, double, boolean, Date, string, and enumerations custom types) and relationships which have multiplicities and can be inherit, associate or contain. You receive a textual description of a problem domain and return a list of 5 very detailed and precise tasks containing CRUD operations in a 1D json array containing only str of what the other LLM should do to create a correct metamodel. Do not talk about CRUD operations in the tasks. The other LLM won't have access to this description so always specify everything to him."
         messages =[{"role": "system", "content": sys_role}]
@@ -39,7 +65,7 @@ def gpt_task_call(client, prompt, divide, llm_name):
             tasks = json.loads(response.strip("```json\n").strip("```"))
         except:
             print(tasks)
-            raise Exception("Failed to parse tasks from GPT response")
+            raise Exception("Failed to parse tasks from GPT response: Restart the process manually")
     elif divide == "manual":
         tasks = prompt["user_prompt"].split('\n\n')
     else:
@@ -59,16 +85,17 @@ def gpt_task_call(client, prompt, divide, llm_name):
 
 def gpt_call(prompt, divide, llm_name):
     """
-    Makes a call to the GPT model using the OpenAI API.
+    Makes a call to the GPT model using the provided prompt and parameters.
 
     Args:
-        prompt (str): The input prompt to be sent to the GPT model.
-        divide (str): The divide method to prepare. It can be "" for no divide, "manual" for manual divide, or "auto" for auto divide.
+        prompt (str): The input text prompt to be sent to the GPT model.
+        divide (str): A string indicating whether to divide the task into subtasks.
         llm_name (str): The name of the language model to be used.
 
     Returns:
-        str: The content of the response message from the GPT model.
+        tuple: A tuple containing the response from the GPT model and the tasks (if any).
     """
+
     load_dotenv()
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     if divide != "":
