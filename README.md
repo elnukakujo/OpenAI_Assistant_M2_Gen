@@ -3,7 +3,7 @@
 ## General Informations
 This project aims at designing a Model assistant to design metamodels for Domain Specific Languages, using OpenAI API and prompt engineering.
 
-Based on the findings of the article called [Automated Domain Modeling with Large Language Models: A Comparative Study](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10344012), and with the supervision of my IFT6253 professor.
+Based on the findings of the article called [Automated Domain Modeling with Large Language Models: A Comparative Study](https://ieeexplore.ieee.org/document/10344012), and with the supervision of my IFT6253 professor.
 
 Currently supports gpt-3-turbo, gpt-4, and gemini-1.5-flash models:
 - gemini-1.5-flash: free,
