@@ -1,13 +1,5 @@
 {
-    "enum": [
-        {
-            "name": "PaymentType",
-            "values": [
-                "Prepaid",
-                "PayAtHotel"
-            ]
-        }
-    ],
+    "enum": [],
     "class_": [
         {
             "name": "HBMS",
@@ -27,10 +19,6 @@
                 },
                 {
                     "to": "SpecialOffer",
-                    "mul": "*"
-                },
-                {
-                    "to": "CompetitorHotel",
                     "mul": "*"
                 }
             ],
@@ -132,7 +120,7 @@
                 },
                 {
                     "name": "paymentType",
-                    "type": "PaymentType"
+                    "type": "string"
                 },
                 {
                     "name": "cancellationDeadline",
@@ -141,14 +129,6 @@
                 {
                     "name": "confirmationStatus",
                     "type": "string"
-                },
-                {
-                    "name": "keyParameters",
-                    "type": "string"
-                },
-                {
-                    "name": "cancellationFee",
-                    "type": "double"
                 }
             ],
             "contains": [],
@@ -191,38 +171,6 @@
                     "mul": "1"
                 }
             ],
-            "inherit": []
-        },
-        {
-            "name": "CompetitorHotel",
-            "attributes": [
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "specialOffer",
-                    "type": "double"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "HotelRoom",
-            "attributes": [
-                {
-                    "name": "type",
-                    "type": "string"
-                },
-                {
-                    "name": "availability",
-                    "type": "boolean"
-                }
-            ],
-            "contains": [],
-            "associate": [],
             "inherit": []
         }
     ]

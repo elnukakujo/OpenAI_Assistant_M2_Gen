@@ -1,5 +1,4 @@
-from common import *
-from conversion import convert_json2nl
+from common import read_txt, read_json
 import os
 
 def prepare_prompt_ex(shots):
@@ -12,12 +11,15 @@ def prepare_prompt_ex(shots):
                      number of examples to include and {example1}, {example2}, etc. 
                      are the names of the specific examples.
     Returns:
-        list: A list of prompt examples, where each example is a list containing 
-              the description text and the solution JSON.
+        [[str,str],...] or None: A list of prompt examples, where each example is a list containing 
+                      the description text and the solution JSON.
     Raises:
         ValueError: If the number of specified examples does not match {n} or if 
                     an invalid shot method is provided.
     """
+    if shots == "0shot":
+        return None
+    
     examples_path="data/Example"
     prompt_ex = []
     
@@ -58,6 +60,24 @@ def prepare_user_prompt(folder_path):
     user_domain_description=read_txt(f"{folder_path}/description.txt")
     return user_domain_description
 
+def prepare_pre_model(folder_path):
+    """
+    Checks if a pre_model.json file exists in the specified folder path and reads its content.
+
+    Args:
+        folder_path (str): The path to the folder containing the json directory.
+
+    Returns:
+        dict or None: Returns the content of the pre_model.json file as a dictionary if it exists,
+                      otherwise returns None.
+    """
+
+    if os.path.exists(f"{folder_path}/json/pre_model.json"):
+        pre_model=read_json(f"{folder_path}/json/pre_model.json")
+        return pre_model
+    else:
+        return None
+
 
 def prepare_prompt(shots, DSL_folder):
     """
@@ -69,16 +89,17 @@ def prepare_prompt(shots, DSL_folder):
 
     Returns:
         dict: A dictionary containing the prepared example prompt and user prompt.
-            - "prompt_ex" (str): The prepared example prompt.
-            - "user_prompt" (str): The prepared user prompt.
+            - "prompt_ex" [[str,str],...] or None): A 2D array of textual description with their corresponding solution model if shots defined.
+            - "user_prompt" (str): The prepared user description prompt.
+            - "pre_model" (dict or None): The pre_model json data if available.
     """
     path_domain_description = "data/DSL2Gen/"+DSL_folder
-    if shots == "0shot":
-        prompt_ex = []
-    else:
-        prompt_ex = prepare_prompt_ex(shots)
+
+    prompt_ex = prepare_prompt_ex(shots)
     user_prompt = prepare_user_prompt(path_domain_description)
+    pre_model = prepare_pre_model(path_domain_description)
     return {
         "prompt_ex": prompt_ex,
-        "user_prompt": user_prompt
+        "user_prompt": user_prompt,
+        "pre_model": pre_model
     }

@@ -14,11 +14,9 @@ def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
         output (dict): The output data to be saved.
         DSL_path (str): The directory path where the files will be saved.
         llm_name (str): The name of the language model.
-        shots (str): The number of shots (examples) used in the prompt.
+        shots (str): The example method to be used in the prompt preparation corresponding to the explanations passed to the LLM, depends on the dsl_names in the data/Example folder.
         divide (str): The method used to divide the data.
-        tasks (list): A list of tasks to be saved.
-    Returns:
-        None
+        tasks (list): The list of tasks the model used to generate the output in case divide.
     """
     write_json(f'{DSL_path}/json/prompt.json', prompt)
     write_json(f'{DSL_path}/json/output.json', output)
@@ -30,11 +28,21 @@ def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
         tasks = "\n\n".join(tasks)
     
     if divide == "":
-        divide = "None"
-        tasks = "None"
+        divide = np.nan
+        tasks = np.nan
+        
+    if os.path.exists(f'{DSL_path}/json/pre_model.json'):
+        pre_model = convert_json2nl(read_json(f'{DSL_path}/json/pre_model.json'))
+    else:
+        pre_model = ""
     
     prompt = prompt_list2string(prompt)
     output = convert_json2nl(output)
+    
+    if os.path.exists(f'{DSL_path}/json/solution.json'):
+        solution = convert_json2nl(read_json(f'{DSL_path}/json/solution.json'))
+    else:
+        solution = ""
     
     if os.path.exists(f'{DSL_path}/generated.csv'):
         df = pd.read_csv(f'{DSL_path}/generated.csv', index_col=[0, 1, 2])
@@ -44,29 +52,16 @@ def save_data(prompt, output, DSL_path, llm_name, shots, divide, tasks):
         new_row = {
             'Tasks': tasks,
             'Prompt': prompt,
+            'Pre_model': pre_model,
             'Output': output,
-            'Solution': ""
+            'Solution': solution
         }
 
-        # If 'Solution' exists and JSON is available, update the new_row
-        if 'Solution' in df.columns and os.path.exists(f'{DSL_path}/json/solution.json'):
-            solution = convert_json2nl(read_json(f'{DSL_path}/json/solution.json'))
-            new_row['Solution'] = solution
-
-        # Update or insert the row in the DataFrame
-        if (llm_name, shots, np.nan) in df.index:
-            df.drop(index=(llm_name, shots, np.nan), inplace=True)
         df.loc[(llm_name, shots, divide)] = list(new_row.values())
 
     else:
-        # If the file doesn't exist, create a new DataFrame with MultiIndex
-        if os.path.exists(f'{DSL_path}/json/solution.json'):
-            solution = convert_json2nl(read_json(f'{DSL_path}/json/solution.json'))
-            data = [[tasks, prompt, output, solution]]
-            columns = ['Tasks', 'Prompt', 'Output', 'Solution']
-        else:
-            data = [[tasks, prompt, output, ""]]
-            columns = ['Tasks', 'Prompt', 'Output', 'Solution']
+        data = [[tasks, prompt, pre_model, output, solution]]
+        columns = ['Tasks', 'Prompt', 'Pre_model', 'Output', 'Solution']
         
         df = pd.DataFrame(data, columns=columns, index=pd.MultiIndex.from_tuples(
             [(llm_name, shots, divide)],
@@ -81,14 +76,17 @@ def call_llm(prompt, divide, llm_idx, DSL_folder, shots):
     Calls a language model (LLM) based on the provided index and saves the generated data.
 
     Args:
-        prompt (str): The input prompt to be sent to the LLM.
-        divide (int): A parameter to control the division of tasks.
+        prompt (dict): A dictionary containing the prepared example prompt and user prompt.
+            - "prompt_ex" [[str,str],...] or None): A 2D array of textual description with their corresponding solution model if shots defined.
+            - "user_prompt" (str): The prepared user description prompt.
+            - "pre_model" (dict or None): The pre-model json data if available.
+        divide (str): A parameter to control the division of tasks.
         llm_idx (int): Index of the LLM to be used. 
-                       0 for "gpt-3.5-turbo", 
-                       1 for "gpt-4", 
-                       2 for "gemini-1.5-flash".
+                       - 0 : "gpt-3.5-turbo", 
+                       - 1 : "gpt-4", 
+                       - 2 : "gemini-1.5-flash".
         DSL_folder (str): The folder path where the DSL data will be saved.
-        shots (int): Number of shots or examples to be used in the prompt.
+        shots (str): The example method to be used in the prompt preparation corresponding to the explanations passed to the LLM, depends on the dsl_names in the data/Example folder.
     
     Raises:
         IndexError: If an invalid llm_idx is provided.
