@@ -1,5 +1,13 @@
 LLM_name,Shots_example,Divide_method,Tasks,Prompt,Output,Solution
-gemini-1.5-flash,1shot_btms,None,None,"Example domain description: 
+gemini-1.5-flash,1shot_btms,manual,"Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
+
+When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
+
+In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
+
+In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
+
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Example domain description: 
 Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
 
 The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
@@ -27,17 +35,96 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
 Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
-PaymentMethod(pre-paid, paidAtHotel)
-RoomType(single, double, twin)
-BookingStatus(preliminary, finalized, confirmed, cancelled)
 
 Classes:
-HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-Traveller(string name, string billingInformation, string travelPreferences, associate (*) Booking)
-Hotel(string name, string address, string hotelChain, int rating, associate (*) Booking, associate (*) RoomAvailability)
-Booking(string bookingId, Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, double price, PaymentMethod paymentMethod, Date cancellationDeadline, BookingStatus status, string creditCardInformation, associate (1) Traveller, associate (1) Hotel, associate (*) SpecialOffer)
-RoomAvailability(RoomType roomType, Date availableFrom, Date availableTo, associate (1) Hotel)
-SpecialOffer(string offerDetails, associate (1) Booking)
+Traveller(string name, string billingInformation, string travelPreferences, double reliabilityRating, associate (*) Booking)
+Hotel(string name, string address, string deals, int rating, string hotelChain, associate (*) Booking, associate (*) Room, associate (1) City)
+Booking(Date bookingDate, double price, string bookingIdentifier, string paymentType, Date cancellationDeadline, string confirmationStatus, associate (1) Traveller, associate (1) Hotel, associate (1) SpecialOffer, associate (1) CreditCard, associate (1) Room)
+Room(string type, double price, boolean booked, associate (1) Booking, associate (1) Hotel)
+Search(string city, Date arrivalDate, Date departureDate, int roomsNeeded, string roomType, int minRating, double budget, string travelPreferences)
+SpecialOffer(double price, string description, associate (1) Hotel, associate (1) Booking)
+CreditCard(string number, Date expiryDate, int cvv, associate (1) Booking)
+City(string name, associate (*) Hotel)
+","Enumerations:
+RoomType(SINGLE, DOUBLE, TWIN)
+BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
+PaymentType(PREPAID, PAID_AT_HOTEL)
+
+Classes:
+HotelChain(contain (*) Hotel)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch associate (*) Booking)
+BillingInformation(string companyName, string address)
+TravelPreference(string preference, string value)
+Hotel(string city, string country, string area, contain (*) Offer, contain (*) RoomAvailability associate (*) Booking)
+Offer()
+SpecialOffer(inherit Offer associate (1) BookingInfo)
+RegularOffer(inherit Offer associate (*) TravelSearch)
+TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference associate (*) RegularOffer)
+SearchInfo(inherit TripInfo)
+RoomAvailability(inherit TripInfo)
+TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
+BookingInfo(inherit TripInfo associate (0..5) SpecialOffer)
+Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer)
+"
+gemini-1.5-flash,1shot_btms,auto,"Create the class HBMS containing the attributes: name(string), version(string), and the classes Traveller, Hotel, Booking, and HotelChain as contained classes.
+
+Create the enumeration class RoomType with the possible values: single, double, twin, suite, family.
+
+Create the enumeration class PaymentMethod with the possible values: prepaid, payAtHotel.
+
+Create the enumeration class BookingStatus with the possible values: preliminary, confirmed, cancelled.
+
+Create the class Traveller with the attributes: travellerId(int), name(string), billingInformation(string), travelPreferences(string), reliabilityRating(double), and the attributes bookings(Booking) as a contained class with a multiplicity of *.
+
+Create the class Hotel with the attributes: hotelId(int), name(string), address(string), city(string), rating(int), hotelChain(HotelChain), and the attributes bookings(Booking) as a contained class with a multiplicity of *.
+
+Create the class HotelChain with the attributes: chainId(int), name(string), and the attribute hotels(Hotel) as a contained class with a multiplicity of *.
+
+Create the class Booking with the attributes: bookingId(int), traveller(Traveller), hotel(Hotel), arrivalDate(Date), departureDate(Date), numberOfRooms(int), roomType(RoomType), totalCost(double), bookingStatus(BookingStatus), paymentMethod(PaymentMethod), cancellationDeadline(Date), and the attributes specialOffers(SpecialOffer) as a contained class with a multiplicity of *. Create the attribute preliminaryBookingInformation(PreliminaryBookingInformation) as a contained class with multiplicity 1.
+
+Create the class PreliminaryBookingInformation with the attributes: price(double), cityArea(string), hotelRating(int), keyPreferences(string), bookingId(int).
+
+Create the class SpecialOffer with the attributes: offerId(int), hotel(Hotel), price(double), description(string), booking(Booking).","Example domain description: 
+Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+
+The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
+
+The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.Example solution: 
+Enumerations:
+Shift(morning, afternoon, night)
+
+Classes:
+BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
+BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
+Route(int number, associate (*) RouteAssignment)
+RouteAssignment(Date date, associate (*) DriverSchedule)
+Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
+DriverSchedule(Shift shift)
+
+###
+User prompt: 
+Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
+
+When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
+
+In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
+
+In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
+
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
+RoomType(single, double, twin, suite, family)
+PaymentMethod(prepaid, payAtHotel)
+BookingStatus(preliminary, confirmed, cancelled)
+
+Classes:
+HBMS(string name, string version, contain (*) Traveller, contain (*) Hotel, contain (*) Booking, contain (*) HotelChain)
+Traveller(int travellerId, string name, string billingInformation, string travelPreferences, double reliabilityRating, contain (*) Booking)
+Hotel(int hotelId, string name, string address, string city, int rating, contain (*) Booking associate (1) HotelChain)
+HotelChain(int chainId, string name, contain (*) Hotel)
+Booking(int bookingId, Date arrivalDate, Date departureDate, int numberOfRooms, double totalCost, Date cancellationDeadline, contain (*) SpecialOffer, contain (1) PreliminaryBookingInformation associate (1) Traveller, associate (1) Hotel, associate (1) RoomType, associate (1) BookingStatus, associate (1) PaymentMethod)
+SpecialOffer(int offerId, double price, string description, associate (1) Hotel, associate (1) Booking)
+PreliminaryBookingInformation(double price, string cityArea, int hotelRating, string keyPreferences, int bookingId)
 ","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
