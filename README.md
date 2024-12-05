@@ -13,7 +13,8 @@ Currently supports gpt-3-turbo, gpt-4, and gemini-1.5-flash models:
 ## The data folder
 - The folder **DSL2Gen** contains the problem descriptions and the outputs of the DSLs. 
     - **description.txt** is the domain description for the LLM to build from. It is mandatory for the assistant to work.
-    - **solution.json** is for evaluation of the output purpose, comparing the LLM output with the product of a domain expert with the same domain description.
+    - **json/solution.json** is for evaluation of the output purpose, comparing the LLM output with the product of a domain expert with the same domain description.
+    - **json/pre_model.json** is if the user wants the assistant to work on an existing version of the model.
 
 - The folder **Example** contains the domain description/solution examples to pass to the LLM. The folder requires:
     - **description.txt** the problem description
@@ -25,7 +26,8 @@ Currently supports gpt-3-turbo, gpt-4, and gemini-1.5-flash models:
 3. Create the DSL files:
     1. Create **description.txt** and add the domain description
     2. Create two directories named json, for the model and prompts before ecore conversion, and ecore, for output and solution ecore files
-    3. (If you have a solution you want the parser to also transform in ecore, create **solution.json** and put the solution model there defined using the same json format, see previous point)
+    3. (If you have a solution you want the parser to also transform in ecore, create **json/solution.json** and put the solution model there defined using the same json format, see previous point)
+    4. (If you have an existing model you want the model to work on, create a **json/pre_model.json** and put the existing model there defined using the same json format, see previous point)
 4. In the root directory, open **main.py**, define the dsl you want the model as well as the type of LLM model and prompting method you want:
     1. **shots**: The example prompt you want, defining how many dsl example you want, and specifying the names corresponding to the dsl folders in data/Example/. Note: Need to add a description.txt and a solution.json
     2. **divide**: If the textual problem description needs to be divided for a better LLM understanding, and if yes, how. Available options: "", "manual", "auto". Manual separates the description.txt for each `\n\n`, and auto passes the full description to the LLM to generate tasks he should follow later.
