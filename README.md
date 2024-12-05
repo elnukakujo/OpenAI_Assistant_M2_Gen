@@ -56,7 +56,7 @@ As described earlier you need to create a .env file in the root of the repositor
 As described earlier you need to create a .env file in the root of the repository and define your Gemini api key as the variable **GEMINI_API_KEY**
 
 ## How the system works
-![SystemStateDiagram](https://github.com/user-attachments/assets/a0ac112b-08ea-4e21-89f7-f7be61dcc5ac)
+![SystemStateDiagram drawio](https://github.com/user-attachments/assets/febebcf8-cd6b-4e19-8269-1368da193960)
 
 ## TODO
 - [ ] Evaluate
