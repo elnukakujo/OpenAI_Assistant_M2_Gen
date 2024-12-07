@@ -60,5 +60,4 @@ As described earlier you need to create a .env file in the root of the repositor
 
 
 ## Evaluation process
-Done manually by comparing each outputted ecore model with the solution ecore model using EMF Compare in Epsilon Eclipse.
-I compute the precision, recall and F1 score using the same categories as in the article above.
+See the evaluation folder
