@@ -58,5 +58,6 @@ As described earlier you need to create a .env file in the root of the repositor
 ## How the system works
 ![SystemStateDiagram drawio](https://github.com/user-attachments/assets/febebcf8-cd6b-4e19-8269-1368da193960)
 
-## TODO
-- [ ] Evaluate
+## Evaluation process
+Done manually by comparing each outputted ecore model with the solution ecore model using EMF Compare in Epsilon Eclipse.
+I compute the precision, recall and F1 score using the same categories as in the article above.
