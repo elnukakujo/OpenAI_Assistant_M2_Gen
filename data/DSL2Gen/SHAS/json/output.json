@@ -1,1 +1,178 @@
-null
+{
+    "enum": [],
+    "class_": [
+        {
+            "name": "SHAS",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "SmartHome",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "SmartHome",
+            "attributes": [
+                {
+                    "name": "address",
+                    "type": "string"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Room",
+                    "mul": "*"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "AutomationRule",
+                    "mul": "*"
+                },
+                {
+                    "to": "ActivityLog",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Room",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Sensor",
+                    "mul": "*"
+                },
+                {
+                    "to": "Actuator",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Sensor",
+            "attributes": [
+                {
+                    "name": "deviceId",
+                    "type": "string"
+                },
+                {
+                    "name": "type",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "SensorReading",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "Actuator",
+            "attributes": [
+                {
+                    "name": "deviceId",
+                    "type": "string"
+                },
+                {
+                    "name": "type",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "ControlCommand",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "SensorReading",
+            "attributes": [
+                {
+                    "name": "value",
+                    "type": "string"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "ControlCommand",
+            "attributes": [
+                {
+                    "name": "command",
+                    "type": "string"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "Date"
+                },
+                {
+                    "name": "status",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "ActivityLog",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "SensorReading",
+                    "mul": "*"
+                },
+                {
+                    "to": "ControlCommand",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "AutomationRule",
+            "attributes": [
+                {
+                    "name": "precondition",
+                    "type": "string"
+                },
+                {
+                    "name": "action",
+                    "type": "string"
+                },
+                {
+                    "name": "status",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        }
+    ]
+}

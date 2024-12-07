@@ -51,8 +51,7 @@
                 },
                 {
                     "name": "reliabilityRating",
-                    "type": "double",
-                    "default": "0.0"
+                    "type": "double"
                 }
             ],
             "contains": [],
@@ -84,20 +83,15 @@
                     "type": "string"
                 },
                 {
-                    "name": "starRating",
-                    "type": "int"
+                    "name": "hotelChain",
+                    "type": "string"
                 },
                 {
-                    "name": "hotelChain",
-                    "type": "HotelChain"
+                    "name": "starRating",
+                    "type": "int"
                 }
             ],
-            "contains": [
-                {
-                    "to": "Room",
-                    "mul": "0..*"
-                }
-            ],
+            "contains": [],
             "associate": [
                 {
                     "to": "Booking",
@@ -156,14 +150,6 @@
                 {
                     "name": "specialOffer",
                     "type": "string"
-                },
-                {
-                    "name": "confirmationDate",
-                    "type": "Date"
-                },
-                {
-                    "name": "compensationAmount",
-                    "type": "double"
                 }
             ],
             "contains": [],
@@ -171,10 +157,6 @@
                 {
                     "to": "SpecialOffer",
                     "mul": "0..*"
-                },
-                {
-                    "to": "Cancellation",
-                    "mul": "0..1"
                 }
             ],
             "inherit": []
@@ -197,74 +179,6 @@
                 {
                     "name": "description",
                     "type": "string"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "Room",
-            "attributes": [
-                {
-                    "name": "roomId",
-                    "type": "int"
-                },
-                {
-                    "name": "roomType",
-                    "type": "RoomType"
-                },
-                {
-                    "name": "price",
-                    "type": "double"
-                },
-                {
-                    "name": "available",
-                    "type": "boolean"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "HotelChain",
-            "attributes": [
-                {
-                    "name": "chainID",
-                    "type": "int"
-                },
-                {
-                    "name": "name",
-                    "type": "string"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "Cancellation",
-            "attributes": [
-                {
-                    "name": "cancellationId",
-                    "type": "int"
-                },
-                {
-                    "name": "booking",
-                    "type": "Booking"
-                },
-                {
-                    "name": "cancellationDate",
-                    "type": "Date"
-                },
-                {
-                    "name": "cancellationReason",
-                    "type": "string"
-                },
-                {
-                    "name": "charge",
-                    "type": "double"
                 }
             ],
             "contains": [],

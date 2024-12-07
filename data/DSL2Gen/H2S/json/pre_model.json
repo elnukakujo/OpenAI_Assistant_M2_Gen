@@ -1,0 +1,160 @@
+{
+    "enum": [
+        {
+            "name": "DayOfWeek",
+            "values": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ]
+        },
+        {
+            "name": "Category",
+            "values": [
+                "baby clothing",
+                "women\u2019s winter boots",
+                "fridge",
+                "microwave"
+            ]
+        }
+    ],
+    "class_": [
+        {
+            "name": "Resident",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "streetAddress",
+                    "type": "string"
+                },
+                {
+                    "name": "phoneNumber",
+                    "type": "string"
+                },
+                {
+                    "name": "email",
+                    "type": "string"
+                },
+                {
+                    "name": "itemsToBePickedUp",
+                    "type": "string",
+                    "mul": "*"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Item",
+            "attributes": [
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "dimensions",
+                    "type": "string"
+                },
+                {
+                    "name": "weight",
+                    "type": "double"
+                },
+                {
+                    "name": "category",
+                    "type": "Category"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Category",
+                    "mul": "1"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "VolunteerDriver",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "availableDays",
+                    "type": "DayOfWeek",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Vehicle",
+            "attributes": [
+                {
+                    "name": "id",
+                    "type": "int"
+                },
+                {
+                    "name": "storageSpace",
+                    "type": "double"
+                },
+                {
+                    "name": "assignedDrivers",
+                    "type": "VolunteerDriver",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "PickupRoute",
+            "attributes": [
+                {
+                    "name": "date",
+                    "type": "Date"
+                },
+                {
+                    "name": "vehicle",
+                    "type": "Vehicle"
+                },
+                {
+                    "name": "residents",
+                    "type": "Resident",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "DistributionCenter",
+            "attributes": [
+                {
+                    "name": "items",
+                    "type": "Item",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        }
+    ]
+}

@@ -1,0 +1,256 @@
+{
+    "enum": [
+        {
+            "name": "DayOfWeek",
+            "values": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ]
+        },
+        {
+            "name": "Category",
+            "values": [
+                "baby clothing",
+                "women\u2019s winter boots",
+                "fridge",
+                "microwave"
+            ]
+        }
+    ],
+    "class_": [
+        {
+            "name": "Resident",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "streetAddress",
+                    "type": "string"
+                },
+                {
+                    "name": "phoneNumber",
+                    "type": "string"
+                },
+                {
+                    "name": "email",
+                    "type": "string"
+                },
+                {
+                    "name": "itemsToBePickedUp",
+                    "type": "string",
+                    "mul": "*"
+                },
+                {
+                    "name": "neededCategories",
+                    "type": "Category",
+                    "mul": "*"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Item",
+            "attributes": [
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "dimensions",
+                    "type": "string"
+                },
+                {
+                    "name": "weight",
+                    "type": "double"
+                },
+                {
+                    "name": "category",
+                    "type": "Category"
+                },
+                {
+                    "name": "RFID",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Category",
+                    "mul": "1"
+                },
+                {
+                    "to": "H2SEmployee",
+                    "mul": "1",
+                    "name": "assignedBy"
+                },
+                {
+                    "to": "ClientRequest",
+                    "mul": "1",
+                    "name": "fulfillsRequest"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "VolunteerDriver",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "availableDays",
+                    "type": "DayOfWeek",
+                    "mul": "*"
+                },
+                {
+                    "name": "dailyRoute",
+                    "type": "PickupRoute",
+                    "mul": "1"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "Vehicle",
+            "attributes": [
+                {
+                    "name": "id",
+                    "type": "int"
+                },
+                {
+                    "name": "storageSpace",
+                    "type": "double"
+                },
+                {
+                    "name": "assignedDrivers",
+                    "type": "VolunteerDriver",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "PickupRoute",
+            "attributes": [
+                {
+                    "name": "date",
+                    "type": "Date"
+                },
+                {
+                    "name": "vehicle",
+                    "type": "Vehicle"
+                },
+                {
+                    "name": "residents",
+                    "type": "Resident",
+                    "mul": "*"
+                },
+                {
+                    "name": "deliveryRoutes",
+                    "type": "DeliveryRoute",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "DistributionCenter",
+            "attributes": [
+                {
+                    "name": "items",
+                    "type": "Item",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": []
+        },
+        {
+            "name": "DeliveryRoute",
+            "attributes": [
+                {
+                    "name": "date",
+                    "type": "Date"
+                },
+                {
+                    "name": "vehicle",
+                    "type": "Vehicle"
+                },
+                {
+                    "name": "residents",
+                    "type": "Resident",
+                    "mul": "*"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Resident",
+                    "mul": "*"
+                }
+            ],
+            "inherit": []
+        },
+        {
+            "name": "H2SEmployee",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "employeeID",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Item",
+                    "mul": "*",
+                    "name": "assignedBy"
+                }
+            ]
+        },
+        {
+            "name": "ClientRequest",
+            "attributes": [
+                {
+                    "name": "resident",
+                    "type": "Resident"
+                },
+                {
+                    "name": "neededCategories",
+                    "type": "Category",
+                    "mul": "*"
+                },
+                {
+                    "name": "requestDate",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": []
+        }
+    ]
+}

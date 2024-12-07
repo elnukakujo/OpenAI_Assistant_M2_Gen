@@ -1,0 +1,67 @@
+LLM_name,Shots_example,Divide_method,Tasks,Prompt,Pre_model,Output,Solution
+gemini-1.5-flash,1shot_btms,,,"Example domain description: 
+Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+
+The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
+
+The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.Example solution: 
+Enumerations:
+Shift(morning, afternoon, night)
+
+Classes:
+BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
+BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
+Route(int number, associate (*) RouteAssignment)
+RouteAssignment(Date date, associate (*) DriverSchedule)
+Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
+DriverSchedule(Shift shift)
+
+###
+User prompt: 
+A smart home automation system (SHAS) offers various users to automatically manage smart home automation tasks. A smart home (located at a physical address) consists of several rooms, each of which may contain sensor devices and actuator (controller) devices of different types (e.g. temperature sensor, movement sensor, light controller, lock controller). Each sensor and actuator have a unique device identifier. Once a new sensor or actuator is activated or deactivated, SHAS will recognize the change and update its infrastructure map.
+
+When SHAS is operational, a sensor device periodically provides sensor readings (recording the measured value and the timestamp). Similarly, a predefined set of control commands (e.g. lockDoor, turnOnHeating) can be sent to the actuator devices with the timestamp and the status of the command (e.g. requested, completed, failed, etc.). All sensor readings and control commands for a smart home are recorded by SHAS in an activity log.
+
+Relevant alerts in a smart home can be set up and managed by its owner by setting up automation rules. An automation rule has a precondition and an action. The precondition is a Boolean expression constructed from relational terms connected by basic Boolean operators (AND, OR, NOT). Atomic relational terms may refer to rooms, sensors, actuators, sensor readings and control commands. The action is a sequence of control commands. 
+For example, a sample rule could specify:
+when actualTemperature by Device #1244 in Living Room < 18 and window is closed then turnOnHeating in Living Room
+
+Automation rules can be created, edited, activated and deactivated by owners. Only deactivated rules can be edited. Rules can also depend on or conflict with other rules, thus a complex rule hierarchy can be designed. SHAS records whenever an active rule was triggered using a timestamp.",,"Enumerations:
+
+Classes:
+SHAS(contain (*) SmartHome)
+SmartHome(string address, contain (*) Room associate (*) AutomationRule, associate (1) ActivityLog)
+Room(string name, contain (*) Sensor, contain (*) Actuator)
+Sensor(string deviceId, string type, associate (*) SensorReading)
+Actuator(string deviceId, string type, associate (*) ControlCommand)
+SensorReading(string value, Date timestamp)
+ControlCommand(string command, Date timestamp, string status)
+ActivityLog(contain (*) SensorReading, contain (*) ControlCommand)
+AutomationRule(string precondition, string action, string status)
+","Enumerations:
+DeviceStatus(Activated, Deactivated)
+CommandType(lockDoor, turnOnHeating)
+CommandStatus(Requested, Completed, Failed)
+RuleStatus(created, edited, activated, deactivated)
+BinaryOp(AND, OR)
+
+Classes:
+SHAS(contain (*) SmartHome, contain (*) User)
+SmartHome(contain (0..1) Address, contain (*) Room, contain (0..1) ActivityLog associate (*) User)
+User(string name, associate (*) SmartHome)
+Address(string city, string postalCode, string street, string aptNumber)
+Room(contain (*) SensorDevice, contain (*) ActuatorDevice associate (*) RelationalTerm)
+Device(DeviceStatus deviceStatus, int deviceID, inherit DeviceStatus contain (0..1) BooleanExpression)
+SensorDevice(inherit Device associate (*) SensorReading, associate (*) RelationalTerm)
+ActuatorDevice(inherit Device associate (*) ControlCommand, associate (*) RelationalTerm)
+ActivityLog(contain (*) SensorReading, contain (*) ControlCommand)
+RuntimeElement(time timestamp)
+SensorReading(double value, inherit RuntimeElement associate (*) RelationalTerm)
+ControlCommand(CommandType commandType, CommandStatus commandStatus, associate (*) RelationalTerm)
+AlertRule(RuleStatus ruleStatus, contain (*) CommandSequence)
+BooleanExpression(associate (0..1) NotExpression, associate (0..1) BinaryExpression)
+RelationalTerm()
+NotExpression()
+BinaryExpression(BinaryOp binaryOp)
+CommandSequence(contain (0..1) ControlCommand associate (*) CommandSequence)
+"

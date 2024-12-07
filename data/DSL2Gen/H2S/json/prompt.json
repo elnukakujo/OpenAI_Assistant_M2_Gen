@@ -265,188 +265,159 @@
             }
         ]
     ],
-    "user_prompt": "Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).\n\nWhen searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.\n\nIn case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.\n\nIn both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.\n\nEach hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller\u2019s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.",
+    "user_prompt": "Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. \n\nAt the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S\u2019s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of categories (e.g., baby clothing, women\u2019s winter boots, fridge, microwave\u2026). \n\nH2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.",
     "pre_model": {
         "enum": [
             {
-                "name": "RoomType",
+                "name": "DayOfWeek",
                 "values": [
-                    "SINGLE",
-                    "DOUBLE",
-                    "TWIN"
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday"
                 ]
             },
             {
-                "name": "PaymentMethod",
+                "name": "Category",
                 "values": [
-                    "PREPAID",
-                    "PAY_AT_HOTEL"
-                ]
-            },
-            {
-                "name": "BookingStatus",
-                "values": [
-                    "PRELIMINARY",
-                    "FINALIZED",
-                    "CONFIRMED",
-                    "CANCELLED"
+                    "baby clothing",
+                    "women\u2019s winter boots",
+                    "fridge",
+                    "microwave"
                 ]
             }
         ],
         "class_": [
             {
-                "name": "Traveller",
+                "name": "Resident",
                 "attributes": [
-                    {
-                        "name": "travellerId",
-                        "type": "int"
-                    },
                     {
                         "name": "name",
                         "type": "string"
                     },
                     {
-                        "name": "billingInformation",
+                        "name": "streetAddress",
                         "type": "string"
                     },
                     {
-                        "name": "travelPreferences",
+                        "name": "phoneNumber",
                         "type": "string"
                     },
                     {
-                        "name": "creditCardInformation",
+                        "name": "email",
                         "type": "string"
                     },
                     {
-                        "name": "reliabilityRating",
-                        "type": "double"
+                        "name": "itemsToBePickedUp",
+                        "type": "string",
+                        "mul": "*"
                     }
                 ],
-                "contains": [],
-                "associate": [
+                "contains": [
                     {
-                        "to": "Booking",
-                        "mul": "0..*"
+                        "to": "Item",
+                        "mul": "*"
                     }
                 ],
+                "associate": [],
                 "inherit": []
             },
             {
-                "name": "Hotel",
+                "name": "Item",
                 "attributes": [
-                    {
-                        "name": "hotelId",
-                        "type": "int"
-                    },
-                    {
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "name": "address",
-                        "type": "string"
-                    },
-                    {
-                        "name": "city",
-                        "type": "string"
-                    },
-                    {
-                        "name": "hotelChain",
-                        "type": "string"
-                    },
-                    {
-                        "name": "starRating",
-                        "type": "int"
-                    }
-                ],
-                "contains": [],
-                "associate": [
-                    {
-                        "to": "Booking",
-                        "mul": "0..*"
-                    }
-                ],
-                "inherit": []
-            },
-            {
-                "name": "Booking",
-                "attributes": [
-                    {
-                        "name": "bookingId",
-                        "type": "int"
-                    },
-                    {
-                        "name": "traveller",
-                        "type": "Traveller"
-                    },
-                    {
-                        "name": "hotel",
-                        "type": "Hotel"
-                    },
-                    {
-                        "name": "arrivalDate",
-                        "type": "Date"
-                    },
-                    {
-                        "name": "departureDate",
-                        "type": "Date"
-                    },
-                    {
-                        "name": "numberOfRooms",
-                        "type": "int"
-                    },
-                    {
-                        "name": "roomType",
-                        "type": "RoomType"
-                    },
-                    {
-                        "name": "totalCost",
-                        "type": "double"
-                    },
-                    {
-                        "name": "paymentMethod",
-                        "type": "PaymentMethod"
-                    },
-                    {
-                        "name": "bookingStatus",
-                        "type": "BookingStatus"
-                    },
-                    {
-                        "name": "cancellationDeadline",
-                        "type": "Date"
-                    },
-                    {
-                        "name": "specialOffer",
-                        "type": "string"
-                    }
-                ],
-                "contains": [],
-                "associate": [
-                    {
-                        "to": "SpecialOffer",
-                        "mul": "0..*"
-                    }
-                ],
-                "inherit": []
-            },
-            {
-                "name": "SpecialOffer",
-                "attributes": [
-                    {
-                        "name": "specialOfferId",
-                        "type": "int"
-                    },
-                    {
-                        "name": "booking",
-                        "type": "Booking"
-                    },
-                    {
-                        "name": "offeredPrice",
-                        "type": "double"
-                    },
                     {
                         "name": "description",
                         "type": "string"
+                    },
+                    {
+                        "name": "dimensions",
+                        "type": "string"
+                    },
+                    {
+                        "name": "weight",
+                        "type": "double"
+                    },
+                    {
+                        "name": "category",
+                        "type": "Category"
+                    }
+                ],
+                "contains": [],
+                "associate": [
+                    {
+                        "to": "Category",
+                        "mul": "1"
+                    }
+                ],
+                "inherit": []
+            },
+            {
+                "name": "VolunteerDriver",
+                "attributes": [
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "availableDays",
+                        "type": "DayOfWeek",
+                        "mul": "*"
+                    }
+                ],
+                "contains": [],
+                "associate": [],
+                "inherit": []
+            },
+            {
+                "name": "Vehicle",
+                "attributes": [
+                    {
+                        "name": "id",
+                        "type": "int"
+                    },
+                    {
+                        "name": "storageSpace",
+                        "type": "double"
+                    },
+                    {
+                        "name": "assignedDrivers",
+                        "type": "VolunteerDriver",
+                        "mul": "*"
+                    }
+                ],
+                "contains": [],
+                "associate": [],
+                "inherit": []
+            },
+            {
+                "name": "PickupRoute",
+                "attributes": [
+                    {
+                        "name": "date",
+                        "type": "Date"
+                    },
+                    {
+                        "name": "vehicle",
+                        "type": "Vehicle"
+                    },
+                    {
+                        "name": "residents",
+                        "type": "Resident",
+                        "mul": "*"
+                    }
+                ],
+                "contains": [],
+                "associate": [],
+                "inherit": []
+            },
+            {
+                "name": "DistributionCenter",
+                "attributes": [
+                    {
+                        "name": "items",
+                        "type": "Item",
+                        "mul": "*"
                     }
                 ],
                 "contains": [],
