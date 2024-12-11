@@ -39,7 +39,8 @@ def gpt_unique_call(client, prompt, llm_name):
     The function prepares the prompt messages by combining example prompts and user prompts with a system role description.
     It then makes a call to the GPT model to generate a response based on the provided prompts.
     """
-    sys_role = "You are an expert in designing and validating models from a textual description for domain models returning only valid Json files with only components from the description. Ensure all referenced classes are explicitly defined within the input."
+    model_explanation = "A model is composed of enumerations and classes. Classes can be abstract, and are composed of attributes with non complex types (int, double, boolean, Date, string, and enumerations custom types) and relationships which have multiplicities and can be inherit, associate or contain. However, models don't have methods."
+    sys_role = f"You are an expert in designing and validating class diagrams for domain models returning only valid Json files. {model_explanation} You receive textual description of a problem domain and return a valid json object using the same format as the example before."
     if prompt["pre_model"] is not None:
         sys_role += f"\n To design the model, you use the following model as a base: \n {json.dumps(prompt['pre_model'])}"
     messages = gpt_prepare_shots_prompt(prompt['prompt_ex'], prompt['user_prompt'], sys_role)
@@ -58,10 +59,11 @@ def gpt_task_call(client, prompt, divide, llm_name):
     Raises:
         Exception: If the divide method is invalid or if task parsing fails.
     """
+    model_explanation = "A model is composed of enumerations and classes. Classes can be abstract, and are composed of attributes with non complex types (int, double, boolean, Date, string, and enumerations custom types) and relationships which have multiplicities and can be inherit, associate or contain. However, models don't have methods."
     if divide == "auto":
-        sys_role = "You are an expert in designing CRUD operation tasks for another LLM to build a model. A model is composed of enumerations and classes. Classes are composed of attributes with types (int, double, boolean, Date, string, and enumerations custom types) and relationships which have multiplicities and can be inherit, associate or contain. However, models don't have methods. You receive a textual description of a problem domain and return a list of 5 very detailed and precise tasks containing CRUD operations in a 1D json array containing only str of what the other LLM should do to create a correct model. Do not talk about CRUD operations in the tasks. The other LLM won't have access to this description so always specify everything to him."
+        sys_role = f"You are an expert in designing CRUD operation tasks for another LLM to build a Model. {model_explanation} You receive a textual description of a problem domain and return a list of 10 CRUD operation very detailed and precise tasks in a 1D json array containing only str of what the other LLM should do to create a correct Model. Do not talk about CRUD operations in the tasks. The other LLM won't have access to this description so always specify everything to him."
         if prompt["pre_model"] is not None:
-            sys_role += f"\n To design those tasks, you use the following model as a base: \n {json.dumps(prompt['pre_model'])}"
+            sys_role += f"\n To design those tasks, you use the following partial solution model: \n {json.dumps(prompt['pre_model'])}"
         messages =[{"role": "system", "content": sys_role}]
         messages.append({"role": "user", "content": prompt["user_prompt"]})
         response = client.chat.completions.create(model=llm_name, messages=messages).choices[0].message.content
@@ -77,9 +79,9 @@ def gpt_task_call(client, prompt, divide, llm_name):
     
     response = {}
     
-    sys_role = "You are an expert in designing and validating models for domain models returning only valid Json files. You receive tasks with the format of CRUD operations as well as a model from previous tasks and return a valid json object using the same format as the shots above. A model is composed of enumerations and classes. Classes are composed of attributes with types (int, double, boolean, Date, string, and enumerations custom types) and relationships which have mul and can be inherit, associate or contain. Return only valid Json files as shown in the shots, and USE THE PREVIOUS model AS BASE! USE THE PREVIOUS model AS BASE! USE THE PREVIOUS model AS BASE!"
+    sys_role = f"You are an expert in designing and validating domain models returning only valid Json files. You receive tasks with the format of CRUD operations as well as a model from previous tasks and return a valid json object using the same format as the shots above. {model_explanation}"
     if prompt["pre_model"] is not None:
-            sys_role += f"\n To design the model, you use the following model as a base: \n {json.dumps(prompt['pre_model'])}"
+            sys_role += f"\n To design the model, you use the following partial solution model: \n {json.dumps(prompt['pre_model'])}"
     
     i=0
     for task in tasks:

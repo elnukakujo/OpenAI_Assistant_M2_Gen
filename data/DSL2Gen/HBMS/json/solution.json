@@ -38,7 +38,8 @@
                 }
             ],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "HotelBookingManager",
@@ -51,18 +52,11 @@
                 {
                     "to": "Traveller",
                     "mul": "*"
-                },
-                {
-                    "to": "TravelPreference",
-                    "mul": "*"
-                },
-                {
-                    "to": "BillingInformation",
-                    "mul": "1"
                 }
             ],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Traveller",
@@ -80,6 +74,14 @@
                 {
                     "to": "TravelSearch",
                     "mul": "*"
+                },
+                {
+                    "to": "TravelPreference",
+                    "mul": "*"
+                },
+                {
+                    "to": "BillingInformation",
+                    "mul": "1..1"
                 }
             ],
             "associate": [
@@ -88,7 +90,8 @@
                     "mul": "*"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "BillingInformation",
@@ -104,7 +107,8 @@
             ],
             "contains": [],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "TravelPreference",
@@ -120,7 +124,8 @@
             ],
             "contains": [],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Hotel",
@@ -154,28 +159,26 @@
                     "mul": "*"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Offer",
             "attributes": [],
             "contains": [],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": true
         },
         {
             "name": "SpecialOffer",
             "attributes": [],
             "contains": [],
-            "associate": [
-                {
-                    "to": "BookingInfo",
-                    "mul": "1"
-                }
-            ],
+            "associate": [],
             "inherit": [
                 "Offer"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "RegularOffer",
@@ -189,7 +192,8 @@
             ],
             "inherit": [
                 "Offer"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "TravelSearch",
@@ -210,7 +214,8 @@
                     "mul": "*"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "SearchInfo",
@@ -219,7 +224,8 @@
             "associate": [],
             "inherit": [
                 "TripInfo"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "RoomAvailability",
@@ -228,7 +234,8 @@
             "associate": [],
             "inherit": [
                 "TripInfo"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "TripInfo",
@@ -239,7 +246,8 @@
                 },
                 {
                     "name": "roomType",
-                    "type": "RoomType"
+                    "type": "RoomType",
+                    "default": "SINGLE"
                 },
                 {
                     "name": "arrivalDate",
@@ -251,12 +259,14 @@
                 },
                 {
                     "name": "budgetPerNight",
-                    "type": "float"
+                    "type": "float",
+                    "default": 0.0
                 }
             ],
             "contains": [],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": true
         },
         {
             "name": "BookingInfo",
@@ -265,12 +275,13 @@
             "associate": [
                 {
                     "to": "SpecialOffer",
-                    "mul": "0..5"
+                    "mul": "*"
                 }
             ],
             "inherit": [
                 "TripInfo"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "Booking",
@@ -293,7 +304,8 @@
                 },
                 {
                     "name": "paymentType",
-                    "type": "PaymentType"
+                    "type": "PaymentType",
+                    "default": "PREPAID"
                 },
                 {
                     "name": "confirmationDate",
@@ -301,7 +313,8 @@
                 },
                 {
                     "name": "paidAmount",
-                    "type": "float"
+                    "type": "float",
+                    "default": 0.0
                 }
             ],
             "contains": [
@@ -314,9 +327,18 @@
                 {
                     "to": "Offer",
                     "mul": "0..1"
+                },
+                {
+                    "to": "Hotel",
+                    "mul": "1"
+                },
+                {
+                    "to": "Traveller",
+                    "mul": "1"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         }
     ]
 }

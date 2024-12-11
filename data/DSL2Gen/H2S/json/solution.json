@@ -18,6 +18,10 @@
                     "mul": "*"
                 },
                 {
+                    "to": "Vehicle",
+                    "mul": "*"
+                },
+                {
                     "to": "Route",
                     "mul": "*"
                 },
@@ -31,7 +35,8 @@
                 }
             ],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Person",
@@ -60,14 +65,40 @@
                     "mul": "*"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "UserRole",
             "attributes": [],
             "contains": [],
-            "associate": [],
-            "inherit": []
+            "associate": [
+                {
+                    "to": "Person",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "Client",
+            "attributes": [
+                {
+                    "name": "neededCategory",
+                    "type": "ItemCategory"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "SecondHandArticle",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "UserRole"
+            ],
+            "abstract": false
         },
         {
             "name": "Volunteer",
@@ -86,7 +117,8 @@
             ],
             "inherit": [
                 "UserRole"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "Resident",
@@ -100,7 +132,8 @@
             ],
             "inherit": [
                 "UserRole"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "SecondHandArticle",
@@ -119,10 +152,20 @@
                 }
             ],
             "contains": [],
-            "associate": [],
+            "associate": [
+                {
+                    "to": "Client",
+                    "mul": "1"
+                },
+                {
+                    "to": "Route",
+                    "mul": "0..1"
+                }
+            ],
             "inherit": [
                 "Item"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "Item",
@@ -145,8 +188,28 @@
                 }
             ],
             "contains": [],
+            "associate": [
+                {
+                    "to": "Route",
+                    "mul": "1"
+                },
+                {
+                    "to": "Resident",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "FoodItem",
+            "attributes": [],
+            "contains": [],
             "associate": [],
-            "inherit": []
+            "inherit": [
+                "Item"
+            ],
+            "abstract": false
         },
         {
             "name": "Route",
@@ -165,9 +228,18 @@
                 {
                     "to": "SecondHandArticle",
                     "mul": "*"
+                },
+                {
+                    "to": "Vehicle",
+                    "mul": "1"
+                },
+                {
+                    "to": "Volunteer",
+                    "mul": "1"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         }
     ]
 }

@@ -28,7 +28,8 @@
                 }
             ],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Game",
@@ -71,16 +72,21 @@
                 },
                 {
                     "to": "Player",
-                    "mul": "0..1"
+                    "mul": "2..4"
                 }
             ],
             "associate": [
                 {
                     "to": "WinTile",
                     "mul": "0..1"
+                },
+                {
+                    "to": "Player",
+                    "mul": "0..1"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Connection",
@@ -92,14 +98,16 @@
                     "mul": "2"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Die",
             "attributes": [],
             "contains": [],
             "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Deck",
@@ -110,8 +118,14 @@
                     "mul": "0..32"
                 }
             ],
-            "associate": [],
-            "inherit": []
+            "associate": [
+                {
+                    "to": "ActionCard",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
         },
         {
             "name": "Tile",
@@ -123,20 +137,21 @@
                 {
                     "name": "y",
                     "type": "int"
+                },
+                {
+                    "name": "hasBeenVisited",
+                    "type": "boolean"
                 }
             ],
             "contains": [],
             "associate": [
                 {
                     "to": "Connection",
-                    "mul": "0..*"
-                },
-                {
-                    "to": "Player",
                     "mul": "0..4"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": true
         },
         {
             "name": "ActionCard",
@@ -147,13 +162,9 @@
                 }
             ],
             "contains": [],
-            "associate": [
-                {
-                    "to": "Deck",
-                    "mul": "0..1"
-                }
-            ],
-            "inherit": []
+            "associate": [],
+            "inherit": [],
+            "abstract": true
         },
         {
             "name": "RollDieActionCard",
@@ -162,7 +173,8 @@
             "associate": [],
             "inherit": [
                 "ActionCard"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "ConnectTilesActionCard",
@@ -171,7 +183,8 @@
             "associate": [],
             "inherit": [
                 "ActionCard"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "RemoveConnectionActionCard",
@@ -180,7 +193,8 @@
             "associate": [],
             "inherit": [
                 "ActionCard"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "TeleportActionCard",
@@ -189,7 +203,8 @@
             "associate": [],
             "inherit": [
                 "ActionCard"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "LoseTurnActionCard",
@@ -198,30 +213,37 @@
             "associate": [],
             "inherit": [
                 "ActionCard"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "WinTile",
             "attributes": [],
             "contains": [],
-            "associate": [
-                {
-                    "to": "Game",
-                    "mul": "1"
-                }
-            ],
+            "associate": [],
             "inherit": [
                 "Tile"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "ActionTile",
-            "attributes": [],
+            "attributes": [
+                {
+                    "name": "inactivityPeriod",
+                    "type": "int"
+                },
+                {
+                    "name": "turnsUntilActive",
+                    "type": "int"
+                }
+            ],
             "contains": [],
             "associate": [],
             "inherit": [
                 "Tile"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "NormalTile",
@@ -230,7 +252,8 @@
             "associate": [],
             "inherit": [
                 "Tile"
-            ]
+            ],
+            "abstract": false
         },
         {
             "name": "Player",
@@ -248,14 +271,15 @@
                     "type": "Color"
                 }
             ],
-            "contains": [
+            "contains": [],
+            "associate": [
                 {
                     "to": "Tile",
                     "mul": "0..2"
                 }
             ],
-            "associate": [],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         }
     ]
 }

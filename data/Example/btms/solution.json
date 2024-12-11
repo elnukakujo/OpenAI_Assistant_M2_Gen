@@ -12,14 +12,20 @@
     "class_":[
         {
             "name":"BTMS",
-            "attributes":[],
+            "abstract": false,
+            "attributes":[
+                {
+                    "name":"currentDate",
+                    "type":"Date"
+                }
+            ],
             "contains":[
                 {
                     "to":"BusVehicle",
                     "mul":"*"
                 },
                 {
-                    "to":"BusDriver",
+                    "to":"Driver",
                     "mul":"*"
                 },
                 {
@@ -40,6 +46,7 @@
         },
         {
             "name":"BusVehicle",
+            "abstract": false,
             "attributes":[
                 {
                     "name":"licencePlate",
@@ -47,7 +54,8 @@
                 },
                 {
                     "name":"inRepairShop",
-                    "type":"boolean"
+                    "type":"boolean",
+                    "default":"false"
                 }
             ],
             "contains":[],
@@ -61,6 +69,7 @@
         },
         {
             "name":"Route",
+            "abstract": false,
             "attributes":[
                 {
                     "name":"number",
@@ -78,6 +87,7 @@
         },
         {
             "name":"RouteAssignment",
+            "abstract": false,
             "attributes":[
                 {
                     "name":"date",
@@ -89,12 +99,21 @@
                 {
                     "to":"DriverSchedule",
                     "mul":"*"
+                },
+                {
+                    "to":"BusVehicle",
+                    "mul":"1"
+                },
+                {
+                    "to":"Route",
+                    "mul":"1"
                 }
             ],
             "inherit":[]
         },
         {
             "name":"Driver",
+            "abstract": false,
             "attributes":[
                 {
                     "name":"name",
@@ -102,11 +121,12 @@
                 },
                 {
                     "name":"id",
-                    "type":"string"
+                    "type":"int"
                 },
                 {
                     "name":"onSickLeave",
-                    "type":"boolean"
+                    "type":"boolean",
+                    "default":"false"
                 }
             ],
             "contains":[],
@@ -120,6 +140,7 @@
         },
         {
             "name":"DriverSchedule",
+            "abstract": false,
             "attributes":[
                 {
                     "name":"shift",
@@ -127,7 +148,16 @@
                 }
             ],
             "contains":[],
-            "associate":[],
+            "associate":[
+                {
+                    "to":"RouteAssignment",
+                    "mul":"1"
+                },
+                {
+                    "to":"Driver",
+                    "mul":"1"
+                }
+            ],
             "inherit":[]
         }
     ]
