@@ -1,0 +1,129 @@
+{
+    "class_": [
+        {
+            "name": "H2S",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                },
+                {
+                    "to": "Vehicle",
+                    "mul": "*"
+                },
+                {
+                    "to": "Route",
+                    "mul": "*"
+                },
+                {
+                    "to": "UserRole",
+                    "mul": "*"
+                },
+                {
+                    "to": "Person",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Person",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "address",
+                    "type": "string"
+                },
+                {
+                    "name": "phoneNumber",
+                    "type": "string"
+                },
+                {
+                    "name": "emailAddress",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "UserRole",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "UserRole",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Person",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "Client",
+            "attributes": [
+                {
+                    "name": "neededCategory",
+                    "type": "ItemCategory"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "SecondHandArticle",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "UserRole"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "Item",
+            "attributes": [
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "dimension",
+                    "type": "string"
+                },
+                {
+                    "name": "weight",
+                    "type": "int"
+                },
+                {
+                    "name": "requestedPickedDate",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Route",
+                    "mul": "1"
+                },
+                {
+                    "to": "Resident",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        }
+    ]
+}

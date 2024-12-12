@@ -1,0 +1,144 @@
+LLM_name,Shots_example,Divide_method,Tasks,Prompt,Pre_model,Output,Solution
+gemini-1.5-flash,1shot_btms,,,"Example domain description: 
+A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+
+The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
+
+The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.Example solution: 
+Enumerations:
+Shift(morning, afternoon, night)
+
+Classes:
+BTMS(Date currentDate, contain (*) BusVehicle, contain (*) Driver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
+BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
+Route(int number, associate (*) RouteAssignment)
+RouteAssignment(Date date, associate (*) DriverSchedule, associate (1) BusVehicle, associate (1) Route)
+Driver(string name, int id, boolean onSickLeave, associate (*) DriverSchedule)
+DriverSchedule(Shift shift, associate (1) RouteAssignment, associate (1) Driver)
+
+###
+User prompt: 
+The Team Sports Scouting System is used by various employees of the club, including the head coach, the director of the club and the scouts. It is the role of the head coach to identify designated player profiles for future signings, which includes designated target positions for a player (e.g. GK for goalkeeper, LB for left back, etc.), and other player attributes (identified by a name and a value). 
+
+Scouts may note players a long list who seem to match a designated target profile at any time. This long list is periodically evaluated by the head scout when setting up scouting assignments for his team to investigate a specific player more thoroughly. As the completion of a scouting assignment, the scout submits a scouting report about the player, which includes the pros and cons of the player as well as a recommendation (e.g. key player, first team player, reserve team player, prospective player, not a good signing). 
+
+After comparing first scouting results for a designated player profile, the head coach and the head scout decide upon which players to move to the short list. Several other rounds of scouting can be carried out for each short-listed player as part of scouting assignments – some of which is carried out by the head scout himself. If a player is finally recommended for signing by the head scout, the director makes an official offer for the player. ","Classes:
+abstract Person(string firstName, string lastName)
+Scout(ScoutKind scoutKind, inherit Person contain (*) ScoutingAssignment)
+Club(contain (*) Player, contain (0..1) HeadCoach, contain (0..1) Director, contain (*) Scout)
+Offer(int value, associate (0..1) Player)
+PlayerAttribute(string name, int value)
+","Enumerations:
+Recommendation(key player, first team player, reserve team player, prospective player, not a good signing)
+ScoutKind(REGULAR_SCOUT, HEAD_SCOUT)
+TargetPosition(GK, LB, CB, RB, DM, LM, CM, RM, LW, RW, CF)
+
+Classes:
+abstract Person(string firstName, string lastName)
+Scout(ScoutKind scoutKind, inherit Person contain (*) ScoutingAssignment)
+Club(contain (*) Player, contain (1) HeadCoach, contain (1) Director, contain (*) Scout)
+Offer(int value, associate (1) Player)
+PlayerAttribute(string name, int value)
+Player(contain (*) PlayerAttribute associate (0..1) Offer, associate (*) ScoutingAssignment)
+HeadCoach(inherit Person contain (*) DesignatedPlayerProfile)
+Director(inherit Person)
+DesignatedPlayerProfile(TargetPosition targetPosition)
+ScoutingAssignment(Date date, associate (1) Scout, associate (1) Player, associate (1) ScoutingReport)
+ScoutingReport(string pros, string cons, Recommendation recommendation)
+","Enumerations:
+ScoutingStatus(LONG_LISTED, SHORT_LISTED, RECOMMENDATION_FOR_SIGNING, OFFER_MADE)
+ScoutKind(REGULAR_SCOUT, HEAD_SCOUT)
+Position(GK, LB)
+Recommendation(KEY_PLAYER, FIRST_TEAM_PLAYER, RESERVE_TEAM_PLAYER, PROSPECTIVE_PLAYER, NOT_RECOMMENDED)
+
+Classes:
+abstract Person(string firstName, string lastName)
+Player(ScoutingStatus scoutingStatus, inherit Person associate (*) ScoutingAssignment, associate (0..1) PlayerProfile, associate (*) Offer)
+HeadCoach(inherit Person contain (*) PlayerProfile)
+Director(inherit Person contain (*) Offer)
+Scout(ScoutKind scoutKind, inherit Person contain (*) ScoutingAssignment)
+Club(contain (*) Player, contain (0..1) HeadCoach, contain (0..1) Director, contain (*) Scout)
+Offer(int value, associate (0..1) Player)
+ScoutingAssignment(contain (0..1) ScoutReport associate (1) Player)
+ScoutReport(string pro, string con, Recommendation recommendation, associate (0..2) ScoutReport)
+PlayerProfile(Position position, contain (*) PlayerAttribute associate (0..1) Player)
+PlayerAttribute(string name, int value)
+"
+gemini-1.5-flash,1shot_tile-o,,,"Example domain description: 
+The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color.
+
+A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles.
+
+The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn
+
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.Example solution: 
+Enumerations:
+Mode(design, game)
+Color(red, blue, green, yellow)
+
+Classes:
+TileO(contain (*) Game)
+Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (2..4) Player associate (0..1) WinTile, associate (0..1) Player)
+Connection(associate (2) Tile)
+Die()
+Deck(contain (0..32) ActionCard associate (0..1) ActionCard)
+abstract Tile(int x, int y, boolean hasBeenVisited, associate (0..4) Connection)
+abstract ActionCard(string instructions)
+RollDieActionCard(inherit ActionCard)
+ConnectTilesActionCard(inherit ActionCard)
+RemoveConnectionActionCard(inherit ActionCard)
+TeleportActionCard(inherit ActionCard)
+LoseTurnActionCard(inherit ActionCard)
+WinTile(inherit Tile)
+ActionTile(int inactivityPeriod, int turnsUntilActive, inherit Tile)
+NormalTile(inherit Tile)
+Player(int number, int turnsUntilActive, Color color, associate (0..2) Tile)
+
+###
+User prompt: 
+The Team Sports Scouting System is used by various employees of the club, including the head coach, the director of the club and the scouts. It is the role of the head coach to identify designated player profiles for future signings, which includes designated target positions for a player (e.g. GK for goalkeeper, LB for left back, etc.), and other player attributes (identified by a name and a value). 
+
+Scouts may note players a long list who seem to match a designated target profile at any time. This long list is periodically evaluated by the head scout when setting up scouting assignments for his team to investigate a specific player more thoroughly. As the completion of a scouting assignment, the scout submits a scouting report about the player, which includes the pros and cons of the player as well as a recommendation (e.g. key player, first team player, reserve team player, prospective player, not a good signing). 
+
+After comparing first scouting results for a designated player profile, the head coach and the head scout decide upon which players to move to the short list. Several other rounds of scouting can be carried out for each short-listed player as part of scouting assignments – some of which is carried out by the head scout himself. If a player is finally recommended for signing by the head scout, the director makes an official offer for the player. ","Classes:
+abstract Person(string firstName, string lastName)
+Scout(ScoutKind scoutKind, inherit Person contain (*) ScoutingAssignment)
+Club(contain (*) Player, contain (0..1) HeadCoach, contain (0..1) Director, contain (*) Scout)
+Offer(int value, associate (0..1) Player)
+PlayerAttribute(string name, int value)
+","Enumerations:
+ScoutKind(REGULAR_SCOUT, HEAD_SCOUT)
+Recommendation(KEY_PLAYER, FIRST_TEAM_PLAYER, RESERVE_TEAM_PLAYER, PROSPECTIVE_PLAYER, NOT_A_GOOD_SIGNING)
+
+Classes:
+abstract Person(string firstName, string lastName)
+Scout(ScoutKind scoutKind, inherit Person contain (*) ScoutingAssignment)
+HeadScout(inherit Scout)
+abstract ClubEmployee(inherit Person)
+HeadCoach(inherit ClubEmployee contain (*) DesignatedPlayerProfile)
+Director(inherit ClubEmployee)
+Club(contain (*) Player, contain (1) HeadCoach, contain (1) Director, contain (*) Scout)
+Offer(int value, associate (1) Player)
+PlayerAttribute(string name, int value)
+Player(associate (0..1) Offer, associate (*) ScoutingAssignment, associate (*) DesignatedPlayerProfile)
+DesignatedPlayerProfile(string targetPosition, contain (*) PlayerAttribute associate (*) Player)
+ScoutingAssignment(Date date, Recommendation result, associate (1) Scout, associate (1) Player)
+","Enumerations:
+ScoutingStatus(LONG_LISTED, SHORT_LISTED, RECOMMENDATION_FOR_SIGNING, OFFER_MADE)
+ScoutKind(REGULAR_SCOUT, HEAD_SCOUT)
+Position(GK, LB)
+Recommendation(KEY_PLAYER, FIRST_TEAM_PLAYER, RESERVE_TEAM_PLAYER, PROSPECTIVE_PLAYER, NOT_RECOMMENDED)
+
+Classes:
+abstract Person(string firstName, string lastName)
+Player(ScoutingStatus scoutingStatus, inherit Person associate (*) ScoutingAssignment, associate (0..1) PlayerProfile, associate (*) Offer)
+HeadCoach(inherit Person contain (*) PlayerProfile)
+Director(inherit Person contain (*) Offer)
+Scout(ScoutKind scoutKind, inherit Person contain (*) ScoutingAssignment)
+Club(contain (*) Player, contain (0..1) HeadCoach, contain (0..1) Director, contain (*) Scout)
+Offer(int value, associate (0..1) Player)
+ScoutingAssignment(contain (0..1) ScoutReport associate (1) Player)
+ScoutReport(string pro, string con, Recommendation recommendation, associate (0..2) ScoutReport)
+PlayerProfile(Position position, contain (*) PlayerAttribute associate (0..1) Player)
+PlayerAttribute(string name, int value)
+"

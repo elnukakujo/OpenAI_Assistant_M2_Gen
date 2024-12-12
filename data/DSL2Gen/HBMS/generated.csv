@@ -1,6 +1,6 @@
 LLM_name,Shots_example,Divide_method,Tasks,Prompt,Pre_model,Output,Solution
 gemini-1.5-flash,1shot_btms,,,"Example domain description: 
-Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
 
 The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
 
@@ -9,16 +9,16 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes:
-BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
+BTMS(Date currentDate, contain (*) BusVehicle, contain (*) Driver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
 BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
 Route(int number, associate (*) RouteAssignment)
-RouteAssignment(Date date, associate (*) DriverSchedule)
-Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
-DriverSchedule(Shift shift)
+RouteAssignment(Date date, associate (*) DriverSchedule, associate (1) BusVehicle, associate (1) Route)
+Driver(string name, int id, boolean onSickLeave, associate (*) DriverSchedule)
+DriverSchedule(Shift shift, associate (1) RouteAssignment, associate (1) Driver)
 
 ###
 User prompt: 
-Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
+Business travellers use HMBS for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
 
 When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
 
@@ -26,205 +26,25 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
-PaymentMethod(pre-paid, paidAtHotel)
-RoomType(single, double, twin)
-BookingStatus(preliminary, finalized, confirmed, cancelled)
-
-Classes:
-HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-Traveller(string name, string billingInformation, string travelPreferences, associate (*) Booking)
-Hotel(string name, string address, string hotelChain, int rating, associate (*) Booking, associate (*) RoomAvailability)
-Booking(string bookingId, date arrivalDate, date departureDate, int numberOfRooms, RoomType roomType, double price, PaymentMethod paymentMethod, date cancellationDeadline, BookingStatus status, string creditCardInformation, associate (1) Traveller, associate (1) Hotel, associate (*) SpecialOffer)
-RoomAvailability(RoomType roomType, date availableFrom, date availableTo, associate (1) Hotel)
-SpecialOffer(string offerDetails, associate (1) Booking)
-","Enumerations:
-PaymentMethod(pre-paid, paidAtHotel)
-RoomType(single, double, twin)
-BookingStatus(preliminary, finalized, confirmed, cancelled)
-
-Classes:
-HBMS(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-Traveller(string name, string billingInformation, string travelPreferences, double reliabilityRating, associate (*) Booking)
-Hotel(string name, string address, string hotelChain, int rating, associate (*) Booking, associate (*) RoomAvailability)
-Booking(string bookingId, date arrivalDate, date departureDate, int numberOfRooms, RoomType roomType, double price, PaymentMethod paymentMethod, date cancellationDeadline, BookingStatus status, string creditCardInformation, associate (1) Traveller, associate (1) Hotel, associate (*) SpecialOffer)
-RoomAvailability(RoomType roomType, date availableFrom, date availableTo, associate (1) Hotel)
-SpecialOffer(string offerDetails, associate (1) Booking)
-","Enumerations:
-RoomType(SINGLE, DOUBLE, TWIN)
-BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
-PaymentType(PREPAID, PAID_AT_HOTEL)
-
-Classes:
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Classes:
 HotelChain(contain (*) Hotel)
-HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
-Traveller(string name, int reliabilityRating, contain (*) TravelSearch associate (*) Booking)
-BillingInformation(string companyName, string address)
-TravelPreference(string preference, string value)
-Hotel(string city, string country, string area, contain (*) Offer, contain (*) RoomAvailability associate (*) Booking)
-Offer()
-SpecialOffer(inherit Offer associate (1) BookingInfo)
-RegularOffer(inherit Offer associate (*) TravelSearch)
-TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference associate (*) RegularOffer)
-SearchInfo(inherit TripInfo)
-RoomAvailability(inherit TripInfo)
-TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo(inherit TripInfo associate (0..5) SpecialOffer)
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer)
-"
-gemini-1.5-flash,1shot_btms,manual,"Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
-
-When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
-
-In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
-
-In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
-
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Example domain description: 
-Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
-
-The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
-
-The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.Example solution: 
-Enumerations:
-Shift(morning, afternoon, night)
-
-Classes:
-BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
-BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
-Route(int number, associate (*) RouteAssignment)
-RouteAssignment(Date date, associate (*) DriverSchedule)
-Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
-DriverSchedule(Shift shift)
-
-###
-User prompt: 
-Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
-
-When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
-
-In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
-
-In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
-
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
-
-Classes:
-Traveller(string name, string billingInformation, string travelPreferences, double reliabilityRating, associate (*) Booking)
-Hotel(string name, string address, string deals, int rating, string hotelChain, associate (*) Booking, associate (*) Room, associate (1) City)
-Booking(date bookingDate, double price, string bookingIdentifier, string paymentType, date cancellationDeadline, string confirmationStatus, associate (1) Traveller, associate (1) Hotel, associate (1) SpecialOffer, associate (1) CreditCard, associate (1) Room)
-Room(string type, double price, boolean booked, associate (1) Booking, associate (1) Hotel)
-Search(string city, date arrivalDate, date departureDate, int roomsNeeded, string roomType, int minRating, double budget, string travelPreferences)
-SpecialOffer(double price, string description, associate (1) Hotel, associate (1) Booking)
-CreditCard(string number, date expiryDate, int cvv, associate (1) Booking)
-City(string name, associate (*) Hotel)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller)
+abstract Offer()
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
 ","Enumerations:
-
-Classes:
-Traveller(string name, string billingInformation, string travelPreferences, double reliabilityRating, associate (*) Booking)
-Hotel(string name, string address, string deals, int rating, string hotelChain, associate (*) Booking, associate (*) Room, associate (1) City)
-Booking(date bookingDate, double price, string bookingIdentifier, string paymentType, date cancellationDeadline, string confirmationStatus, associate (1) Traveller, associate (1) Hotel, associate (1) SpecialOffer, associate (1) CreditCard, associate (1) Room)
-Room(string type, double price, boolean booked, associate (1) Booking, associate (1) Hotel)
-Search(string city, date arrivalDate, date departureDate, int roomsNeeded, string roomType, int minRating, double budget, string travelPreferences)
-SpecialOffer(double price, string description, associate (1) Hotel, associate (1) Booking)
-CreditCard(string number, date expiryDate, int cvv, associate (1) Booking)
-City(string name, associate (*) Hotel)
-PreliminaryBooking(string bookingIdentifier, double price, string city, int hotelRating, string travelPreferences, associate (1) Traveller, associate (*) SpecialOffer)
-","Enumerations:
-RoomType(SINGLE, DOUBLE, TWIN)
-BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
-PaymentType(PREPAID, PAID_AT_HOTEL)
-
-Classes:
-HotelChain(contain (*) Hotel)
-HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
-Traveller(string name, int reliabilityRating, contain (*) TravelSearch associate (*) Booking)
-BillingInformation(string companyName, string address)
-TravelPreference(string preference, string value)
-Hotel(string city, string country, string area, contain (*) Offer, contain (*) RoomAvailability associate (*) Booking)
-Offer()
-SpecialOffer(inherit Offer associate (1) BookingInfo)
-RegularOffer(inherit Offer associate (*) TravelSearch)
-TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference associate (*) RegularOffer)
-SearchInfo(inherit TripInfo)
-RoomAvailability(inherit TripInfo)
-TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo(inherit TripInfo associate (0..5) SpecialOffer)
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer)
-"
-gemini-1.5-flash,1shot_btms,auto,"Create a new class named `CreditCardInformation` with attributes: `creditCardId` (int), `cardNumber` (string), `expirationDate` (Date), and `cvv` (int). Add an association to the `Traveller` class with multiplicity 1 and an association to the `Booking` class with multiplicity 1.
-
-Add a new attribute `creditCardInformation` of type `CreditCardInformation` to the `Booking` class.
-
-Modify the `Booking` class to include a new attribute `paymentMethod` of type `PaymentMethod` enumeration.
-
-Create a new class named `Room` with attributes: `roomId` (int), `roomType` (RoomType enumeration), and `price` (double). Add a containment relationship from the `Hotel` class to the `Room` class with multiplicity *.
-
-Add an attribute `rooms` of type `Room` to the `Booking` class with multiplicity *. This attribute will represent the list of rooms booked.
-
-Add a new attribute `bookingStatus` of type `BookingStatus` enumeration to the `Booking` class.
-
-Add a new attribute `confirmationDate` (Date) to the Booking class to store the timestamp when a booking gets confirmed.
-
-Create a new class named `HotelCancellationPolicy` with attributes: `cancellationDeadline` (Date) and `cancellationFee` (double). Add a containment relationship from the `Booking` class to the `HotelCancellationPolicy` class with multiplicity 1.
-
-Add a new attribute `specialOffers` of type `SpecialOffer` to the `Booking` class with multiplicity *. This attribute will allow the booking to contain multiple special offers.
-
-Create a new class `Company` with attributes `companyId` (int), `companyName` (string), `address` (string). Add a containment relationship from `Traveller` to `Company` with multiplicity 1 to model billing information.","Example domain description: 
-Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
-
-The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
-
-The current version of BTMS does not support the information of bus drivers or buses to be updated – only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows – for each route number – the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.Example solution: 
-Enumerations:
-Shift(morning, afternoon, night)
-
-Classes:
-BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
-BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
-Route(int number, associate (*) RouteAssignment)
-RouteAssignment(Date date, associate (*) DriverSchedule)
-Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
-DriverSchedule(Shift shift)
-
-###
-User prompt: 
-Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
-
-When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
-
-In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
-
-In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
-
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
-RoomType(single, double, twin, suite, family)
-PaymentMethod(prepaid, payAtHotel)
+RoomType(single, double, twin)
+PaymentMethod(prepaid, atHotel)
 BookingStatus(preliminary, confirmed, cancelled)
 
 Classes:
-Traveller(int travellerId, string name, string billingInformation, string travelPreferences, double reliabilityRating, associate (*) Booking)
-Hotel(int hotelId, string name, string address, string city, int rating, associate (*) Booking, associate (1) HotelChain)
-HotelChain(int chainId, string name, contain (*) Hotel)
-Booking(int bookingId, date arrivalDate, date departureDate, int numberOfRooms, double totalCost, date cancellationDeadline, contain (*) SpecialOffer, contain (1) PreliminaryBookingInformation associate (1) Traveller, associate (1) Hotel, associate (1) RoomType, associate (1) BookingStatus, associate (1) PaymentMethod)
-SpecialOffer(int offerId, double price, string description, associate (1) Hotel, associate (1) Booking)
-PreliminaryBookingInformation(double price, string cityArea, int hotelRating, string keyPreferences, int bookingId)
-","Enumerations:
-RoomType(single, double, twin, suite, family)
-PaymentMethod(prepaid, payAtHotel)
-BookingStatus(preliminary, confirmed, cancelled)
-
-Classes:
-Traveller(int travellerId, string name, string travelPreferences, double reliabilityRating, contain (1) Company associate (*) Booking, associate (1) CreditCardInformation)
-Hotel(int hotelId, string name, string address, string city, int rating, contain (*) Room associate (*) Booking, associate (1) HotelChain)
-HotelChain(int chainId, string name, contain (*) Hotel)
-Booking(int bookingId, date arrivalDate, date departureDate, int numberOfRooms, double totalCost, CreditCardInformation creditCardInformation, PaymentMethod paymentMethod, Room rooms, BookingStatus bookingStatus, Date confirmationDate, SpecialOffer specialOffers, contain (*) SpecialOffer, contain (1) PreliminaryBookingInformation, contain (1) HotelCancellationPolicy associate (1) Traveller, associate (1) Hotel, associate (1) RoomType)
-SpecialOffer(int offerId, double price, string description, associate (1) Hotel, associate (1) Booking)
-PreliminaryBookingInformation(double price, string cityArea, int hotelRating, string keyPreferences, int bookingId)
-CreditCardInformation(int creditCardId, string cardNumber, Date expirationDate, int cvv, associate (1) Traveller, associate (1) Booking)
-Room(int roomId, RoomType roomType, double price)
-HotelCancellationPolicy(Date cancellationDeadline, double cancellationFee)
-Company(int companyId, string companyName, string address)
+HotelChain(contain (*) Hotel)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller)
+abstract Offer(float price, int rating, associate (1) Hotel, associate (1) Booking, associate (1) Traveller)
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
+Traveller(string name, string billingInfo, associate (*) Booking)
+Hotel(string address, associate (*) Offer, associate (*) Booking, associate (1) HotelChain)
+Booking(int bookingId, PaymentMethod paymentMethod, date cancellationDeadline, BookingStatus status, associate (1) Traveller, associate (1) Hotel, associate (1) Offer)
+SpecialOffer(inherit Offer)
 ","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
@@ -232,54 +52,54 @@ PaymentType(PREPAID, PAID_AT_HOTEL)
 
 Classes:
 HotelChain(contain (*) Hotel)
-HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
-Traveller(string name, int reliabilityRating, contain (*) TravelSearch associate (*) Booking)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch, contain (*) TravelPreference, contain (1..1) BillingInformation associate (*) Booking)
 BillingInformation(string companyName, string address)
 TravelPreference(string preference, string value)
 Hotel(string city, string country, string area, contain (*) Offer, contain (*) RoomAvailability associate (*) Booking)
-Offer()
-SpecialOffer(inherit Offer associate (1) BookingInfo)
+abstract Offer()
+SpecialOffer(inherit Offer)
 RegularOffer(inherit Offer associate (*) TravelSearch)
 TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference associate (*) RegularOffer)
 SearchInfo(inherit TripInfo)
 RoomAvailability(inherit TripInfo)
-TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo(inherit TripInfo associate (0..5) SpecialOffer)
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer)
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
+BookingInfo(inherit TripInfo associate (*) SpecialOffer)
+Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer, associate (1) Hotel, associate (1) Traveller)
 "
 gemini-1.5-flash,1shot_tile-o,,,"Example domain description: 
-The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
+The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color.
 
-A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
+A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles.
 
-The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
+The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. Example solution: 
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.Example solution: 
 Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
 Classes:
 TileO(contain (*) Game)
-Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (0..1) Player associate (0..1) WinTile)
+Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (2..4) Player associate (0..1) WinTile, associate (0..1) Player)
 Connection(associate (2) Tile)
 Die()
-Deck(contain (0..32) ActionCard)
-Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
-ActionCard(string instructions, associate (0..1) Deck)
+Deck(contain (0..32) ActionCard associate (0..1) ActionCard)
+abstract Tile(int x, int y, boolean hasBeenVisited, associate (0..4) Connection)
+abstract ActionCard(string instructions)
 RollDieActionCard(inherit ActionCard)
 ConnectTilesActionCard(inherit ActionCard)
 RemoveConnectionActionCard(inherit ActionCard)
 TeleportActionCard(inherit ActionCard)
 LoseTurnActionCard(inherit ActionCard)
-WinTile(inherit Tile associate (1) Game)
-ActionTile(inherit Tile)
+WinTile(inherit Tile)
+ActionTile(int inactivityPeriod, int turnsUntilActive, inherit Tile)
 NormalTile(inherit Tile)
-Player(int number, int turnsUntilActive, Color color, contain (0..2) Tile)
+Player(int number, int turnsUntilActive, Color color, associate (0..2) Tile)
 
 ###
 User prompt: 
-Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
+Business travellers use HMBS for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
 
 When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
 
@@ -287,116 +107,27 @@ In case of a preliminary booking, HBMS forwards the key parameters of the bookin
 
 In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
 
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
-PaymentMethod(prepaid, payAtHotel)
-BookingStatus(preliminary, finalized, confirmed, cancelled)
-
-Classes:
-HotelBookingManagementSystem(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-Traveller(string name, string billingInformation, string travelPreferences, contain (*) Booking)
-Hotel(string name, string address, string city, int rating, contain (*) Room, contain (*) Booking, contain (*) SpecialOffer associate (0..1) HotelChain)
-HotelChain(string name, contain (*) Hotel)
-Room(string type, double price, associate (1) Hotel, associate (0..*) Booking)
-Booking(string bookingId, date arrivalDate, date departureDate, int numberOfRooms, PaymentMethod paymentMethod, BookingStatus bookingStatus, date cancellationDeadline, date creationDate, associate (1) Traveller, associate (1) Hotel, associate (*) Room, associate (0..1) SpecialOffer)
-SpecialOffer(double price, string description, associate (1) Hotel, associate (0..1) Booking)
-","Enumerations:
-PaymentMethod(prepaid, payAtHotel)
-BookingStatus(preliminary, finalized, confirmed, cancelled)
-RoomType(single, double, twin)
-
-Classes:
-HotelBookingManagementSystem(contain (*) Traveller, contain (*) Hotel, contain (*) Booking)
-Traveller(string name, string billingInformation, string travelPreferences, double reliabilityRating, contain (*) Booking)
-Hotel(string name, string address, string city, int rating, contain (*) Room, contain (*) Booking, contain (*) SpecialOffer associate (0..1) HotelChain)
-HotelChain(string name, contain (*) Hotel)
-Room(RoomType type, double price, boolean available, associate (1) Hotel, associate (0..*) Booking)
-Booking(string bookingId, date arrivalDate, date departureDate, int numberOfRooms, PaymentMethod paymentMethod, BookingStatus bookingStatus, date cancellationDeadline, date creationDate, double price, associate (1) Traveller, associate (1) Hotel, associate (*) Room, associate (0..1) SpecialOffer)
-SpecialOffer(double price, string description, associate (1) Hotel, associate (0..1) Booking)
-","Enumerations:
-RoomType(SINGLE, DOUBLE, TWIN)
-BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
-PaymentType(PREPAID, PAID_AT_HOTEL)
-
-Classes:
+Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Classes:
 HotelChain(contain (*) Hotel)
-HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
-Traveller(string name, int reliabilityRating, contain (*) TravelSearch associate (*) Booking)
-BillingInformation(string companyName, string address)
-TravelPreference(string preference, string value)
-Hotel(string city, string country, string area, contain (*) Offer, contain (*) RoomAvailability associate (*) Booking)
-Offer()
-SpecialOffer(inherit Offer associate (1) BookingInfo)
-RegularOffer(inherit Offer associate (*) TravelSearch)
-TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference associate (*) RegularOffer)
-SearchInfo(inherit TripInfo)
-RoomAvailability(inherit TripInfo)
-TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo(inherit TripInfo associate (0..5) SpecialOffer)
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer)
-"
-gemini-1.5-flash,1shot_tile-o,manual,"Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
-
-When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
-
-In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
-
-In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
-
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Example domain description: 
-The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
-
-A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
-
-The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
-
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. Example solution: 
-Enumerations:
-Mode(design, game)
-Color(red, blue, green, yellow)
-
-Classes:
-TileO(contain (*) Game)
-Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (0..1) Player associate (0..1) WinTile)
-Connection(associate (2) Tile)
-Die()
-Deck(contain (0..32) ActionCard)
-Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
-ActionCard(string instructions, associate (0..1) Deck)
-RollDieActionCard(inherit ActionCard)
-ConnectTilesActionCard(inherit ActionCard)
-RemoveConnectionActionCard(inherit ActionCard)
-TeleportActionCard(inherit ActionCard)
-LoseTurnActionCard(inherit ActionCard)
-WinTile(inherit Tile associate (1) Game)
-ActionTile(inherit Tile)
-NormalTile(inherit Tile)
-Player(int number, int turnsUntilActive, Color color, contain (0..2) Tile)
-
-###
-User prompt: 
-Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
-
-When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
-
-In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
-
-In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
-
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.",,"Enumerations:
-TravelPreference(breakfastIncluded, freeWifi, frontDesk247)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller)
+abstract Offer()
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
+","Enumerations:
 RoomType(single, double, twin)
+PaymentMethod(prepaid, atHotel)
 BookingStatus(preliminary, confirmed, cancelled)
-PaymentMethod(prepaid, payAtHotel)
 
 Classes:
-HotelBookingManagementSystem(contain (*) Traveller, contain (*) Hotel)
-Traveller(string name, string billingAddress, string companyName, double reliabilityRating, associate (0..*) Hotel, associate (0..*) Booking)
-Hotel(string name, string address, int rating, string hotelChain, associate (0..*) Traveller, associate (*) Deal, associate (0..*) RoomType)
-Deal(string description, double price, Date arrivalDate, Date departureDate, int roomsNeeded, RoomType roomType, associate (1) Hotel, associate (0..*) TravelPreference, associate (0..1) Booking)
-Booking(string bookingId, BookingStatus status, PaymentMethod paymentMethod, Date cancellationDeadline, string creditCardInformation, associate (1) Traveller, associate (1) Deal, associate (0..1) SpecialOffer)
-SpecialOffer(string description, double price, Date deadline, associate (1) Hotel, associate (1) Booking)
-City(string name, contain (*) Hotel)
-RoomType(string type, boolean available, associate (1) Hotel)
+HotelChain(contain (*) Hotel)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller)
+abstract Offer(float price, associate (1) Hotel, associate (1) Traveller, associate (1) Booking)
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight, string preferences)
+Traveller(string name, string billingInfo, string preferences, int reliabilityRating, associate (*) Booking, associate (*) Offer)
+Hotel(string address, int rating, associate (0..1) HotelChain, associate (*) Offer, associate (*) Booking)
+Booking(string bookingId, PaymentMethod paymentMethod, BookingStatus bookingStatus, date cancellationDeadline, date creationDate, associate (1) Traveller, associate (1) Hotel, associate (0..1) Offer)
+SpecialOffer(inherit Offer)
+PreliminaryBooking(inherit Booking)
+CompletedBooking(inherit Booking)
 ","Enumerations:
 RoomType(SINGLE, DOUBLE, TWIN)
 BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
@@ -404,103 +135,18 @@ PaymentType(PREPAID, PAID_AT_HOTEL)
 
 Classes:
 HotelChain(contain (*) Hotel)
-HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
-Traveller(string name, int reliabilityRating, contain (*) TravelSearch associate (*) Booking)
+HotelBookingManager(contain (*) HotelChain, contain (*) Traveller)
+Traveller(string name, int reliabilityRating, contain (*) TravelSearch, contain (*) TravelPreference, contain (1..1) BillingInformation associate (*) Booking)
 BillingInformation(string companyName, string address)
 TravelPreference(string preference, string value)
 Hotel(string city, string country, string area, contain (*) Offer, contain (*) RoomAvailability associate (*) Booking)
-Offer()
-SpecialOffer(inherit Offer associate (1) BookingInfo)
+abstract Offer()
+SpecialOffer(inherit Offer)
 RegularOffer(inherit Offer associate (*) TravelSearch)
 TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference associate (*) RegularOffer)
 SearchInfo(inherit TripInfo)
 RoomAvailability(inherit TripInfo)
-TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo(inherit TripInfo associate (0..5) SpecialOffer)
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer)
-"
-gemini-1.5-flash,1shot_tile-o,auto,"[{'task': ""Add a new attribute 'company' with type string to the Traveller class to store the traveller's company name.""}, {'task': ""Add a new attribute 'address' with type string to the Traveller class to store the traveller's billing address.""}, {'task': ""Modify the Traveller class to include a new attribute named 'travelPreferences' of type string, which can store a JSON array of traveller preferences (e.g., breakfast included, free wifi, 24/7 front desk).""}, {'task': ""Create a new class named 'Room' with attributes 'roomId' (int), 'roomType'(RoomType), 'price' (double), and 'available' (boolean).  Add a 'contains' relationship from Hotel to Room with multiplicity 0..*""}, {'task': ""Create a new class named 'HotelChain' with attributes 'chainID'(int) and 'name'(string). Add an 'associate' relationship from Hotel to HotelChain with multiplicity 1..1.""}, {'task': ""Add a new attribute 'hotelChain' of type HotelChain to the Hotel class. This will link to the hotel's parent chain, if one exists.""}, {'task': ""Add a new attribute 'confirmationDate' of type Date to the Booking class to store the date when the hotel confirms the booking.""}, {'task': ""Add a new attribute 'compensationAmount' with type double to the Booking class to store any financial compensation offered to the traveller.""}, {'task': ""Create a new class named 'Cancellation' with attributes 'cancellationId'(int), 'booking'(Booking), 'cancellationDate'(Date), 'cancellationReason'(string), 'charge'(double). Add an 'associate' relationship from Booking to Cancellation with multiplicity 0..1""}, {'task': ""Add a new attribute 'reliabilityRating' to the Traveller class with type double and default value 0.0 to store the traveller's reliability rating.""}]","Example domain description: 
-The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
-
-A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
-
-The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
-
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. Example solution: 
-Enumerations:
-Mode(design, game)
-Color(red, blue, green, yellow)
-
-Classes:
-TileO(contain (*) Game)
-Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (0..1) Player associate (0..1) WinTile)
-Connection(associate (2) Tile)
-Die()
-Deck(contain (0..32) ActionCard)
-Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
-ActionCard(string instructions, associate (0..1) Deck)
-RollDieActionCard(inherit ActionCard)
-ConnectTilesActionCard(inherit ActionCard)
-RemoveConnectionActionCard(inherit ActionCard)
-TeleportActionCard(inherit ActionCard)
-LoseTurnActionCard(inherit ActionCard)
-WinTile(inherit Tile associate (1) Game)
-ActionTile(inherit Tile)
-NormalTile(inherit Tile)
-Player(int number, int turnsUntilActive, Color color, contain (0..2) Tile)
-
-###
-User prompt: 
-Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).
-
-When searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.
-
-In case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.
-
-In both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.
-
-Each hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller’s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.","Enumerations:
-RoomType(SINGLE, DOUBLE, TWIN)
-PaymentMethod(PREPAID, PAY_AT_HOTEL)
-BookingStatus(PRELIMINARY, FINALIZED, CONFIRMED, CANCELLED)
-
-Classes:
-Traveller(int travellerId, string name, string billingInformation, string travelPreferences, string creditCardInformation, double reliabilityRating, associate (0..*) Booking)
-Hotel(int hotelId, string name, string address, string city, string hotelChain, int starRating, associate (0..*) Booking)
-Booking(int bookingId, Traveller traveller, Hotel hotel, Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, double totalCost, PaymentMethod paymentMethod, BookingStatus bookingStatus, Date cancellationDeadline, string specialOffer, associate (0..*) SpecialOffer)
-SpecialOffer(int specialOfferId, Booking booking, double offeredPrice, string description)
-","Enumerations:
-RoomType(SINGLE, DOUBLE, TWIN)
-PaymentMethod(PREPAID, PAY_AT_HOTEL)
-BookingStatus(PRELIMINARY, FINALIZED, CONFIRMED, CANCELLED)
-
-Classes:
-Traveller(int travellerId, string name, string billingInformation, string travelPreferences, string creditCardInformation, double reliabilityRating, associate (0..*) Booking)
-Hotel(int hotelId, string name, string address, string city, int starRating, HotelChain hotelChain, contain (0..*) Room associate (0..*) Booking)
-Booking(int bookingId, Traveller traveller, Hotel hotel, Date arrivalDate, Date departureDate, int numberOfRooms, RoomType roomType, double totalCost, PaymentMethod paymentMethod, BookingStatus bookingStatus, Date cancellationDeadline, string specialOffer, Date confirmationDate, double compensationAmount, associate (0..*) SpecialOffer, associate (0..1) Cancellation)
-SpecialOffer(int specialOfferId, Booking booking, double offeredPrice, string description)
-Room(int roomId, RoomType roomType, double price, boolean available)
-HotelChain(int chainID, string name)
-Cancellation(int cancellationId, Booking booking, Date cancellationDate, string cancellationReason, double charge)
-","Enumerations:
-RoomType(SINGLE, DOUBLE, TWIN)
-BookingStatus(FINALIZED, CONFIRMED, CANCELLED_BY_HBMS, PRELIMINARY, CANCELLED_BY_TRAVELLER, CANCELLED_BY_HOTEL)
-PaymentType(PREPAID, PAID_AT_HOTEL)
-
-Classes:
-HotelChain(contain (*) Hotel)
-HotelBookingManager(contain (*) HotelChain, contain (*) Traveller, contain (*) TravelPreference, contain (1) BillingInformation)
-Traveller(string name, int reliabilityRating, contain (*) TravelSearch associate (*) Booking)
-BillingInformation(string companyName, string address)
-TravelPreference(string preference, string value)
-Hotel(string city, string country, string area, contain (*) Offer, contain (*) RoomAvailability associate (*) Booking)
-Offer()
-SpecialOffer(inherit Offer associate (1) BookingInfo)
-RegularOffer(inherit Offer associate (*) TravelSearch)
-TravelSearch(contain (1) SearchInfo, contain (*) TravelPreference associate (*) RegularOffer)
-SearchInfo(inherit TripInfo)
-RoomAvailability(inherit TripInfo)
-TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
-BookingInfo(inherit TripInfo associate (0..5) SpecialOffer)
-Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer)
+abstract TripInfo(int numberOfRooms, RoomType roomType, date arrivalDate, date departureDate, float budgetPerNight)
+BookingInfo(inherit TripInfo associate (*) SpecialOffer)
+Booking(int bookingId, date cancellationDeadline, string creditCardNumber, BookingStatus bookingStatus, PaymentType paymentType, date confirmationDate, float paidAmount, contain (1) BookingInfo associate (0..1) Offer, associate (1) Hotel, associate (1) Traveller)
 "

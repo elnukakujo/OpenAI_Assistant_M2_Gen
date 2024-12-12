@@ -37,8 +37,8 @@ def main(shots, divide, DSL_name, llm_idx):
 if __name__ == "__main__":
     # Edit your parameters here
     shots = "1shot_tile-o"
-    divide = "auto"
-    DSL_name = "H2S"
+    divide = ""
+    DSL_name = "TSS"
     llm_idx = 2
     # Edit your parameters here
     main(shots, divide, DSL_name, llm_idx)

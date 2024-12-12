@@ -1,26 +1,86 @@
 {
-    "enum": [
+    "enum": [],
+    "class_": [
         {
-            "name": "DayOfWeek",
-            "values": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday"
-            ]
+            "name": "H2S",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                },
+                {
+                    "to": "Vehicle",
+                    "mul": "*"
+                },
+                {
+                    "to": "Route",
+                    "mul": "*"
+                },
+                {
+                    "to": "Employee",
+                    "mul": "*"
+                },
+                {
+                    "to": "VolunteerDriver",
+                    "mul": "*"
+                },
+                {
+                    "to": "Resident",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
         },
         {
-            "name": "Category",
-            "values": [
-                "baby clothing",
-                "women\u2019s winter boots",
-                "fridge",
-                "microwave"
-            ]
-        }
-    ],
-    "class_": [
+            "name": "UserRole",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Person",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "Item",
+            "attributes": [
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "dimension",
+                    "type": "string"
+                },
+                {
+                    "name": "weight",
+                    "type": "int"
+                },
+                {
+                    "name": "requestedPickedDate",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Route",
+                    "mul": "1"
+                },
+                {
+                    "to": "Resident",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        },
         {
             "name": "Resident",
             "attributes": [
@@ -39,218 +99,144 @@
                 {
                     "name": "email",
                     "type": "string"
-                },
-                {
-                    "name": "itemsToBePickedUp",
-                    "type": "string",
-                    "mul": "*"
-                },
-                {
-                    "name": "neededCategories",
-                    "type": "Category",
-                    "mul": "*"
-                }
-            ],
-            "contains": [
-                {
-                    "to": "Item",
-                    "mul": "*"
-                }
-            ],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "Item",
-            "attributes": [
-                {
-                    "name": "description",
-                    "type": "string"
-                },
-                {
-                    "name": "dimensions",
-                    "type": "string"
-                },
-                {
-                    "name": "weight",
-                    "type": "double"
-                },
-                {
-                    "name": "category",
-                    "type": "Category"
-                },
-                {
-                    "name": "RFID",
-                    "type": "string"
                 }
             ],
             "contains": [],
             "associate": [
                 {
-                    "to": "Category",
-                    "mul": "1"
-                },
-                {
-                    "to": "H2SEmployee",
-                    "mul": "1",
-                    "name": "assignedBy"
-                },
-                {
-                    "to": "ClientRequest",
-                    "mul": "1",
-                    "name": "fulfillsRequest"
-                }
-            ],
-            "inherit": []
-        },
-        {
-            "name": "VolunteerDriver",
-            "attributes": [
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "availableDays",
-                    "type": "DayOfWeek",
+                    "to": "Item",
                     "mul": "*"
-                },
-                {
-                    "name": "dailyRoute",
-                    "type": "PickupRoute",
-                    "mul": "1"
                 }
             ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
+            "inherit": [
+                "Person"
+            ],
+            "abstract": false
         },
         {
             "name": "Vehicle",
             "attributes": [
                 {
-                    "name": "id",
-                    "type": "int"
-                },
-                {
                     "name": "storageSpace",
-                    "type": "double"
-                },
-                {
-                    "name": "assignedDrivers",
-                    "type": "VolunteerDriver",
-                    "mul": "*"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "PickupRoute",
-            "attributes": [
-                {
-                    "name": "date",
-                    "type": "Date"
-                },
-                {
-                    "name": "vehicle",
-                    "type": "Vehicle"
-                },
-                {
-                    "name": "residents",
-                    "type": "Resident",
-                    "mul": "*"
-                },
-                {
-                    "name": "deliveryRoutes",
-                    "type": "DeliveryRoute",
-                    "mul": "*"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "DistributionCenter",
-            "attributes": [
-                {
-                    "name": "items",
-                    "type": "Item",
-                    "mul": "*"
-                }
-            ],
-            "contains": [],
-            "associate": [],
-            "inherit": []
-        },
-        {
-            "name": "DeliveryRoute",
-            "attributes": [
-                {
-                    "name": "date",
-                    "type": "Date"
-                },
-                {
-                    "name": "vehicle",
-                    "type": "Vehicle"
-                },
-                {
-                    "name": "residents",
-                    "type": "Resident",
-                    "mul": "*"
+                    "type": "int"
                 }
             ],
             "contains": [],
             "associate": [
                 {
-                    "to": "Resident",
-                    "mul": "*"
+                    "to": "Route",
+                    "mul": "1"
                 }
             ],
-            "inherit": []
+            "inherit": [],
+            "abstract": false
         },
         {
-            "name": "H2SEmployee",
-            "attributes": [
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "employeeID",
-                    "type": "int"
-                }
-            ],
+            "name": "Route",
+            "attributes": [],
             "contains": [],
             "associate": [
                 {
                     "to": "Item",
-                    "mul": "*",
-                    "name": "assignedBy"
-                }
-            ]
-        },
-        {
-            "name": "ClientRequest",
-            "attributes": [
-                {
-                    "name": "resident",
-                    "type": "Resident"
-                },
-                {
-                    "name": "neededCategories",
-                    "type": "Category",
                     "mul": "*"
                 },
                 {
-                    "name": "requestDate",
-                    "type": "Date"
+                    "to": "Vehicle",
+                    "mul": "1"
+                },
+                {
+                    "to": "VolunteerDriver",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Employee",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Person",
+                "UserRole"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "VolunteerDriver",
+            "attributes": [
+                {
+                    "name": "availableDays",
+                    "type": "string"
                 }
             ],
             "contains": [],
-            "associate": []
+            "associate": [
+                {
+                    "to": "Route",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [
+                "Person",
+                "UserRole"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "Person",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "NonPerishableFood",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Item"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "SecondHandArticle",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Item"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "FoodBank",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "NonPerishableFood",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "DistributionCenter",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "SecondHandArticle",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
         }
     ]
 }

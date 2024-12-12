@@ -1,150 +1,306 @@
 {
     "prompt_ex": [
         [
-            "Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city\u2019s public bus system.\n\nThe BTMS keeps track of a driver\u2019s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.\n\nThe current version of BTMS does not support the information of bus drivers or buses to be updated \u2013 only adding and deleting is supported. However, BTMS does support indicating whether a bus driver is on sick leave and whether a bus is in the repair shop. If that is the case, the driver cannot be scheduled or the bus cannot be assigned to a route. For a given day, an overview shows \u2013 for each route number \u2013 the licence plate number of each assigned bus, the entered shifts and the IDs and names of the assigned drivers. If a driver is currently sick or a bus is in the repair shop, the driver or bus, respectively, is highlighted in the overview.",
+            "The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color.\n\nA designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles.\n\nThe designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn\n\nPlayers take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.",
             {
                 "enum": [
                     {
-                        "name": "Shift",
+                        "name": "Mode",
                         "values": [
-                            "morning",
-                            "afternoon",
-                            "night"
+                            "design",
+                            "game"
+                        ]
+                    },
+                    {
+                        "name": "Color",
+                        "values": [
+                            "red",
+                            "blue",
+                            "green",
+                            "yellow"
                         ]
                     }
                 ],
                 "class_": [
                     {
-                        "name": "BTMS",
+                        "name": "TileO",
                         "attributes": [],
                         "contains": [
                             {
-                                "to": "BusVehicle",
-                                "mul": "*"
-                            },
-                            {
-                                "to": "BusDriver",
-                                "mul": "*"
-                            },
-                            {
-                                "to": "Route",
-                                "mul": "*"
-                            },
-                            {
-                                "to": "DriverSchedule",
-                                "mul": "*"
-                            },
-                            {
-                                "to": "RouteAssignment",
+                                "to": "Game",
                                 "mul": "*"
                             }
                         ],
                         "associate": [],
-                        "inherit": []
+                        "inherit": [],
+                        "abstract": false
                     },
                     {
-                        "name": "BusVehicle",
+                        "name": "Game",
                         "attributes": [
                             {
-                                "name": "licencePlate",
-                                "type": "string"
+                                "name": "currentConnectionPieces",
+                                "type": "int"
                             },
                             {
-                                "name": "inRepairShop",
+                                "name": "mode",
+                                "type": "Mode"
+                            },
+                            {
+                                "name": "spaceConnectionPieces",
+                                "type": "int",
+                                "default": "32"
+                            },
+                            {
+                                "name": "numberOfActionCards",
+                                "type": "int",
+                                "default": "32"
+                            }
+                        ],
+                        "contains": [
+                            {
+                                "to": "Tile",
+                                "mul": "*"
+                            },
+                            {
+                                "to": "Connection",
+                                "mul": "*"
+                            },
+                            {
+                                "to": "Die",
+                                "mul": "1"
+                            },
+                            {
+                                "to": "Deck",
+                                "mul": "1"
+                            },
+                            {
+                                "to": "Player",
+                                "mul": "2..4"
+                            }
+                        ],
+                        "associate": [
+                            {
+                                "to": "WinTile",
+                                "mul": "0..1"
+                            },
+                            {
+                                "to": "Player",
+                                "mul": "0..1"
+                            }
+                        ],
+                        "inherit": [],
+                        "abstract": false
+                    },
+                    {
+                        "name": "Connection",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [
+                            {
+                                "to": "Tile",
+                                "mul": "2"
+                            }
+                        ],
+                        "inherit": [],
+                        "abstract": false
+                    },
+                    {
+                        "name": "Die",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [],
+                        "abstract": false
+                    },
+                    {
+                        "name": "Deck",
+                        "attributes": [],
+                        "contains": [
+                            {
+                                "to": "ActionCard",
+                                "mul": "0..32"
+                            }
+                        ],
+                        "associate": [
+                            {
+                                "to": "ActionCard",
+                                "mul": "0..1"
+                            }
+                        ],
+                        "inherit": [],
+                        "abstract": false
+                    },
+                    {
+                        "name": "Tile",
+                        "attributes": [
+                            {
+                                "name": "x",
+                                "type": "int"
+                            },
+                            {
+                                "name": "y",
+                                "type": "int"
+                            },
+                            {
+                                "name": "hasBeenVisited",
                                 "type": "boolean"
                             }
                         ],
                         "contains": [],
                         "associate": [
                             {
-                                "to": "RouteAssignment",
-                                "mul": "*"
+                                "to": "Connection",
+                                "mul": "0..4"
                             }
                         ],
-                        "inherit": []
+                        "inherit": [],
+                        "abstract": true
                     },
                     {
-                        "name": "Route",
+                        "name": "ActionCard",
                         "attributes": [
                             {
-                                "name": "number",
+                                "name": "instructions",
+                                "type": "string"
+                            }
+                        ],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [],
+                        "abstract": true
+                    },
+                    {
+                        "name": "RollDieActionCard",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [
+                            "ActionCard"
+                        ],
+                        "abstract": false
+                    },
+                    {
+                        "name": "ConnectTilesActionCard",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [
+                            "ActionCard"
+                        ],
+                        "abstract": false
+                    },
+                    {
+                        "name": "RemoveConnectionActionCard",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [
+                            "ActionCard"
+                        ],
+                        "abstract": false
+                    },
+                    {
+                        "name": "TeleportActionCard",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [
+                            "ActionCard"
+                        ],
+                        "abstract": false
+                    },
+                    {
+                        "name": "LoseTurnActionCard",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [
+                            "ActionCard"
+                        ],
+                        "abstract": false
+                    },
+                    {
+                        "name": "WinTile",
+                        "attributes": [],
+                        "contains": [],
+                        "associate": [],
+                        "inherit": [
+                            "Tile"
+                        ],
+                        "abstract": false
+                    },
+                    {
+                        "name": "ActionTile",
+                        "attributes": [
+                            {
+                                "name": "inactivityPeriod",
+                                "type": "int"
+                            },
+                            {
+                                "name": "turnsUntilActive",
                                 "type": "int"
                             }
                         ],
                         "contains": [],
-                        "associate": [
-                            {
-                                "to": "RouteAssignment",
-                                "mul": "*"
-                            }
+                        "associate": [],
+                        "inherit": [
+                            "Tile"
                         ],
-                        "inherit": []
+                        "abstract": false
                     },
                     {
-                        "name": "RouteAssignment",
-                        "attributes": [
-                            {
-                                "name": "date",
-                                "type": "Date"
-                            }
-                        ],
-                        "contains": [],
-                        "associate": [
-                            {
-                                "to": "DriverSchedule",
-                                "mul": "*"
-                            }
-                        ],
-                        "inherit": []
-                    },
-                    {
-                        "name": "Driver",
-                        "attributes": [
-                            {
-                                "name": "name",
-                                "type": "string"
-                            },
-                            {
-                                "name": "id",
-                                "type": "string"
-                            },
-                            {
-                                "name": "onSickLeave",
-                                "type": "boolean"
-                            }
-                        ],
-                        "contains": [],
-                        "associate": [
-                            {
-                                "to": "DriverSchedule",
-                                "mul": "*"
-                            }
-                        ],
-                        "inherit": []
-                    },
-                    {
-                        "name": "DriverSchedule",
-                        "attributes": [
-                            {
-                                "name": "shift",
-                                "type": "Shift"
-                            }
-                        ],
+                        "name": "NormalTile",
+                        "attributes": [],
                         "contains": [],
                         "associate": [],
-                        "inherit": []
+                        "inherit": [
+                            "Tile"
+                        ],
+                        "abstract": false
+                    },
+                    {
+                        "name": "Player",
+                        "attributes": [
+                            {
+                                "name": "number",
+                                "type": "int"
+                            },
+                            {
+                                "name": "turnsUntilActive",
+                                "type": "int"
+                            },
+                            {
+                                "name": "color",
+                                "type": "Color"
+                            }
+                        ],
+                        "contains": [],
+                        "associate": [
+                            {
+                                "to": "Tile",
+                                "mul": "0..2"
+                            }
+                        ],
+                        "inherit": [],
+                        "abstract": false
                     }
                 ]
             }
         ]
     ],
-    "user_prompt": "Business travellers use Hotel Booking Management System (HBMS) for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).\n\nWhen searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.\n\nIn case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.\n\nIn both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.\n\nEach hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller\u2019s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.",
+    "user_prompt": "Business travellers use HMBS for booking special accommodation deals offered by participating hotels. Travellers register to HBMS by providing their name, billing information (incl. company name and address) and optional travel preferences (e.g. breakfast included, free wifi, 24/7 front desk, etc.).\n\nWhen searching for accommodation, the traveller specifies the city, the date of arrival and departure, the number of needed rooms and the type of rooms (e.g. single, double, twin), minimum hotel rating (stars), a tentative budget (max. cost per night), and optionally, further travel preferences to filter offers in the search results. HBMS lists all available offers of hotels for the given travel period, and the traveller can either create a preliminary booking or complete a booking in the regular way.\n\nIn case of a preliminary booking, HBMS forwards the key parameters of the booking information (i.e. price, city area, hotel rating and key preferences and a unique booking identifier) to other hotels so that they can compete for the traveller with special offers provided within the next 24 hours. After 24-hour deadline, HBMS sends the five best special offers to the traveller who can switch to the new offer or proceed with the original preliminary booking.\n\nIn both cases, the traveller needs to provide credit card information to finalize a booking. Each finalized booking can be either pre-paid (i.e. paid immediately when it cannot be reimbursed), or paid at hotel (when the traveller pays during his/her stay). A finalized booking needs to be confirmed by the hotel within 24 hours. A booking may also contain a cancellation deadline: if the traveller cancels a confirmed booking before this deadline, then there are no further consequences. However, if a confirmed booking is cancelled after this deadline, then 1-night accommodation is charged for the traveller. HBMS stores all past booking information for a traveller to calculate a reliability rating.\n\nEach hotel is located in a city at a particular address, and possibly run by a hotel chain. A hotel may announce its available types of rooms for a given period in HBMS, and may also inform HBMS when a particular type of room is fully booked. HBMS sends information about the preliminary booking information to competitor hotels together with the traveller\u2019s preferences and his/her reliability rating. The competitor hotels may then provide a special offer. Once a booking is finalized, the hotel needs to send a confirmation to the traveller. If a completed booking is not confirmed by the hotel within 24 hours, then HBMS needs to cancel it, and reimburse the traveller in case of a pre-paid booking. If the hotel needs to cancel a confirmed booking, then financial compensation must be offered to the traveller.",
     "pre_model": {
         "class_": [
             {
                 "name": "HotelChain",
                 "attributes": [],
-                "contains": [],
+                "contains": [
+                    {
+                        "to": "Hotel",
+                        "mul": "*"
+                    }
+                ],
                 "associate": [],
                 "inherit": [],
                 "abstract": false
@@ -152,15 +308,16 @@
             {
                 "name": "HotelBookingManager",
                 "attributes": [],
-                "contains": [],
-                "associate": [],
-                "inherit": [],
-                "abstract": false
-            },
-            {
-                "name": "Traveller",
-                "attributes": [],
-                "contains": [],
+                "contains": [
+                    {
+                        "to": "HotelChain",
+                        "mul": "*"
+                    },
+                    {
+                        "to": "Traveller",
+                        "mul": "*"
+                    }
+                ],
                 "associate": [],
                 "inherit": [],
                 "abstract": false
@@ -175,7 +332,30 @@
             },
             {
                 "name": "TripInfo",
-                "attributes": [],
+                "attributes": [
+                    {
+                        "name": "numberOfRooms",
+                        "type": "int"
+                    },
+                    {
+                        "name": "roomType",
+                        "type": "RoomType",
+                        "default": "SINGLE"
+                    },
+                    {
+                        "name": "arrivalDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "departureDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "budgetPerNight",
+                        "type": "float",
+                        "default": 0.0
+                    }
+                ],
                 "contains": [],
                 "associate": [],
                 "inherit": [],

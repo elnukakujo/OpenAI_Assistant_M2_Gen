@@ -121,6 +121,14 @@
             "abstract": false
         },
         {
+            "name": "Date",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
             "name": "Resident",
             "attributes": [],
             "contains": [],
@@ -236,6 +244,28 @@
                 {
                     "to": "Volunteer",
                     "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Vehicle",
+            "attributes": [
+                {
+                    "name": "dimension",
+                    "type": "int"
+                },
+                {
+                    "name": "weightRestriction",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Route",
+                    "mul": "*"
                 }
             ],
             "inherit": [],

@@ -1,0 +1,85 @@
+{
+    "class_": [
+        {
+            "name": "Person",
+            "attributes": [
+                {
+                    "name": "firstName",
+                    "type": "string"
+                },
+                {
+                    "name": "lastName",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "Scout",
+            "attributes": [
+                {
+                    "name": "scoutKind",
+                    "type": "ScoutKind",
+                    "default": "REGULAR_SCOUT"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "ScoutingAssignment",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [
+                "Person"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "Club",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Player",
+                    "mul": "*"
+                },
+                {
+                    "to": "HeadCoach",
+                    "mul": "0..1"
+                },
+                {
+                    "to": "Director",
+                    "mul": "0..1"
+                },
+                {
+                    "to": "Scout",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Offer",
+            "attributes": [
+                {
+                    "name": "value",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Player",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        }
+    ]
+}

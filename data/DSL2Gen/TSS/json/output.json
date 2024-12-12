@@ -1,0 +1,236 @@
+{
+    "enum": [
+        {
+            "name": "ScoutKind",
+            "values": [
+                "REGULAR_SCOUT",
+                "HEAD_SCOUT"
+            ]
+        },
+        {
+            "name": "Recommendation",
+            "values": [
+                "KEY_PLAYER",
+                "FIRST_TEAM_PLAYER",
+                "RESERVE_TEAM_PLAYER",
+                "PROSPECTIVE_PLAYER",
+                "NOT_A_GOOD_SIGNING"
+            ]
+        }
+    ],
+    "class_": [
+        {
+            "name": "Person",
+            "attributes": [
+                {
+                    "name": "firstName",
+                    "type": "string"
+                },
+                {
+                    "name": "lastName",
+                    "type": "string"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "Scout",
+            "attributes": [
+                {
+                    "name": "scoutKind",
+                    "type": "ScoutKind",
+                    "default": "REGULAR_SCOUT"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "ScoutingAssignment",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [
+                "Person"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "HeadScout",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Scout"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "ClubEmployee",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "Person"
+            ],
+            "abstract": true
+        },
+        {
+            "name": "HeadCoach",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "DesignatedPlayerProfile",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [
+                "ClubEmployee"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "Director",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [
+                "ClubEmployee"
+            ],
+            "abstract": false
+        },
+        {
+            "name": "Club",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Player",
+                    "mul": "*"
+                },
+                {
+                    "to": "HeadCoach",
+                    "mul": "1"
+                },
+                {
+                    "to": "Director",
+                    "mul": "1"
+                },
+                {
+                    "to": "Scout",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Offer",
+            "attributes": [
+                {
+                    "name": "value",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Player",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "PlayerAttribute",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "value",
+                    "type": "int"
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Player",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Offer",
+                    "mul": "0..1"
+                },
+                {
+                    "to": "ScoutingAssignment",
+                    "mul": "*"
+                },
+                {
+                    "to": "DesignatedPlayerProfile",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "DesignatedPlayerProfile",
+            "attributes": [
+                {
+                    "name": "targetPosition",
+                    "type": "string"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "PlayerAttribute",
+                    "mul": "*"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "Player",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "ScoutingAssignment",
+            "attributes": [
+                {
+                    "name": "date",
+                    "type": "Date"
+                },
+                {
+                    "name": "result",
+                    "type": "Recommendation"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Scout",
+                    "mul": "1"
+                },
+                {
+                    "to": "Player",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        }
+    ]
+}

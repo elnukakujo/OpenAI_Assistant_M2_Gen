@@ -23,6 +23,7 @@ def convert_json2ecore(data, dsl_name, file_name):
         "class_": [
             {
                 "name": "ClassName",
+                "abstract": true | false,
                 "attributes": [
                     {
                         "name": "attributeName",
@@ -33,14 +34,14 @@ def convert_json2ecore(data, dsl_name, file_name):
                 "contains": [
                     {
                         "to": "ContainedClassName",
-                        "mul": "1" | "*"
+                        "mul": "0..1" | "1" | "*"
                     },
                     ...
                 ],
                 "associate": [
                     {
                         "to": "AssociatedClassName",
-                        "mul": "1" | "*"
+                        "mul": "0..1" | "1" | "*"
                     },
                     ...
                 ],
@@ -87,6 +88,7 @@ def convert_json2ecore(data, dsl_name, file_name):
             e_class = ET.SubElement(ecore_model, "eClassifiers")
             e_class.set("xsi:type", "ecore:EClass")
             e_class.set("name", cls["name"])
+            e_class.set("abstract", "true" if cls["abstract"] else "false")
 
             # Add attributes
             if "attributes" in cls:
@@ -154,6 +156,7 @@ def convert_json2nl(data):
         ...     "class_": [
         ...         {
         ...             "name": "Car",
+        ...             "abstract": False,
         ...             "attributes": [{"type": "string", "name": "model"}],
         ...             "contains": [{"mul": "1..*", "to": "Wheel"}],
         ...             "inherit": ["Vehicle"],
@@ -199,7 +202,7 @@ def convert_json2nl(data):
             )
 
             # Combine class declaration
-            declaration = f"{cls['name']}("
+            declaration = f"{'abstract ' if cls['abstract'] else ''}{cls['name']}("
             if attributes:
                 declaration += f"{attributes}, "
 

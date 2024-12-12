@@ -1,6 +1,6 @@
 LLM_name,Shots_example,Divide_method,Tasks,Prompt,Pre_model,Output,Solution
 gemini-1.5-flash,1shot_btms,,,"Example domain description: 
-Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
 
 The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
 
@@ -9,60 +9,70 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes:
-BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
+BTMS(Date currentDate, contain (*) BusVehicle, contain (*) Driver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
 BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
 Route(int number, associate (*) RouteAssignment)
-RouteAssignment(Date date, associate (*) DriverSchedule)
-Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
-DriverSchedule(Shift shift)
+RouteAssignment(Date date, associate (*) DriverSchedule, associate (1) BusVehicle, associate (1) Route)
+Driver(string name, int id, boolean onSickLeave, associate (*) DriverSchedule)
+DriverSchedule(Shift shift, associate (1) RouteAssignment, associate (1) Driver)
 
 ###
 User prompt: 
-Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of 134 categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Enumerations:
-Category()
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
 
-Classes:
-HelpingHandStore(contain (*) Resident, contain (*) Vehicle, contain (*) VolunteerDriver, contain (*) SecondHandArticle, contain (*) PickUp, contain (*) Delivery)
-Resident(string name, string streetAddress, string phoneNumber, string email, associate (*) PickUp)
-Vehicle(string storageSpace, associate (*) PickUp)
-VolunteerDriver(associate (*) PickUp)
-SecondHandArticle(string RFID, Category category, string dimensions, string weight, associate (1) PickUp, associate (1) Delivery)
-PickUp(Date day, string description)
-Delivery(Date day)
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of many categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
+
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Classes:
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
 ","Enumerations:
-Category()
 
 Classes:
-HelpingHandStore(contain (*) Resident, contain (*) Vehicle, contain (*) VolunteerDriver, contain (*) SecondHandArticle, contain (*) PickUp, contain (*) Delivery)
-Resident(string name, string streetAddress, string phoneNumber, string email, associate (*) PickUp)
-Vehicle(string storageSpace, associate (*) PickUp)
-VolunteerDriver(string availableDays, associate (*) PickUp)
-SecondHandArticle(string RFID, Category category, string dimensions, string weight, associate (1) PickUp, associate (1) Delivery)
-PickUp(Date day, string description)
-Delivery(Date day)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+Resident(string name, string streetAddress, string phoneNumber, string email, inherit Person associate (*) Item)
+Vehicle(int storageSpace, associate (*) Route)
+Route(associate (*) Item, associate (1) Vehicle)
+abstract Person()
+VolunteerDriver(string availableDays, inherit PersonUserRole)
+Employee(inherit PersonUserRole)
+SecondHandArticle(string RFID, string category, inherit Item)
+NonPerishableFood(inherit Item)
+FoodBank(contain (*) NonPerishableFood)
+DistributionCenter(contain (*) SecondHandArticle)
 ","Enumerations:
 ItemCategory(Baby Clothing, Fridge)
 
 Classes:
-H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
 Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
-UserRole()
+abstract UserRole(associate (1) Person)
+Client(ItemCategory neededCategory, inherit UserRole associate (*) SecondHandArticle)
 Volunteer(inherit UserRole contain (*) Date associate (*) Route)
+Date()
 Resident(inherit UserRole associate (*) Item)
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
-Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item associate (1) Client, associate (0..1) Route)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+FoodItem(inherit Item)
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle, associate (1) Vehicle, associate (1) Volunteer)
+Vehicle(int dimension, int weightRestriction, associate (*) Route)
 "
-gemini-1.5-flash,1shot_btms,manual,"Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+gemini-1.5-flash,1shot_btms,manual,"The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of 134 categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Example domain description: 
-Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
+
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of 134 categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
+
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Example domain description: 
+A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
 
 The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
 
@@ -71,78 +81,60 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes:
-BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
+BTMS(Date currentDate, contain (*) BusVehicle, contain (*) Driver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
 BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
 Route(int number, associate (*) RouteAssignment)
-RouteAssignment(Date date, associate (*) DriverSchedule)
-Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
-DriverSchedule(Shift shift)
+RouteAssignment(Date date, associate (*) DriverSchedule, associate (1) BusVehicle, associate (1) Route)
+Driver(string name, int id, boolean onSickLeave, associate (*) DriverSchedule)
+DriverSchedule(Shift shift, associate (1) RouteAssignment, associate (1) Driver)
 
 ###
 User prompt: 
-Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of 134 categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Enumerations:
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
 
-Classes:
-Resident(string name, string streetAddress, string phoneNumber, string emailAddress, string description, associate (*) NeededItem)
-Donation(associate (1) Resident, associate (*) Item)
-Item(string description)
-VolunteerDriver(string availableDays, associate (1) Vehicle, associate (*) Route)
-Vehicle(string storageSpace, associate (*) Route)
-Route(Date date)
-DistributionCenter(associate (*) Item)
-RFID(string id, associate (1) Item)
-Category(string name, associate (*) Item, associate (1) NeededItem)
-NeededItem(associate (1) Resident, associate (1) Category)
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of 134 categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
+
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Classes:
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
 ","Enumerations:
 
 Classes:
-Resident(string name, string streetAddress, string phoneNumber, string emailAddress, string description, associate (*) NeededItem)
-Donation(associate (1) Resident, associate (*) Item)
-Item(string description, associate (1) RFID, associate (1) Category)
-VolunteerDriver(string availableDays, associate (1) Vehicle, associate (*) Route)
-Vehicle(string storageSpace, associate (*) Route)
-Route(Date date)
-DistributionCenter(associate (*) Item)
-RFID(string id)
-Category(string name)
-NeededItem(associate (1) Resident, associate (1) Category)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person, contain (*) PickUpDelivery, contain (*) Delivery)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, string RFID, string category, associate (1) Route, associate (0..1) Resident)
+PickUpDelivery(Date pickUpDate, Date deliveryDate, string status, associate (1) Resident, associate (*) Item, associate (1) Vehicle)
+abstract Route(associate (*) Item)
+Vehicle(string plateNumber, int storageSpace, associate (*) PickUpDelivery)
+abstract Resident(associate (*) Item, associate (*) PickUpDelivery)
+VolunteerDriver(string availableDays, associate (1) Route)
+Delivery(Date deliveryDate, string status, associate (*) Item, associate (1) VolunteerDriver)
 ","Enumerations:
 ItemCategory(Baby Clothing, Fridge)
 
 Classes:
-H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
 Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
-UserRole()
+abstract UserRole(associate (1) Person)
+Client(ItemCategory neededCategory, inherit UserRole associate (*) SecondHandArticle)
 Volunteer(inherit UserRole contain (*) Date associate (*) Route)
+Date()
 Resident(inherit UserRole associate (*) Item)
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
-Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item associate (1) Client, associate (0..1) Route)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+FoodItem(inherit Item)
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle, associate (1) Vehicle, associate (1) Volunteer)
+Vehicle(int dimension, int weightRestriction, associate (*) Route)
 "
-gemini-1.5-flash,1shot_btms,auto,"Create a new enumeration called ""Status"" with values ""Pending"", ""PickedUp"", ""Delivered"", and ""Archived"".
-
-Add a new attribute called ""status"" of type ""Status"" to the class ""Item"".
-
-Add a new class called ""DistributionCenter"" with attributes:  ""address"" of type ""string"", and ""capacity"" of type ""double"".
-
-Add a new relationship of type ""associate"" between the classes ""Item"" and ""DistributionCenter"" with multiplicity ""*"" on the ""Item"" side indicating that multiple items can be at the center, and multiplicity ""1"" on ""DistributionCenter"" side, indicating the center is unique.
-
-Add a new class called ""ClientNeeds"" with attributes: ""resident"" of type ""Resident"", and ""neededCategories"" of type ""Category"".  Set the multiplicity of the association between ""ClientNeeds"" and ""Category"" to be many to many (*).*
-
-Create a new attribute called ""RFID"" of type ""string"" in the class ""Item"".
-
-Add a new class called ""Employee"" with attributes: ""name"" of type ""string"", and ""phoneNumber"" of type ""string"".
-
-Add a new relationship of type ""associate"" from ""Employee"" to ""Item"" representing the employee who assigns the category. Set the multiplicity to * for Item and 1 for Employee.
-
-Modify the class ""PickupRoute"" to include an attribute ""deliveryItems"" of type ""Item"" with a multiplicity of *. Add a relationship from ""PickupRoute"" to ""ClientNeeds"" with a multiplicity of * on the PickupRoute side and 1 on the ClientNeeds side.
-
-Add a new attribute to the class ""VolunteerDriver"" called ""deliveryRoute"" of type ""PickupRoute"" with a multiplicity of 1.","Example domain description: 
-Description: A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
+gemini-1.5-flash,1shot_btms,auto,"[{'task': 'Create the enumeration ""Category"" with possible values such as ""baby clothing"", ""women’s winter boots"", ""fridge"", ""microwave"", etc.'}, {'task': 'Create the class ""Resident"" that inherits from the class ""Person"" and contains an attribute ""items"" with type ""Item"" and multiplicity ""*""'}, {'task': 'Create the class ""Employee"" that inherits from the class ""Person"" and contains an attribute ""city"" with type ""string""'}, {'task': 'Create the class ""VolunteerDriver"" that inherits from the class ""Person"" and contains an attribute ""availableDays"" with type ""Date"" and multiplicity ""*""'}, {'task': 'Create the class ""Food"" that inherits from the class ""Item"" and adds no additional attributes.'}, {'task': 'Create the class ""SecondHandArticle"" that inherits from the class ""Item"" and adds the attributes:  ""RFID"" with type ""string"", and ""category"" with type ""Category""'}, {'task': 'Create the class ""Route"" with attributes: ""vehicle"" with type ""Vehicle"", ""items"" with type ""Item"" and multiplicity ""*"", and ""driver"" with type ""VolunteerDriver""'}, {'task': 'Create the class ""Vehicle"" with attributes: ""storageSpace"" with type ""string"", and  ""city"" with type ""string""'}, {'task': 'Create the class ""FoodBank"" with an attribute ""city"" with type ""string"" and a contains relationship to the class ""Food"" with multiplicity ""*""'}, {'task': 'Create the class ""DistributionCenter"" with an attribute ""city"" with type ""string"" and a contains relationship to the class ""SecondHandArticle"" with multiplicity ""*""'}]","Example domain description: 
+A city is using the Bus Transportation Management System (BTMS) to simplify the day-to-day activities related to the city’s public bus system.
 
 The BTMS keeps track of a driver’s name and automatically assigns a unique ID to each driver. A bus route is identified by a unique number that is determined by city staff, while a bus is identified by its unique licence plate. The highest possible number for a bus route is 9999, while a licence plate number may be up to 10 characters long, inclusive. For up to a year in advance, city staff assigns buses to routes. Several buses may be assigned to a route per day. Each bus serves at the most one route per day but may be assigned to different routes on different days. Similarly, for up to a year in advance, city staff posts the schedule for its bus drivers. For each route, there is a morning shift, an afternoon shift, and a night shift. A driver is assigned by city staff to a shift for a particular bus on a particular day. The BTMS offers city staff great flexibility, i.e., there are no restrictions in terms of how many shifts a bus driver has per day. It is even possible to assign a bus driver to two shifts at the same time.
 
@@ -151,281 +143,317 @@ Enumerations:
 Shift(morning, afternoon, night)
 
 Classes:
-BTMS(contain (*) BusVehicle, contain (*) BusDriver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
+BTMS(Date currentDate, contain (*) BusVehicle, contain (*) Driver, contain (*) Route, contain (*) DriverSchedule, contain (*) RouteAssignment)
 BusVehicle(string licencePlate, boolean inRepairShop, associate (*) RouteAssignment)
 Route(int number, associate (*) RouteAssignment)
-RouteAssignment(Date date, associate (*) DriverSchedule)
-Driver(string name, string id, boolean onSickLeave, associate (*) DriverSchedule)
-DriverSchedule(Shift shift)
+RouteAssignment(Date date, associate (*) DriverSchedule, associate (1) BusVehicle, associate (1) Route)
+Driver(string name, int id, boolean onSickLeave, associate (*) DriverSchedule)
+DriverSchedule(Shift shift, associate (1) RouteAssignment, associate (1) Driver)
 
 ###
 User prompt: 
-Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Enumerations:
-DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday)
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
+
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of many categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
+
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Classes:
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+","Enumerations:
 Category(baby clothing, women’s winter boots, fridge, microwave)
 
 Classes:
-Resident(string name, string streetAddress, string phoneNumber, string email, string itemsToBePickedUp, associate (*) Item)
-Item(string description, string dimensions, double weight, Category category, associate (1) Resident)
-Vehicle(double storageSpace, Item scheduledItems, associate (*) PickupRoute)
-VolunteerDriver(string name, DayOfWeek availableDays, associate (*) PickupRoute)
-PickupRoute(Vehicle vehicle, Date date, Resident residents, associate (1) Vehicle, associate (1) VolunteerDriver)
-","Enumerations:
-DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday)
-Category(baby clothing, women’s winter boots, fridge, microwave)
-Status(Pending, PickedUp, Delivered, Archived)
-
-Classes:
-Resident(string name, string streetAddress, string phoneNumber, string email, string itemsToBePickedUp, associate (*) Item)
-Item(string description, string dimensions, double weight, Category category, Status status, string RFID, associate (1) Resident, associate (1) DistributionCenter, associate (1) Employee)
-Vehicle(double storageSpace, Item scheduledItems, associate (*) PickupRoute)
-VolunteerDriver(string name, DayOfWeek availableDays, PickupRoute deliveryRoute, associate (*) PickupRoute)
-PickupRoute(Vehicle vehicle, Date date, Resident residents, Item deliveryItems, associate (1) Vehicle, associate (1) VolunteerDriver, associate (1) ClientNeeds)
-DistributionCenter(string address, double capacity, associate (*) Item)
-ClientNeeds(Resident resident, Category neededCategories, associate (*) Category)
-Employee(string name, string phoneNumber, associate (*) Item)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, Category category, associate (1) Route, associate (0..1) Resident)
+Resident(inherit Person contain (*) Item)
+Employee(string city, inherit Person)
+VolunteerDriver(Date availableDays, inherit Person)
+Food(inherit Item)
+SecondHandArticle(string RFID, Category category, inherit Item)
+Route(Vehicle vehicle, VolunteerDriver driver, contain (*) Item)
+Vehicle(string storageSpace, string city)
+FoodBank(string city, contain (*) Food)
+DistributionCenter(string city, contain (*) SecondHandArticle)
 ","Enumerations:
 ItemCategory(Baby Clothing, Fridge)
 
 Classes:
-H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
 Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
-UserRole()
+abstract UserRole(associate (1) Person)
+Client(ItemCategory neededCategory, inherit UserRole associate (*) SecondHandArticle)
 Volunteer(inherit UserRole contain (*) Date associate (*) Route)
+Date()
 Resident(inherit UserRole associate (*) Item)
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
-Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item associate (1) Client, associate (0..1) Route)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+FoodItem(inherit Item)
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle, associate (1) Vehicle, associate (1) Volunteer)
+Vehicle(int dimension, int weightRestriction, associate (*) Route)
 "
 gemini-1.5-flash,1shot_tile-o,,,"Example domain description: 
-The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
+The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color.
 
-A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
+A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles.
 
-The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
+The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. Example solution: 
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.Example solution: 
 Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
 Classes:
 TileO(contain (*) Game)
-Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (0..1) Player associate (0..1) WinTile)
+Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (2..4) Player associate (0..1) WinTile, associate (0..1) Player)
 Connection(associate (2) Tile)
 Die()
-Deck(contain (0..32) ActionCard)
-Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
-ActionCard(string instructions, associate (0..1) Deck)
+Deck(contain (0..32) ActionCard associate (0..1) ActionCard)
+abstract Tile(int x, int y, boolean hasBeenVisited, associate (0..4) Connection)
+abstract ActionCard(string instructions)
 RollDieActionCard(inherit ActionCard)
 ConnectTilesActionCard(inherit ActionCard)
 RemoveConnectionActionCard(inherit ActionCard)
 TeleportActionCard(inherit ActionCard)
 LoseTurnActionCard(inherit ActionCard)
-WinTile(inherit Tile associate (1) Game)
-ActionTile(inherit Tile)
+WinTile(inherit Tile)
+ActionTile(int inactivityPeriod, int turnsUntilActive, inherit Tile)
 NormalTile(inherit Tile)
-Player(int number, int turnsUntilActive, Color color, contain (0..2) Tile)
+Player(int number, int turnsUntilActive, Color color, associate (0..2) Tile)
 
 ###
 User prompt: 
-Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Enumerations:
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
 
-Classes:
-HelpingHandStore(associate (*) Resident, associate (*) VolunteerDriver, associate (*) Employee, associate (*) Vehicle, associate (*) SecondHandArticle)
-Resident(string name, string streetAddress, string phoneNumber, string emailAddress, associate (*) Pickup, associate (1) HelpingHandStore, associate (*) Category)
-VolunteerDriver(associate (1) HelpingHandStore, associate (1) Vehicle, associate (*) PickupRoute, associate (*) Delivery)
-Employee(associate (1) HelpingHandStore, associate (*) SecondHandArticle, associate (*) Pickup, associate (*) Delivery)
-Vehicle(string storageSpace, associate (1) HelpingHandStore, associate (1) VolunteerDriver, associate (1) PickupRoute)
-SecondHandArticle(string description, int weight, string dimensions, associate (1) HelpingHandStore, associate (1) Category, associate (1) Pickup, associate (1) RFID)
-Category(string name, associate (*) Resident, associate (*) SecondHandArticle)
-RFID(string id, associate (1) SecondHandArticle)
-Pickup(associate (1) Resident, associate (1) Employee, associate (*) SecondHandArticle, associate (1) PickupRoute)
-PickupRoute(string day, associate (1) VolunteerDriver, associate (1) Vehicle, associate (*) Pickup)
-Delivery(associate (1) Employee, associate (1) VolunteerDriver, associate (1) Resident, associate (*) SecondHandArticle)
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of many categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
+
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Classes:
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
 ","Enumerations:
 
 Classes:
-HelpingHandStore(associate (*) Resident, associate (*) VolunteerDriver, associate (*) Employee, associate (*) Vehicle, associate (*) SecondHandArticle)
-Resident(string name, string streetAddress, string phoneNumber, string emailAddress, associate (*) Pickup, associate (1) HelpingHandStore, associate (*) Category)
-VolunteerDriver(string availableDays, associate (1) HelpingHandStore, associate (1) Vehicle, associate (*) PickupRoute, associate (*) Delivery)
-Employee(associate (1) HelpingHandStore, associate (*) SecondHandArticle, associate (*) Pickup, associate (*) Delivery)
-Vehicle(string storageSpace, associate (1) HelpingHandStore, associate (1) VolunteerDriver, associate (1) PickupRoute)
-SecondHandArticle(string description, int weight, string dimensions, associate (1) HelpingHandStore, associate (1) Category, associate (1) Pickup, associate (1) RFID)
-Category(string name, associate (*) Resident, associate (*) SecondHandArticle)
-RFID(string id, associate (1) SecondHandArticle)
-Pickup(associate (1) Resident, associate (1) Employee, associate (*) SecondHandArticle, associate (1) PickupRoute)
-PickupRoute(string day, associate (1) VolunteerDriver, associate (1) Vehicle, associate (*) Pickup)
-Delivery(associate (1) Employee, associate (1) VolunteerDriver, associate (1) Resident, associate (*) SecondHandArticle)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) Employee, contain (*) VolunteerDriver, contain (*) Resident)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+Resident(string name, string streetAddress, string phoneNumber, string email, inherit Person associate (*) Item)
+Vehicle(int storageSpace, associate (1) Route)
+Route(associate (*) Item, associate (1) Vehicle, associate (1) VolunteerDriver)
+Employee(inherit PersonUserRole)
+VolunteerDriver(string availableDays, inherit PersonUserRole associate (*) Route)
+abstract Person()
+NonPerishableFood(inherit Item)
+SecondHandArticle(inherit Item)
+FoodBank(contain (*) NonPerishableFood)
+DistributionCenter(contain (*) SecondHandArticle)
 ","Enumerations:
 ItemCategory(Baby Clothing, Fridge)
 
 Classes:
-H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
 Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
-UserRole()
+abstract UserRole(associate (1) Person)
+Client(ItemCategory neededCategory, inherit UserRole associate (*) SecondHandArticle)
 Volunteer(inherit UserRole contain (*) Date associate (*) Route)
+Date()
 Resident(inherit UserRole associate (*) Item)
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
-Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item associate (1) Client, associate (0..1) Route)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+FoodItem(inherit Item)
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle, associate (1) Vehicle, associate (1) Volunteer)
+Vehicle(int dimension, int weightRestriction, associate (*) Route)
 "
-gemini-1.5-flash,1shot_tile-o,manual,"Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+gemini-1.5-flash,1shot_tile-o,manual,"The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Example domain description: 
-The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
 
-A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of many categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
 
-The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Example domain description: 
+The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color.
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. Example solution: 
+A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles.
+
+The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn
+
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.Example solution: 
 Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
 Classes:
 TileO(contain (*) Game)
-Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (0..1) Player associate (0..1) WinTile)
+Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (2..4) Player associate (0..1) WinTile, associate (0..1) Player)
 Connection(associate (2) Tile)
 Die()
-Deck(contain (0..32) ActionCard)
-Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
-ActionCard(string instructions, associate (0..1) Deck)
+Deck(contain (0..32) ActionCard associate (0..1) ActionCard)
+abstract Tile(int x, int y, boolean hasBeenVisited, associate (0..4) Connection)
+abstract ActionCard(string instructions)
 RollDieActionCard(inherit ActionCard)
 ConnectTilesActionCard(inherit ActionCard)
 RemoveConnectionActionCard(inherit ActionCard)
 TeleportActionCard(inherit ActionCard)
 LoseTurnActionCard(inherit ActionCard)
-WinTile(inherit Tile associate (1) Game)
-ActionTile(inherit Tile)
+WinTile(inherit Tile)
+ActionTile(int inactivityPeriod, int turnsUntilActive, inherit Tile)
 NormalTile(inherit Tile)
-Player(int number, int turnsUntilActive, Color color, contain (0..2) Tile)
+Player(int number, int turnsUntilActive, Color color, associate (0..2) Tile)
 
 ###
 User prompt: 
-Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Enumerations:
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
 
-Classes:
-Resident(string name, string streetAddress, string phoneNumber, string emailAddress, string description, associate (*) Item, associate (0..*) Category)
-HelpingHandStore(contain (*) Resident, contain (*) Vehicle, contain (1) DistributionCenter, contain (*) Item)
-Item(string description, double weight, string dimensions, associate (1) Resident, associate (1) Vehicle, associate (1) Category)
-Vehicle(double storageSpace, contain (*) Item associate (1) VolunteerDriver, associate (1) Route)
-VolunteerDriver(string availableDays, associate (1) Vehicle)
-Route(associate (1) Vehicle)
-DistributionCenter()
-Category(string name, associate (*) Item, associate (0..*) Resident)
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of many categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
+
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Classes:
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
 ","Enumerations:
 
 Classes:
-Resident(string name, string streetAddress, string phoneNumber, string emailAddress, string description, associate (*) Item, associate (0..*) Category, associate (*) PickupRequest, associate (*) DeliveryRequest)
-HelpingHandStore(contain (*) Resident, contain (*) Vehicle, contain (1) DistributionCenter, contain (*) Item, contain (*) PickupRequest, contain (*) DeliveryRequest)
-Item(string description, double weight, string dimensions, string RFID, associate (1) Resident, associate (1) Vehicle, associate (1) Category, associate (1) PickupRequest, associate (1) DeliveryRequest)
-Vehicle(double storageSpace, contain (*) Item associate (1) VolunteerDriver, associate (1) Route)
-VolunteerDriver(string availableDays, associate (1) Vehicle)
-Route(Date date, associate (1) Vehicle)
-DistributionCenter()
-Category(string name, associate (*) Item, associate (0..*) Resident, associate (*) DeliveryRequest)
-PickupRequest(Date pickupDate, string status, associate (1) Resident, associate (*) Item)
-DeliveryRequest(Date deliveryDate, string status, associate (1) Resident, associate (*) Item, associate (1) Category)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+Resident(inherit Person associate (*) Item)
+Employee(inherit Person)
+Vehicle(int capacity, string registrationNumber)
+Route(int routeId, associate (*) Item)
+PickupRequest(Date pickupDate, string pickupTime, string status, associate (1) Item, associate (1) Resident, associate (0..1) Employee)
+VolunteerDriver(string availableDays, inherit Employee associate (1) Route)
+SecondHandArticle(string RFID, string category, inherit Item)
+Food(inherit Item)
+DeliveryRequest(Date deliveryDate, string deliveryTime, string status, associate (1) Item, associate (1) Resident, associate (1) VolunteerDriver)
 ","Enumerations:
 ItemCategory(Baby Clothing, Fridge)
 
 Classes:
-H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
 Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
-UserRole()
+abstract UserRole(associate (1) Person)
+Client(ItemCategory neededCategory, inherit UserRole associate (*) SecondHandArticle)
 Volunteer(inherit UserRole contain (*) Date associate (*) Route)
+Date()
 Resident(inherit UserRole associate (*) Item)
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
-Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item associate (1) Client, associate (0..1) Route)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+FoodItem(inherit Item)
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle, associate (1) Vehicle, associate (1) Volunteer)
+Vehicle(int dimension, int weightRestriction, associate (*) Route)
 "
-gemini-1.5-flash,1shot_tile-o,auto,"[{'task': 'Create a new class named ""DeliveryRoute"" with attributes: date (Date), vehicle (Vehicle), and residents (Resident, multiplicity *).'}, {'task': 'Add a new relationship from class DeliveryRoute to class Resident with multiplicity *. This represents residents receiving deliveries.'}, {'task': 'Add a new attribute to the Resident class called ""neededCategories"" with type ""Category"" and multiplicity *.'}, {'task': 'Create a new class named ""H2SEmployee"" with attributes: name (string) and employeeID (int).'}, {'task': 'Add an attribute to the Item class called ""RFID"" with type string.  Make it optional. Update the description to specify that it will store the RFID tag information if the item is tagged.'}, {'task': 'Add a new relationship between class Item and class H2SEmployee to represent the assignment of categories. The relationship will be named ""assignedBy"" and the multiplicity on Item will be 1 and on H2SEmployee will be *.'}, {'task': 'Modify the PickupRoute class to include a new attribute:  ""deliveryRoutes"", with type DeliveryRoute and multiplicity *.'}, {'task': 'Create a new class named ""ClientRequest"" with attributes: resident (Resident), neededCategories (Category, multiplicity *), and requestDate (Date).'}, {'task': 'Add a new relationship between the ""Item"" class and the ""ClientRequest"" class. This relationship should show Items fulfilling a client\'s request.'}, {'task': 'Add a new attribute to the VolunteerDriver class: ""dailyRoute"" of type PickupRoute. Ensure that the multiplicity of this attribute is 1.'}]","Example domain description: 
-The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color. 
+gemini-1.5-flash,1shot_tile-o,auto,"Create the enumeration ""Category"" with possible values such as ""baby clothing"", ""women’s winter boots"", ""fridge"", ""microwave"", etc.
 
-A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles. 
+Create the class ""Resident"" that inherits from the class ""Person"" and contains an attribute ""items"" of type ""Item"" with multiplicity ""*"".
 
-The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn. 
+Create the class ""VolunteerDriver"" that inherits from the class ""Person"" and contains attributes for available days and the vehicle assigned.
 
-Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it. Example solution: 
+Create the class ""Employee"" that inherits from the class ""Person"" and contains attributes for role and department(distribution center).
+
+Create the class ""Food"" that inherits from the class ""Item"" and adds an attribute ""perishable"" of type boolean, with default value of false.
+
+Create the class ""SecondHandArticle"" that inherits from the class ""Item"" and adds attributes for RFID and category, with category type being the previously defined ""Category"" enumeration.
+
+Create the class ""Route"" with attributes for vehicle, date, and a list of items to be picked up.
+
+Create the class ""Vehicle"" with attributes for storage space, current storage used, and assigned driver.
+
+Create the association between the class ""Route"" and class ""Vehicle"" with multiplicity 1 to 1.
+
+Create the association between the class ""Resident"" and class ""SecondHandArticle"" with multiplicity 1 to *","Example domain description: 
+The Tile-O application first allows a game designer to design a board game and then allows players to play the game. Only one game can be played at a time and it cannot be paused or saved. The objective of the game is to find a hidden tile on the board. Two to four players take turns by moving their playing pieces along connected tiles based on the roll of a die. Each playing piece has a different color.
+
+A designer first defines the whole game including the layout of the game board. The designer places the tiles on the board and connects them with connection pieces. A tile can be connected to other tiles on its right side, left side, top side, and bottom side. At the most one tile can be connected on each side. In addition, the designer indicates the hidden tile, the starting positions of each player, as well as the location of action tiles.
+
+The designer also defines a deck of 32 action cards by choosing from the following predefined choices: (i) roll the die for an extra turn, (ii) connect two adjacent tiles with a connection piece from the pile of 32 spare connection pieces, (iii) remove a connection piece from the board and place it in the pile of spare connection pieces, (iv) move your playing piece to an arbitrary tile that is not your current tile, and (v) lose your next turn
+
+Players take turns, with Player 1 starting the game, followed by Player 2, Player 3 (if applicable), and Player 4 (if applicable). The player whose turn it is rolls the die and them moves their playing piece along connected tiles. If the player lands on any tile, the color of the tile changes from white to black to indicate that the tile has been visited during the game. If the player lands on the hidden tile, the game ends and the player wins the game. If the player lands on an action tile, the player takes the first action card from the deck of action cards and follows the instructions on the action card. In addition, the action tile turns into a regular tile for a number of turns as specified by the game designer. Players do not know whether a tile is an action tile until a player lands on it.Example solution: 
 Enumerations:
 Mode(design, game)
 Color(red, blue, green, yellow)
 
 Classes:
 TileO(contain (*) Game)
-Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (0..1) Player associate (0..1) WinTile)
+Game(int currentConnectionPieces, Mode mode, int spaceConnectionPieces, int numberOfActionCards, contain (*) Tile, contain (*) Connection, contain (1) Die, contain (1) Deck, contain (2..4) Player associate (0..1) WinTile, associate (0..1) Player)
 Connection(associate (2) Tile)
 Die()
-Deck(contain (0..32) ActionCard)
-Tile(int x, int y, associate (0..*) Connection, associate (0..4) Player)
-ActionCard(string instructions, associate (0..1) Deck)
+Deck(contain (0..32) ActionCard associate (0..1) ActionCard)
+abstract Tile(int x, int y, boolean hasBeenVisited, associate (0..4) Connection)
+abstract ActionCard(string instructions)
 RollDieActionCard(inherit ActionCard)
 ConnectTilesActionCard(inherit ActionCard)
 RemoveConnectionActionCard(inherit ActionCard)
 TeleportActionCard(inherit ActionCard)
 LoseTurnActionCard(inherit ActionCard)
-WinTile(inherit Tile associate (1) Game)
-ActionTile(inherit Tile)
+WinTile(inherit Tile)
+ActionTile(int inactivityPeriod, int turnsUntilActive, inherit Tile)
 NormalTile(inherit Tile)
-Player(int number, int turnsUntilActive, Color color, contain (0..2) Tile)
+Player(int number, int turnsUntilActive, Color color, associate (0..2) Tile)
 
 ###
 User prompt: 
-Description: The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents. A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. 
+The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.
 
-At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Those articles that can still be used are tagged with an RFID device. In addition, the H2S employee assigns a category to the article from a standard list of categories (e.g., baby clothing, women’s winter boots, fridge, microwave…). 
+A resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.
 
-H2S allows those clients to indicate which categories of articles they need. An H2S employee calls them to let them know about the relevant articles that were dropped off that day. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Enumerations:
-DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday)
+H2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S’s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.
+
+At H2S’s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of many categories (e.g., baby clothing, women’s winter boots, fridge, microwave…).
+
+In some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client’s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.","Classes:
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+","Enumerations:
 Category(baby clothing, women’s winter boots, fridge, microwave)
 
 Classes:
-Resident(string name, string streetAddress, string phoneNumber, string email, string itemsToBePickedUp, contain (*) Item)
-Item(string description, string dimensions, double weight, Category category, associate (1) Category)
-VolunteerDriver(string name, DayOfWeek availableDays)
-Vehicle(int id, double storageSpace, VolunteerDriver assignedDrivers)
-PickupRoute(Date date, Vehicle vehicle, Resident residents)
-DistributionCenter(Item items)
-","Enumerations:
-DayOfWeek(Monday, Tuesday, Wednesday, Thursday, Friday)
-Category(baby clothing, women’s winter boots, fridge, microwave)
-
-Classes:
-Resident(string name, string streetAddress, string phoneNumber, string email, string itemsToBePickedUp, Category neededCategories, contain (*) Item)
-Item(string description, string dimensions, double weight, Category category, string RFID, associate (1) Category, associate (1) H2SEmployee, associate (1) ClientRequest)
-VolunteerDriver(string name, DayOfWeek availableDays, PickupRoute dailyRoute)
-Vehicle(int id, double storageSpace, VolunteerDriver assignedDrivers)
-PickupRoute(Date date, Vehicle vehicle, Resident residents, DeliveryRoute deliveryRoutes)
-DistributionCenter(Item items)
-DeliveryRoute(Date date, Vehicle vehicle, Resident residents, associate (*) Resident)
-H2SEmployee(string name, int employeeID, associate (*) Item)
-ClientRequest(Resident resident, Category neededCategories, Date requestDate)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
+Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
+abstract UserRole(associate (1) Person)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, Category category, associate (1) Route, associate (0..1) Resident)
+Resident(inherit Person contain (*) Item associate (*) SecondHandArticle)
+VolunteerDriver(string availableDays, Vehicle vehicle, inherit Person)
+Employee(string role, string department, inherit Person)
+Food(boolean perishable, inherit Item)
+SecondHandArticle(string RFID, Category category, inherit Item)
+Route(Vehicle vehicle, Date date, Item itemsToBePickedUp, associate (1) Vehicle)
+Vehicle(int storageSpace, int currentStorageUsed, VolunteerDriver assignedDriver)
 ","Enumerations:
 ItemCategory(Baby Clothing, Fridge)
 
 Classes:
-H2S(contain (*) Item, contain (*) Route, contain (*) UserRole, contain (*) Person)
+H2S(contain (*) Item, contain (*) Vehicle, contain (*) Route, contain (*) UserRole, contain (*) Person)
 Person(string name, string address, string phoneNumber, string emailAddress, associate (*) UserRole)
-UserRole()
+abstract UserRole(associate (1) Person)
+Client(ItemCategory neededCategory, inherit UserRole associate (*) SecondHandArticle)
 Volunteer(inherit UserRole contain (*) Date associate (*) Route)
+Date()
 Resident(inherit UserRole associate (*) Item)
-SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item)
-Item(string description, string dimension, int weight, Date requestedPickedDate)
-Route(Date date, associate (*) Item, associate (*) SecondHandArticle)
+SecondHandArticle(string codeRFID, boolean discarded, ItemCategory category, inherit Item associate (1) Client, associate (0..1) Route)
+abstract Item(string description, string dimension, int weight, Date requestedPickedDate, associate (1) Route, associate (0..1) Resident)
+FoodItem(inherit Item)
+Route(Date date, associate (*) Item, associate (*) SecondHandArticle, associate (1) Vehicle, associate (1) Volunteer)
+Vehicle(int dimension, int weightRestriction, associate (*) Route)
 "

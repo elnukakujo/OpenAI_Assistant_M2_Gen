@@ -1,0 +1,80 @@
+{
+    "class_": [
+        {
+            "name": "H2S",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Item",
+                    "mul": "*"
+                },
+                {
+                    "to": "Vehicle",
+                    "mul": "*"
+                },
+                {
+                    "to": "Route",
+                    "mul": "*"
+                },
+                {
+                    "to": "UserRole",
+                    "mul": "*"
+                },
+                {
+                    "to": "Person",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "UserRole",
+            "attributes": [],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Person",
+                    "mul": "1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "Item",
+            "attributes": [
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "dimension",
+                    "type": "string"
+                },
+                {
+                    "name": "weight",
+                    "type": "int"
+                },
+                {
+                    "name": "requestedPickedDate",
+                    "type": "Date"
+                }
+            ],
+            "contains": [],
+            "associate": [
+                {
+                    "to": "Route",
+                    "mul": "1"
+                },
+                {
+                    "to": "Resident",
+                    "mul": "0..1"
+                }
+            ],
+            "inherit": [],
+            "abstract": true
+        }
+    ]
+}

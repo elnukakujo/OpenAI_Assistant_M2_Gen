@@ -31,41 +31,6 @@
             "abstract": false
         },
         {
-            "name": "Traveller",
-            "attributes": [
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "reliabilityRating",
-                    "type": "int"
-                }
-            ],
-            "contains": [
-                {
-                    "to": "TravelSearch",
-                    "mul": "*"
-                },
-                {
-                    "to": "TravelPreference",
-                    "mul": "*"
-                },
-                {
-                    "to": "BillingInformation",
-                    "mul": "1..1"
-                }
-            ],
-            "associate": [
-                {
-                    "to": "Booking",
-                    "mul": "*"
-                }
-            ],
-            "inherit": [],
-            "abstract": false
-        },
-        {
             "name": "Offer",
             "attributes": [],
             "contains": [],

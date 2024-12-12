@@ -289,31 +289,65 @@
             }
         ]
     ],
-    "user_prompt": "The Helping Hand Store (H2S) collects second hand articles and non-perishable foods from residents of the city and distributes them to those in need. H2S also operates in many cities, but each location is run independently. To increase the number of items available for distribution, H2S is seeking to offer a Pickup and Delivery Service to its customers, which would allow a resident to schedule a pickup of items from a street address online at the H2S website.\n\nA resident enters a name, street address, phone number, optional email address, as well as a description of the items to be picked up. The resident places the items just outside the front door of the building at the stated street address in the morning of the weekday requested for pickup.\n\nH2S has a fleet of pickup vehicles, which it uses to collect items from residents. At the beginning of every weekday, a pickup route for that day is determined for each vehicle for which a volunteer driver is available. Volunteer drivers indicate their available days on the H2S website. The route takes into account the available storage space of a vehicle and the dimensions and weights of scheduled items. A scheduled pickup may occur anytime between 8:00 and 14:00. After completing all scheduled pickups, the driver drops off all collected second hand articles at H2S\u2019s distribution center. Non-perishable foods, on the other hand, are directly dropped off at the food bank, which then deals with these items without further involvement from H2S.\n\nAt H2S\u2019s distribution center, an H2S employee examines the quality of the received second hand articles. Those articles that can still be used are tagged with an RFID device. The H2S employee double checks the description of the article given by the resident and makes any corrections as needed. In addition, the H2S employee assigns a category to the article from a standard list of many categories (e.g., baby clothing, women\u2019s winter boots, fridge, microwave\u2026).\n\nIn some cities in which H2S operates, the distribution center offers an additional service for clients who receive second hand articles from H2S but are not able to personally visit the H2S distribution center. Instead, H2S allows those clients to indicate which categories of articles they need. At the end of each day, an H2S employee calls them to let them know about the relevant articles that were dropped off that day. If the client still needs an article, the H2S employee arranges delivery of the article to the client\u2019s home address. Delivery of such articles is made by a volunteer driver before picking up items according to the pickup route.",
+    "user_prompt": "The Team Sports Scouting System is used by various employees of the club, including the head coach, the director of the club and the scouts. It is the role of the head coach to identify designated player profiles for future signings, which includes designated target positions for a player (e.g. GK for goalkeeper, LB for left back, etc.), and other player attributes (identified by a name and a value). \n\nScouts may note players a long list who seem to match a designated target profile at any time. This long list is periodically evaluated by the head scout when setting up scouting assignments for his team to investigate a specific player more thoroughly. As the completion of a scouting assignment, the scout submits a scouting report about the player, which includes the pros and cons of the player as well as a recommendation (e.g. key player, first team player, reserve team player, prospective player, not a good signing). \n\nAfter comparing first scouting results for a designated player profile, the head coach and the head scout decide upon which players to move to the short list. Several other rounds of scouting can be carried out for each short-listed player as part of scouting assignments \u2013 some of which is carried out by the head scout himself. If a player is finally recommended for signing by the head scout, the director makes an official offer for the player. ",
     "pre_model": {
         "class_": [
             {
-                "name": "H2S",
+                "name": "Person",
+                "attributes": [
+                    {
+                        "name": "firstName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "lastName",
+                        "type": "string"
+                    }
+                ],
+                "contains": [],
+                "associate": [],
+                "inherit": [],
+                "abstract": true
+            },
+            {
+                "name": "Scout",
+                "attributes": [
+                    {
+                        "name": "scoutKind",
+                        "type": "ScoutKind",
+                        "default": "REGULAR_SCOUT"
+                    }
+                ],
+                "contains": [
+                    {
+                        "to": "ScoutingAssignment",
+                        "mul": "*"
+                    }
+                ],
+                "associate": [],
+                "inherit": [
+                    "Person"
+                ],
+                "abstract": false
+            },
+            {
+                "name": "Club",
                 "attributes": [],
                 "contains": [
                     {
-                        "to": "Item",
+                        "to": "Player",
                         "mul": "*"
                     },
                     {
-                        "to": "Vehicle",
-                        "mul": "*"
+                        "to": "HeadCoach",
+                        "mul": "0..1"
                     },
                     {
-                        "to": "Route",
-                        "mul": "*"
+                        "to": "Director",
+                        "mul": "0..1"
                     },
                     {
-                        "to": "UserRole",
-                        "mul": "*"
-                    },
-                    {
-                        "to": "Person",
+                        "to": "Scout",
                         "mul": "*"
                     }
                 ],
@@ -322,51 +356,39 @@
                 "abstract": false
             },
             {
-                "name": "UserRole",
-                "attributes": [],
-                "contains": [],
-                "associate": [
-                    {
-                        "to": "Person",
-                        "mul": "1"
-                    }
-                ],
-                "inherit": [],
-                "abstract": true
-            },
-            {
-                "name": "Item",
+                "name": "Offer",
                 "attributes": [
                     {
-                        "name": "description",
-                        "type": "string"
-                    },
-                    {
-                        "name": "dimension",
-                        "type": "string"
-                    },
-                    {
-                        "name": "weight",
+                        "name": "value",
                         "type": "int"
-                    },
-                    {
-                        "name": "requestedPickedDate",
-                        "type": "Date"
                     }
                 ],
                 "contains": [],
                 "associate": [
                     {
-                        "to": "Route",
-                        "mul": "1"
-                    },
-                    {
-                        "to": "Resident",
+                        "to": "Player",
                         "mul": "0..1"
                     }
                 ],
                 "inherit": [],
-                "abstract": true
+                "abstract": false
+            },
+            {
+                "name": "PlayerAttribute",
+                "attributes": [
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "value",
+                        "type": "int"
+                    }
+                ],
+                "contains": [],
+                "associate": [],
+                "inherit": [],
+                "abstract": false
             }
         ]
     }
