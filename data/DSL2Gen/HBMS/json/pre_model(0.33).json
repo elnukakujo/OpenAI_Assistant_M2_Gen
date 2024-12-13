@@ -1,0 +1,108 @@
+{
+    "class_": [
+        {
+            "name": "HotelChain",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "Hotel",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "HotelBookingManager",
+            "attributes": [],
+            "contains": [
+                {
+                    "to": "HotelChain",
+                    "mul": "*"
+                },
+                {
+                    "to": "Traveller",
+                    "mul": "*"
+                }
+            ],
+            "associate": [],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Traveller",
+            "attributes": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "reliabilityRating",
+                    "type": "int"
+                }
+            ],
+            "contains": [
+                {
+                    "to": "TravelSearch",
+                    "mul": "*"
+                },
+                {
+                    "to": "TravelPreference",
+                    "mul": "*"
+                },
+                {
+                    "to": "BillingInformation",
+                    "mul": "1..1"
+                }
+            ],
+            "associate": [
+                {
+                    "to": "Booking",
+                    "mul": "*"
+                }
+            ],
+            "inherit": [],
+            "abstract": false
+        },
+        {
+            "name": "Offer",
+            "attributes": [],
+            "contains": [],
+            "associate": [],
+            "inherit": [],
+            "abstract": true
+        },
+        {
+            "name": "TripInfo",
+            "attributes": [
+                {
+                    "name": "numberOfRooms",
+                    "type": "int"
+                },
+                {
+                    "name": "roomType",
+                    "type": "RoomType",
+                    "default": "SINGLE"
+                },
+                {
+                    "name": "arrivalDate",
+                    "type": "date"
+                },
+                {
+                    "name": "departureDate",
+                    "type": "date"
+                },
+                {
+                    "name": "budgetPerNight",
+                    "type": "float",
+                    "default": 0.0
+                }
+            ],
+            "contains": [],
+            "associate": [],
+            "inherit": [],
+            "abstract": true
+        }
+    ]
+}
