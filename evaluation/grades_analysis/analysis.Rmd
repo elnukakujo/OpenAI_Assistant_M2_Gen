@@ -15,41 +15,42 @@ library(lme4)
 library(lmerTest)
 ```
 
+# Task Generation and 33%PSM
+
 ## Import Data
 
 ```{r cars}
-df <- read_excel('IFT6253LLMAssistantEvaluation.xlsx', skip=1)
+df_long <- read_excel('IFT6253LLMAssistantEvaluation.xlsx', skip=1, sheet = "TaskGen_PSM")
 
-colnames(df)[3] <- "Shot_Example"
-colnames(df)[6] <- "Pre_Model"
+colnames(df_long)[3] <- "Shot_Example"
 
-colnames(df)[7] <- "Class_Precision"
-colnames(df)[8] <- "Class_Recall"
-colnames(df)[9] <- "Class_F1"
+colnames(df_long)[7] <- "Class_Precision"
+colnames(df_long)[8] <- "Class_Recall"
+colnames(df_long)[9] <- "Class_F1"
 
-colnames(df)[10] <- "Attr_Precision"
-colnames(df)[11] <- "Attr_Recall"
-colnames(df)[12] <- "Attr_F1"
+colnames(df_long)[10] <- "Attr_Precision"
+colnames(df_long)[11] <- "Attr_Recall"
+colnames(df_long)[12] <- "Attr_F1"
 
-colnames(df)[13] <- "Rel_Precision"
-colnames(df)[14] <- "Rel_Recall"
-colnames(df)[15] <- "Rel_F1"
+colnames(df_long)[13] <- "Rel_Precision"
+colnames(df_long)[14] <- "Rel_Recall"
+colnames(df_long)[15] <- "Rel_F1"
 
-df$Combination <- factor(df$Combination)
-df$Shot_Example <- factor(df$Shot_Example)
-df$DSL2Gen <- factor(df$DSL2Gen)
-df$Divide <- factor(df$Divide)
-df$Pre_Model <- factor(df$Pre_Model)
+df_long$Combination <- factor(df_long$Combination)
+df_long$Shot_Example <- factor(df_long$Shot_Example)
+df_long$DSL2Gen <- factor(df_long$DSL2Gen)
+df_long$TaskGenMethod <- factor(df_long$TaskGenMethod)
+df_long$PSM <- factor(df_long$PSM)
 
-head(df)
+head(df_long)
 ```
 
 ## Preprocess
 
 ```{r}
-df_long <- df %>%
+df_long <- df_long %>%
   pivot_longer(
-    cols = colnames(df)[7:15], # Select relevant columns
+    cols = colnames(df_long)[7:15], # Select relevant columns
     names_to = c("ElementType", ".value"),
     names_sep = "_"
   )
@@ -62,186 +63,31 @@ head(df_long)
 ```{r}
 library(ggplot2)
 
-ggplot(df_long, aes(x = Shot_Example, y = Precision, fill = Shot_Example)) +
+df <- df_long %>%
+  pivot_longer(cols = c(Precision, Recall, F1),
+               names_to = "Metric",
+               values_to = "Score")
+head(df)
+
+ggplot(df, aes(x = Metric, y = Score, fill = Metric)) +
   geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Precision by ElementType and Shot_Example",
-    x = "Shot_Example",
-    y = "Precision") +
+  facet_wrap(~TaskGenMethod) +
+  labs(title = "Score by Task Generation mode and Metrics") +
   theme_minimal() +
   theme(legend.position = "none")
-
-ggplot(df_long, aes(x = Shot_Example, y = Recall, fill = Shot_Example)) +
+ggplot(df, aes(x = Metric, y = Score, fill = Metric)) +
   geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Recall by ElementType and Shot_Example",
-    x = "Shot_Example",
-    y = "Recall") +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-ggplot(df_long, aes(x = Shot_Example, y = F1, fill = Shot_Example)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "F1 by ElementType and Shot_Example",
-    x = "Shot_Example",
-    y = "F1") +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-```
-
-```{r}
-ggplot(df_long, aes(x = DSL2Gen, y = Precision, fill = DSL2Gen)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Precision by ElementType and DSL2Gen",
-    x = "DSL2Gen",
-    y = "Precision") +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-ggplot(df_long, aes(x = DSL2Gen, y = Recall, fill = DSL2Gen)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Recall by ElementType and DSL2Gen",
-    x = "DSL2Gen",
-    y = "Recall") +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-ggplot(df_long, aes(x = DSL2Gen, y = F1, fill = DSL2Gen)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "F1 by ElementType and DSL2Gen",
-    x = "DSL2Gen",
-    y = "F1") +
+  facet_wrap(~PSM) +
+  labs(title = "Score with and without PSM and Metrics") +
   theme_minimal() +
   theme(legend.position = "none")
 ```
 
-```{r}
-ggplot(df_long, aes(x = Divide, y = Precision, fill = Divide)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Precision by ElementType and Divide",
-    x = "Divide",
-    y = "Precision") +
-  theme_minimal() +
-  theme(legend.position = "none")
+## Analysis
 
-ggplot(df_long, aes(x = Divide, y = Recall, fill = Divide)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Recall by ElementType and Divide",
-    x = "Divide",
-    y = "Recall") +
-  theme_minimal() +
-  theme(legend.position = "none")
+### Class
 
-ggplot(df_long, aes(x = Divide, y = F1, fill = Divide)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "F1 by ElementType and Divide",
-    x = "Divide",
-    y = "F1") +
-  theme_minimal() +
-  theme(legend.position = "none")
-```
-
-```{r}
-ggplot(df_long, aes(x = Pre_Model, y = Precision, fill = Pre_Model)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Precision by ElementType and Pre_Model",
-    x = "Pre_Model",
-    y = "Precision") +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-ggplot(df_long, aes(x = Pre_Model, y = Recall, fill = Pre_Model)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "Recall by ElementType and Pre_Model",
-    x = "Pre_Model",
-    y = "Recall") +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-ggplot(df_long, aes(x = Pre_Model, y = F1, fill = Pre_Model)) +
-  geom_boxplot() +
-  facet_wrap(~ ElementType) + # Facet by ElementType
-  labs(title = "F1 by ElementType and Pre_Model",
-    x = "Pre_Model",
-    y = "F1") +
-  theme_minimal() +
-  theme(legend.position = "none")
-```
-
-## Check normality for metrics
-
-### Classes
-
-```{r}
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Class", ]$Precision)
-print("Precision:")
-shapiro_test_result
-print("--------------------------------")
-
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Class", ]$Recall)
-print("Recall:")
-shapiro_test_result
-print("--------------------------------")
-
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Class", ]$F1)
-print("F1:")
-shapiro_test_result
-print("--------------------------------")
-```
-
-Non normal: - Precision
-
-### Attr
-
-```{r}
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Attr", ]$Precision)
-print("Precision:")
-shapiro_test_result
-print("--------------------------------")
-
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Attr", ]$Recall)
-print("Recall:")
-shapiro_test_result
-print("--------------------------------")
-
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Attr", ]$F1)
-print("F1:")
-shapiro_test_result
-print("--------------------------------")
-```
-
-Non normal: - none
-
-### Rel
-
-```{r}
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Rel", ]$Precision)
-print("Precision:")
-shapiro_test_result
-print("--------------------------------")
-
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Rel", ]$Recall)
-print("Recall:")
-shapiro_test_result
-print("--------------------------------")
-
-shapiro_test_result <- shapiro.test(df_long[df_long$ElementType == "Rel", ]$F1)
-print("F1:")
-shapiro_test_result
-print("--------------------------------")
-```
-
-Non normal: - none \## Analysis \### Class \#### Precision
+#### Precision
 
 ```{r}
 library(lme4)
@@ -252,22 +98,22 @@ library(emmeans)
 df <- df_long[df_long$ElementType == "Class", ]
 head(df)
 
-class_precision <- lm(Precision ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
+class_precision <- lm(Precision ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
 summary(class_precision)
 print("----------------------")
 
 qqnorm(residuals(class_precision))
 qqline(residuals(class_precision),col="red")
 
-leveneTest(residuals(class_precision) ~ Divide * Pre_Model, data=df)
+leveneTest(residuals(class_precision) ~ TaskGenMethod * PSM, data=df)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(class_precision, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(class_precision, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(class_precision, pairwise ~ Pre_Model | Divide)$contrasts
+print("TaskGenMethod")
+emmeans(class_precision, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(class_precision, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(class_precision, pairwise ~ TaskGenMethod | PSM)
 ```
 
 #### Recall
@@ -276,16 +122,22 @@ emmeans(class_precision, pairwise ~ Pre_Model | Divide)$contrasts
 df <- df_long[df_long$ElementType == "Class", ]
 head(df)
 
-class_recall <- aov(Recall ~ Pre_Model * Divide + DSL2Gen + Shot_Example, data = df)
-anova(class_recall)
+class_recall <- lm(Recall ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
+summary(class_recall)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(class_recall, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(class_recall, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(class_recall, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(class_recall))
+qqline(residuals(class_recall),col="red")
+
+leveneTest(residuals(class_recall) ~ TaskGenMethod * PSM , data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(class_recall, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(class_recall, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(class_recall, pairwise ~ TaskGenMethod | PSM)
 ```
 
 #### F1
@@ -294,68 +146,23 @@ emmeans(class_recall, pairwise ~ Pre_Model | Divide)$contrasts
 df <- df_long[df_long$ElementType == "Class", ]
 head(df)
 
-class_F1 <- aov(F1 ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
-summary(class_F1)
+class_f1 <- lm(F1 ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
+summary(class_f1)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(class_F1, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(class_F1, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(class_F1, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(class_f1))
+qqline(residuals(class_f1),col="red")
+
+leveneTest(residuals(class_f1) ~ TaskGenMethod * PSM , data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(class_f1, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(class_f1, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(class_f1, pairwise ~ TaskGenMethod | PSM)
 ```
-
-#### Significant changes
-
--   Precision
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 **0.0823 / 0.0322**
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual 0.0502 / 0.4877
-        -   Auto - None -0.0432 / 0.5837
-        -   Manual - None -0.0934 / 0.1062
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 **0.1899 / 0.0065**
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 0.0569 / 0.3623
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 0.0000 / 1.0000
--   Recall
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 -0.000694 / 0.9845
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual 0.03438 / 0.7100
-        -   Auto - None 0.00677 / 0.9865
-        -   Manual - None -0.02760 / 0.8004
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 0.0552 / 0.3787
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 -0.0573 / 0.3614
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 0.0000 / 1.0000
--   F1
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 0.0322 / 0.3014
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual 0.05176 / 0.3638
-        -   Auto - None 0.00485 / 0.9905
-        -   Manual - None -0.04690 / 0.4317
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 0.110 / 0.0521
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 -0.013 / 0.8071
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 0.0000 / 1.0000
 
 ### Attr
 
@@ -365,16 +172,22 @@ emmeans(class_F1, pairwise ~ Pre_Model | Divide)$contrasts
 df <- df_long[df_long$ElementType == "Attr", ]
 head(df)
 
-attr_precision <- aov(Precision ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
+attr_precision <- lm(Precision ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
 summary(attr_precision)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(attr_precision, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(attr_precision, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(attr_precision, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(attr_precision))
+qqline(residuals(attr_precision),col="red")
+
+leveneTest(residuals(attr_precision) ~ TaskGenMethod * PSM, data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(attr_precision, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(attr_precision, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(attr_precision, pairwise ~ TaskGenMethod | PSM)
 ```
 
 #### Recall
@@ -385,16 +198,22 @@ library(emmeans)
 df <- df_long[df_long$ElementType == "Attr", ]
 head(df)
 
-attr_recall <- aov(Recall ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
+attr_recall <- lm(Recall ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
 summary(attr_recall)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(attr_recall, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(attr_recall, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(attr_recall, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(attr_recall))
+qqline(residuals(attr_recall),col="red")
+
+leveneTest(residuals(attr_recall) ~ TaskGenMethod * PSM, data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(attr_recall, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(attr_recall, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(attr_recall, pairwise ~ TaskGenMethod | PSM)
 ```
 
 #### F1
@@ -405,68 +224,23 @@ library(emmeans)
 df <- df_long[df_long$ElementType == "Attr", ]
 head(df)
 
-attr_F1 <- aov(F1 ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
-summary(attr_F1)
+attr_f1 <- lm(F1 ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
+summary(attr_f1)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(attr_F1, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(attr_F1, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(attr_F1, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(attr_f1))
+qqline(residuals(attr_f1),col="red")
+
+leveneTest(residuals(attr_f1) ~ TaskGenMethod * PSM, data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(attr_f1, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(attr_f1, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(attr_f1, pairwise ~ TaskGenMethod | PSM)
 ```
-
-#### Significant changes
-
--   Precision
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 0.0337 / 0.5116
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual -0.0911 / 0.3248
-        -   Auto - None **-0.2661 / 0.0014**
-        -   Manual - None **-0.1750 / 0.0296**
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 0.0205 / 0.8165
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 0.0445 / 0.6158
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 0.0360 / 0.6837
--   Recall
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 **-0.0858 / 0.0293**
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual **0.1198 / 0.0375**
-        -   Auto - None 0.0357 / 0.7003
-        -   Manual - None -0.0841 / 0.1667
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 -0.1131 / 0.0873
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 -0.0789 / 0.2222
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 -0.0655 / 0.3073
--   F1
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 -0.0227 / 0.5648
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual 0.0146 / 0.9491
-        -   Auto - None -0.1204 / 0.0531
-        -   Manual - None **-0.1350 / 0.0291**
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 -0.0292 / 0.6681
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 -0.0192 / 0.7770
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 -0.0196 / 0.7729
 
 ### Rel
 
@@ -476,16 +250,22 @@ emmeans(attr_F1, pairwise ~ Pre_Model | Divide)$contrasts
 df <- df_long[df_long$ElementType == "Rel", ]
 head(df)
 
-rel_precision <- aov(Precision ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
+rel_precision <- lm(Precision ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
 summary(rel_precision)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(rel_precision, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(rel_precision, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(rel_precision, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(rel_precision))
+qqline(residuals(rel_precision),col="red")
+
+leveneTest(residuals(rel_precision) ~ TaskGenMethod * PSM, data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(rel_precision, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(rel_precision, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(rel_precision, pairwise ~ TaskGenMethod | PSM)
 ```
 
 #### Recall
@@ -494,16 +274,22 @@ emmeans(rel_precision, pairwise ~ Pre_Model | Divide)$contrasts
 df <- df_long[df_long$ElementType == "Rel", ]
 head(df)
 
-rel_recall <- aov(Recall ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
+rel_recall <- lm(Recall ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
 summary(rel_recall)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(rel_recall, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(rel_recall, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(rel_recall, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(rel_recall))
+qqline(residuals(rel_recall),col="red")
+
+leveneTest(residuals(rel_recall) ~ TaskGenMethod * PSM, data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(rel_recall, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(rel_recall, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(rel_recall, pairwise ~ TaskGenMethod | PSM)
 ```
 
 #### F1
@@ -512,65 +298,464 @@ emmeans(rel_recall, pairwise ~ Pre_Model | Divide)$contrasts
 df <- df_long[df_long$ElementType == "Rel", ]
 head(df)
 
-rel_f1 <- aov(F1 ~ Divide * Pre_Model + DSL2Gen + Shot_Example, data = df)
+rel_f1 <- lm(F1 ~ TaskGenMethod * PSM + DSL2Gen + Shot_Example, data = df)
 summary(rel_f1)
 print("----------------------")
 
-print("Pre_Model")
-emmeans(rel_f1, pairwise ~ Pre_Model)$contrasts
-print("Divide")
-emmeans(rel_f1, pairwise ~ Divide)$contrasts
-print("Pre_Model | Divide")
-emmeans(rel_f1, pairwise ~ Pre_Model | Divide)$contrasts
+qqnorm(residuals(rel_f1))
+qqline(residuals(rel_f1),col="red")
+
+leveneTest(residuals(rel_f1) ~ TaskGenMethod * PSM, data=df)
+print("----------------------")
+
+print("TaskGenMethod")
+emmeans(rel_f1, pairwise ~ TaskGenMethod)
+print("PSM")
+emmeans(rel_f1, pairwise ~ PSM)
+print("TaskGenMethod | PSM")
+emmeans(rel_f1, pairwise ~ TaskGenMethod | PSM)
 ```
 
-#### Significant changes
+# Comparison Partial Solution Model
 
--   Precision
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 0.0725 / 0.2792
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual 0.1932 / 0.0656
-        -   Auto - None -0.0263 / 0.9413
-        -   Manual - None **-0.2195 / 0.0346**
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 0.19804 / 0.0964
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 0.00445 / 0.9688
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 0.01500 / 0.8952
--   Recall
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 0.00833 / 0.8641
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual -0.0715 / 0.4596
-        -   Auto - None **-0.1889 / 0.0140**
-        -   Manual - None -0.1174 / 0.1444
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 -0.0181 / 0.8305
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 -0.0333 / 0.6933
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 0.0764 / 0.3710
--   F1
-    -   Pre_Model: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Pre_Model0 - Pre_Model1 0.034 / 0.4837
-    -   Divide: NOTE: Results may be misleading due to involvement in
-        interactions
-        -   Auto - Manual 0.0332 / 0.8364
-        -   Auto - None -0.1356 / 0.0794
-        -   Manual - None **-0.1688 / 0.0263**
-    -   Pre_Model \| Divide:
-        -   Divide = Auto:
-            -   Pre_Model0 - Pre_Model1 0.0453 / 0.5886
-        -   Divide = Manual:
-            -   Pre_Model0 - Pre_Model1 0.0016 / 0.9847
-        -   Divide = None:
-            -   Pre_Model0 - Pre_Model1 0.0550 / 0.5122
+## Import Data
+
+```{r}
+df_long <- read_excel('IFT6253LLMAssistantEvaluation.xlsx', skip=1, sheet = "PSM")
+
+colnames(df_long)[3] <- "Shot_Example"
+
+colnames(df_long)[6] <- "Class_Precision"
+colnames(df_long)[7] <- "Class_Recall"
+colnames(df_long)[8] <- "Class_F1"
+
+colnames(df_long)[9] <- "Attr_Precision"
+colnames(df_long)[10] <- "Attr_Recall"
+colnames(df_long)[11] <- "Attr_F1"
+
+colnames(df_long)[12] <- "Rel_Precision"
+colnames(df_long)[13] <- "Rel_Recall"
+colnames(df_long)[14] <- "Rel_F1"
+
+df_long$Combination <- factor(df_long$Combination)
+df_long$Shot_Example <- factor(df_long$Shot_Example)
+df_long$DSL2Gen <- factor(df_long$DSL2Gen)
+df_long$PSM <- factor(df_long$PSM)
+
+head(df_long)
+```
+
+## Pre process
+
+```{r}
+df_long <- df_long %>%
+  pivot_longer(
+    cols = colnames(df_long)[6:14], # Select relevant columns
+    names_to = c("ElementType", ".value"),
+    names_sep = "_"
+  )
+
+head(df_long)
+```
+
+## Box Plots
+
+```{r}
+library(ggplot2)
+
+df <- df_long %>%
+  pivot_longer(cols = c(Precision, Recall, F1),
+               names_to = "Metric",
+               values_to = "Score")
+head(df)
+
+ggplot(df, aes(x = Metric, y = Score, fill = Metric)) +
+  geom_boxplot() +
+  facet_wrap(~PSM, nrow=1) +
+  labs(title = "Score with and without PSM and Metrics") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+## Analysis
+
+### Class
+
+#### Precision
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Class", ]
+head(df)
+
+class_precision <- lm(Precision ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(class_precision)
+print("----------------------")
+
+qqnorm(residuals(class_precision))
+qqline(residuals(class_precision),col="red")
+
+leveneTest(residuals(class_precision) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(class_precision, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+#### Recall
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Class", ]
+head(df)
+
+class_recall <- lm(Recall ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(class_recall)
+print("----------------------")
+
+qqnorm(residuals(class_recall))
+qqline(residuals(class_recall),col="red")
+
+leveneTest(residuals(class_recall) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(class_recall, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+#### F1
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Class", ]
+head(df)
+
+class_f1 <- lm(F1 ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(class_f1)
+print("----------------------")
+
+qqnorm(residuals(class_f1))
+qqline(residuals(class_f1),col="red")
+
+leveneTest(residuals(class_f1) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(class_f1, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+
+print("DSL2Gen ")
+emmeans(class_f1, pairwise ~ DSL2Gen)$contrast
+```
+
+### Attr
+
+#### Precision
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Attr", ]
+head(df)
+
+attr_precision <- lm(Precision ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(attr_precision)
+print("----------------------")
+
+qqnorm(residuals(attr_precision))
+qqline(residuals(attr_precision),col="red")
+
+leveneTest(residuals(attr_precision) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(attr_precision, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+#### Recall
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Attr", ]
+head(df)
+
+attr_recall <- lm(Recall ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(attr_recall)
+print("----------------------")
+
+qqnorm(residuals(attr_recall))
+qqline(residuals(attr_recall),col="red")
+
+leveneTest(residuals(attr_recall) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(attr_recall, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+#### F1
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Attr", ]
+head(df)
+
+attr_f1 <- lm(F1 ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(attr_f1)
+print("----------------------")
+
+qqnorm(residuals(attr_f1))
+qqline(residuals(attr_f1),col="red")
+
+leveneTest(residuals(attr_f1) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(attr_f1, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+### Rel
+
+#### Precision
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Rel", ]
+head(df)
+
+rel_precision <- lm(Precision ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(rel_precision)
+print("----------------------")
+
+qqnorm(residuals(rel_precision))
+qqline(residuals(rel_precision),col="red")
+
+leveneTest(residuals(rel_precision) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(rel_precision, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+#### Recall
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Rel", ]
+head(df)
+
+rel_recall <- lm(Recall ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(rel_recall)
+print("----------------------")
+
+qqnorm(residuals(rel_recall))
+qqline(residuals(rel_recall),col="red")
+
+leveneTest(residuals(rel_recall) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(rel_recall, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+#### F1
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(car)
+library(emmeans)
+
+df <- df_long[df_long$ElementType == "Rel", ]
+head(df)
+
+rel_f1 <- lm(F1 ~ PSM + DSL2Gen + Shot_Example, data = df)
+summary(rel_f1)
+print("----------------------")
+
+qqnorm(residuals(rel_f1))
+qqline(residuals(rel_f1),col="red")
+
+leveneTest(residuals(rel_f1) ~ PSM, data=df)
+print("----------------------")
+
+print("PSM")
+emmeans_results <- emmeans(rel_f1, pairwise ~ PSM)
+emmeans_results$emmeans
+contrast_results <- contrast(emmeans_results, method = "trt.vs.ctrl", ref = 1)
+summary(contrast_results)
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+df <- data.frame(
+    Completeness_Ratio = c("40%", "33%", "25%", "0"),
+    Class_Precision = c(0.93, 0.89, 0.89, 0.82),
+    Class_Recall = c(0.88, 0.77, 0.73, 0.69),
+    Class_F1 = c(0.90, 0.82, 0.79, 0.72),
+    Attribute_Precision = c(0.84, 0.87, 0.86, 0.80),
+    Attribute_Recall = c(0.81, 0.65, 0.55, 0.59),
+    Attribute_F1 = c(0.82, 0.74, 0.67, 0.67),
+    Relationship_Precision = c(0.84, 0.74, 0.79, 0.51),
+    Relationship_Recall = c(0.75, 0.68, 0.62, 0.50),
+    Relationship_F1 = c(0.79, 0.71, 0.69, 0.49)
+)
+
+df <- df %>%
+  pivot_longer(
+    cols = colnames(df)[2:10], # Select relevant columns
+    names_to = c("ElementType", ".value"),
+    names_sep = "_"
+  )
+
+df <- gather(df, key = "Metric", value = "Value", Precision, Recall, F1)
+
+ggplot(df, aes(x = Completeness_Ratio, y = Value, color = Metric, group = Metric)) +
+    geom_line(size = 1) +  # Add lines
+    geom_point()+
+    scale_y_continuous(limits = c(0, 1)) +
+    facet_wrap(~ ElementType, scales = "free_y") +
+    theme_minimal() +      # Apply a minimal theme
+    labs(
+        title = "ElementType scores across level of Completeness in the PSM",
+        x = "Completeness of the PSM ratio",
+        y = "F1 Score",
+        color = "ElementType"
+    )
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+df <- data.frame(
+    Completeness_Ratio = c("40%", "33%", "25%"),
+    Class_Precision = c(0.11, 0.07, 0.07),
+    Class_Recall = c(0.19, 0.08, 0.04),
+    Class_F1 = c(0.18, 0.10, 0.07),
+    Attribute_Precision = c(0.04, 0.07, 0.06),
+    Attribute_Recall = c(0.22, 0.06, -0.04),
+    Attribute_F1 = c(0.15, 0.07, 0),
+    Relationship_Precision = c(0.33, 0.23, 0.28),
+    Relationship_Recall = c(0.25, 0.18, 0.12),
+    Relationship_F1 = c(0.30, 0.21, 0.20)
+)
+
+df <- df %>%
+  pivot_longer(
+    cols = colnames(df)[2:10], # Select relevant columns
+    names_to = c("ElementType", ".value"),
+    names_sep = "_"
+  )
+
+df <- gather(df, key = "Metric", value = "Value", Precision, Recall, F1)
+
+ggplot(df, aes(x = Completeness_Ratio, y = Value, color = Metric, group = Metric)) +
+    geom_line(size = 1) +  # Add lines
+    geom_point()+
+    facet_wrap(~ ElementType, scales = "free_y") +
+    theme_minimal() +      # Apply a minimal theme
+    labs(
+        title = "Class, Attribute across level of Completeness in the PSM",
+        x = "Completeness of the PSM ratio",
+        color = "ElementType"
+    )
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+gradient_df <- data.frame(
+    Completeness_Ratio = c("40%", "33%", "25%"),
+    Class_Precision = c(0.04, 0, 0.07),
+    Class_Recall = c(0.11, 0.04, 0.04),
+    Class_F1 = c(0.08, 0.03, 0.07),
+    Attribute_Precision = c(-0.03, 0.01, 0.06),
+    Attribute_Recall = c(0.16, 0.10, -0.04),
+    Attribute_F1 = c(0.11, 0.07, 0),
+    Relationship_Precision = c(0.1, -0.05, 0.28),
+    Relationship_Recall = c(0.07, 0.06, 0.12),
+    Relationship_F1 = c(0.08, 0.02, 0.2)
+)
+
+gradient_df <- gradient_df %>%
+  pivot_longer(
+    cols = colnames(gradient_df)[2:10], # Select relevant columns
+    names_to = c("ElementType", ".value"),
+    names_sep = "_"
+  )
+
+gradient_df <- gather(gradient_df, key = "Metric", value = "Value", Precision, Recall, F1)
+
+ggplot(gradient_df, aes(x = Completeness_Ratio, y = Value, color = Metric, group = Metric)) +
+    geom_line(size = 1) +  # Add lines
+    geom_point()+
+    facet_wrap(~ ElementType) +
+    theme_minimal() +      # Apply a minimal theme
+    labs(
+        title = "Metrics increase across level of Completeness in the PSM",
+        x = "Completeness of the PSM ratio",
+        y = "Score",
+        color = "ElementType"
+    )
+```
